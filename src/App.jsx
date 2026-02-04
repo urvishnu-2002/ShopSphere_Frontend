@@ -1,10 +1,11 @@
 import './App.css'
+import VendorLogin from './Pages/VendorLogin'
 
 function App() {
 
   return (
     <>
-    <h1>Welcome to  ShopSphere Application....</h1>
+      <VendorLogin />
     </>
   )
 }
