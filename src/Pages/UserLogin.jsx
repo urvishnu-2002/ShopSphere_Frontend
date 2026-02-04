@@ -16,10 +16,8 @@ function UserLogin() {
                 <div className="bg-white/70 backdrop-blur-2xl border border-white/60 rounded-3xl shadow-2xl shadow-gray-300/40 p-10 sm:p-12">
                     {/* Logo / Brand */}
                     <div className="text-center mb-10">
-                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl shadow-lg shadow-blue-500/30 mb-6 transform hover:scale-105 transition-transform duration-300">
-                            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                            </svg>
+                        <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-2xl shadow-lg shadow-blue-500/20 mb-6 transform hover:scale-105 transition-transform duration-300 p-2">
+                            <img src="/ShopSphere.png" alt="ShopSphere Logo" className="w-full h-full object-contain" />
                         </div>
                         <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight mb-2">
                             Shop<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Sphere</span>
@@ -85,17 +83,6 @@ function UserLogin() {
 
                         {/* Remember Me & Forgot Password */}
                         <div className="flex items-center justify-between pt-1">
-                            <label className="flex items-center cursor-pointer group">
-                                <input
-                                    id="remember-me"
-                                    name="remember-me"
-                                    type="checkbox"
-                                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer"
-                                />
-                                <span className="ml-2.5 text-sm text-gray-600 group-hover:text-gray-800 transition-colors">
-                                    Remember me
-                                </span>
-                            </label>
                             <a href="#" className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors">
                                 Forgot password?
                             </a>
