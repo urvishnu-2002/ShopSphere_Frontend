@@ -1,10 +1,10 @@
 import './App.css'
-
+import UserLogin from './Pages/UserLogin'
 function App() {
 
   return (
     <>
-    <h1>Welcome to  ShopSphere Application....</h1>
+      <UserLogin />
     </>
   )
 }
