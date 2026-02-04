@@ -1,11 +1,12 @@
 import './App.css'
+import AdminLogin from './Pages/AdminLogin'
 
 function App() {
 
   return (
-    <>
-    <h1>Welcome to  ShopSphere Application....</h1>
-    </>
+    <div >
+      <AdminLogin />
+    </div>
   )
 }
 
