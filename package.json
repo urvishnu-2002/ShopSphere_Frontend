@@ -12,10 +12,16 @@
   "dependencies": {
     "react": "^19.2.4",
     "react-dom": "^19.2.0",
+<<<<<<< HEAD
     "router": "^2.2.0"
+=======
+    "react-router-dom": "^7.4.2",
+    "tailwind": "^4.0.0"
+>>>>>>> a50c84b98314a2dcf7fffed8e69ddca10c5f0d50
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@tailwindcss/vite": "^4.1.18",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
