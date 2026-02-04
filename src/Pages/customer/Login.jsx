@@ -1,4 +1,4 @@
-function UserLogin() {
+function Login() {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 px-4 py-12 relative overflow-hidden">
             {/* Background decorative elements */}
@@ -153,4 +153,4 @@ function UserLogin() {
     )
 }
 
-export default UserLogin
+export default Login;
