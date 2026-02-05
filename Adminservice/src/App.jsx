@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AdminLogin from './admin/AdminLogin';
 import AdminDashboard from './admin/AdminDashboard';
+import UserManagement from './admin/User';
 import './App.css';
 
 function App() {
@@ -9,6 +10,7 @@ function App() {
       <Routes>
         <Route path="/" element={<AdminLogin />} />
         <Route path="/dashboard" element={<AdminDashboard />} />
+        <Route path="/users" element={<UserManagement />} />
       </Routes>
     </Router>
   );

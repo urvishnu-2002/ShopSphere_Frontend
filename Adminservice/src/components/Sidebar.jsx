@@ -6,18 +6,22 @@ import {
     Package,
     ShoppingCart,
     BarChart3,
-    LogOut
+    ArrowRight
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+import { useNavigate } from 'react-router-dom';
+
 const Sidebar = ({ isSidebarOpen, activePage = 'Dashboard', onLogout }) => {
+    const navigate = useNavigate();
+
     const menuItems = [
-        { name: 'Dashboard', icon: LayoutDashboard },
-        { name: 'Users', icon: Users },
-        { name: 'Vendors', icon: Store },
-        { name: 'Products', icon: Package },
-        { name: 'Orders', icon: ShoppingCart },
-        { name: 'Reports', icon: BarChart3 },
+        { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
+        { name: 'Users', icon: Users, path: '/users' },
+        { name: 'Vendors', icon: Store, path: '/vendors' },
+        { name: 'Products', icon: Package, path: '/products' },
+        { name: 'Orders', icon: ShoppingCart, path: '/orders' },
+        { name: 'Reports', icon: BarChart3, path: '/reports' },
     ];
 
     return (
@@ -44,17 +48,17 @@ const Sidebar = ({ isSidebarOpen, activePage = 'Dashboard', onLogout }) => {
                     {menuItems.map((item) => {
                         const isActive = item.name === activePage;
                         return (
-                            <a
+                            <button
                                 key={item.name}
-                                href="#"
-                                className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 group ${isActive
+                                onClick={() => navigate(item.path)}
+                                className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 group w-full text-left ${isActive
                                     ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/20'
                                     : 'text-slate-500 hover:bg-white hover:text-indigo-600 hover:shadow-md'
                                     }`}
                             >
                                 <item.icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-indigo-600'}`} />
                                 {item.name}
-                            </a>
+                            </button>
                         );
                     })}
                 </nav>
@@ -73,7 +77,7 @@ const Sidebar = ({ isSidebarOpen, activePage = 'Dashboard', onLogout }) => {
                             className="p-1.5 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-lg transition-colors"
                             title="Logout"
                         >
-                            <LogOut className="w-4 h-4" />
+                            <ArrowRight className="w-4 h-4" />
                         </button>
                     </div>
                 </div>
