@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 function AdminLogin() {
     const [email, setEmail] = useState('')
@@ -6,12 +7,15 @@ function AdminLogin() {
     const [rememberMe, setRememberMe] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
 
+    const navigate = useNavigate()
+
     const handleSubmit = (e) => {
         e.preventDefault()
         setIsLoading(true)
         setTimeout(() => {
             setIsLoading(false)
             console.log('Login attempt:', { email, password, rememberMe })
+            navigate('/dashboard')
         }, 1500)
     }
 
@@ -74,7 +78,7 @@ function AdminLogin() {
                             </label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="adminloginbg.png" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
                                     </svg>
                                 </div>
