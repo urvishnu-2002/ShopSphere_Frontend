@@ -79,7 +79,7 @@ const productsSlice = createSlice({
       {
         name: 'Peach',
         price: 80.0,
-        image: 'Images/peach.jpg',
+        image: '/Images/peach.jpg',
         description: 'Juicy, sweet, and aromatic fruit that is perfect for desserts.'
       },
       {

@@ -1,20 +1,18 @@
 import { Routes, Route } from "react-router-dom";
 
 // Customer Pages
-import Home from "../pages/customer/Home";
-import Cart from "../pages/customer/Cart";
-import Checkout from "../pages/customer/Checkout";
-import WhishList from "../pages/customer/WhishList";
-import AboutUs from "../pages/customer/AboutUs";
-import ContactUs from "../pages/customer/ContactUs";
+import Home from "../Pages/customer/Home";
+import Cart from "../Pages/customer/Cart";
+import Checkout from "../Pages/customer/Checkout";
+import WhishList from "../Pages/customer/WhishList";
+import AboutUs from "../Pages/customer/AboutUs";
+import ContactUs from "../Pages/customer/ContactUs";
 import Login from "../Pages/customer/Login";
 import Profile from "../Pages/customer/Profile"; // Import Profile
 import VendorLogin from "../Pages/vendor/VendorLogin";
+import AdminLogin from "../Pages/admin/AdminLogin";
+import DeliveryAgentLogin from "../Pages/delivery/DeliveryAgentLogin";
 import DeliveryAgentLogin from "../pages/delivery/DeliveryAgentLogin";
-
-// Auth Pages
-
-
 function AppRoutes() {
     return (
         <Routes>
