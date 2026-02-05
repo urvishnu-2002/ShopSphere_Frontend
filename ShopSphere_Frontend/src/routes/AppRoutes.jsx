@@ -8,13 +8,11 @@ import WhishList from "../Pages/customer/WhishList";
 import AboutUs from "../Pages/customer/AboutUs";
 import ContactUs from "../Pages/customer/ContactUs";
 import Login from "../Pages/customer/Login";
+import Profile from "../Pages/customer/Profile"; // Import Profile
 import VendorLogin from "../Pages/vendor/VendorLogin";
 import AdminLogin from "../Pages/admin/AdminLogin";
 import DeliveryAgentLogin from "../Pages/delivery/DeliveryAgentLogin";
-
-// Auth Pages
-
-
+import DeliveryAgentLogin from "../pages/delivery/DeliveryAgentLogin";
 function AppRoutes() {
     return (
         <Routes>
@@ -26,13 +24,11 @@ function AppRoutes() {
             <Route path="/wishlist" element={<WhishList />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/contact" element={<ContactUs />} />
+            <Route path="/profile" element={<Profile />} />
 
             {/* Auth Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/vendor" element={<VendorLogin />} />
-
-            {/* Admin Routes */}
-            <Route path="/admin" element={<AdminLogin />} />
 
             {/* Delivery Routes */}
             <Route path="/delivery" element={<DeliveryAgentLogin />} />

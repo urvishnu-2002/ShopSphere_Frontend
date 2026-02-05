@@ -1,7 +1,7 @@
 import { BrowserRouter, useLocation } from "react-router-dom";
 import AppRoutes from "./routes/AppRoutes";
-import Navbar from "./components/common/Navbar";
-import Footer from "./components/common/Footer";
+import Navbar from "./Components/common/Navbar";
+import Footer from "./Components/common/Footer";
 
 function Layout() {
   const location = useLocation();

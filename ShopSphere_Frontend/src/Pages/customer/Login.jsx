@@ -1,4 +1,30 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 function Login() {
+    const navigate = useNavigate();
+    const [credentials, setCredentials] = useState({
+        email: 'Balaji', // Using your requested mock credentials
+        password: 'Balaji@123'
+    });
+
+    const handleChange = (e) => {
+        setCredentials({ ...credentials, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        // Mock Login Logic
+        if (credentials.email === 'Balaji' && credentials.password === 'Balaji@123') {
+            localStorage.setItem('isLoggedIn', 'true');
+            // Store dummy user info if needed
+            localStorage.setItem('user', JSON.stringify({ name: 'Balaji Rekha', email: 'balaji_rekha@example.com' }));
+            navigate('/profile');
+        } else {
+            alert('Invalid credentials! (Try User: Balaji, Pass: Balaji@123)');
+        }
+    };
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 px-4 py-12 relative overflow-hidden">
             {/* Background decorative elements */}
@@ -17,7 +43,8 @@ function Login() {
                     {/* Logo / Brand */}
                     <div className="text-center mb-10">
                         <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-2xl shadow-lg shadow-blue-500/20 mb-6 transform hover:scale-105 transition-transform duration-300 p-2">
-                            <img src="/ShopSphere.png" alt="ShopSphere Logo" className="w-full h-full object-contain" />
+                            {/* Placeholder or Logo */}
+                            <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">S</div>
                         </div>
                         <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight mb-2">
                             Shop<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Sphere</span>
@@ -36,11 +63,11 @@ function Login() {
                     </div>
 
                     {/* Form */}
-                    <form className="space-y-5" action="">
+                    <form className="space-y-5" onSubmit={handleSubmit}>
                         {/* Email Field */}
                         <div className="space-y-2">
                             <label htmlFor="email" className="block text-sm font-semibold text-gray-700">
-                                Email Address
+                                Username / Email
                             </label>
                             <div className="relative group">
                                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-500 transition-colors">
@@ -49,11 +76,13 @@ function Login() {
                                     </svg>
                                 </div>
                                 <input
-                                    type="email"
+                                    type="text"
                                     id="email"
                                     name="email"
+                                    value={credentials.email}
+                                    onChange={handleChange}
                                     className="w-full pl-12 pr-4 py-4 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-gray-300 hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white"
-                                    placeholder="name@example.com"
+                                    placeholder="Enter username"
                                     required
                                 />
                             </div>
@@ -74,6 +103,8 @@ function Login() {
                                     type="password"
                                     id="password"
                                     name="password"
+                                    value={credentials.password}
+                                    onChange={handleChange}
                                     className="w-full pl-12 pr-4 py-4 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-gray-300 hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white"
                                     placeholder="••••••••"
                                     required
@@ -150,7 +181,7 @@ function Login() {
                 </p>
             </div>
         </div>
-    )
+    );
 }
 
 export default Login;
