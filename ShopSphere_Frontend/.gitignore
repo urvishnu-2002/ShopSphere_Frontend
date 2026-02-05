@@ -1,20 +1,3 @@
-# Node
-node_modules/
-
-# Java
-target/
-*.log
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Env
-.env
-
-# Backup
-.git_backup
-=======
 # Logs
 logs
 *.log
@@ -29,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Environment variables
+.env
+.env.local
+.env.*.local
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -39,4 +27,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
->>>>>>> 0482f0368ea67bb5412eb924fc059fa1ad9f2afb

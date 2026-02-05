@@ -1,0 +1,16 @@
+export const ROLES = {
+    ADMIN: 'ADMIN',
+    VENDOR: 'VENDOR',
+    CUSTOMER: 'CUSTOMER',
+    DELIVERY: 'DELIVERY'
+};
+
+export const ORDER_STATUS = {
+    PENDING: 'PENDING',
+    CONFIRMED: 'CONFIRMED',
+    SHIPPED: 'SHIPPED',
+    DELIVERED: 'DELIVERED',
+    CANCELLED: 'CANCELLED'
+};
+
+export const CURRENCY = '₹';
