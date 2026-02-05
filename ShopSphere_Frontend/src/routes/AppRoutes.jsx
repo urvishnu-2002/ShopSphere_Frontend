@@ -8,7 +8,6 @@ import WhishList from "../pages/customer/WhishList";
 import AboutUs from "../pages/customer/AboutUs";
 import ContactUs from "../pages/customer/ContactUs";
 import Login from "../Pages/customer/Login";
-import Profile from "../Pages/customer/Profile"; // Import Profile
 import VendorLogin from "../Pages/vendor/VendorLogin";
 import DeliveryAgentLogin from "../pages/delivery/DeliveryAgentLogin";
 
@@ -26,7 +25,6 @@ function AppRoutes() {
             <Route path="/wishlist" element={<WhishList />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/contact" element={<ContactUs />} />
-            <Route path="/profile" element={<Profile />} />
 
             {/* Auth Routes */}
             <Route path="/login" element={<Login />} />
