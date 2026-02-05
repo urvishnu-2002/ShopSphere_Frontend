@@ -9,9 +9,7 @@ import AboutUs from "../Pages/customer/AboutUs";
 import ContactUs from "../Pages/customer/ContactUs";
 import Login from "../Pages/customer/Login";
 import VendorLogin from "../Pages/vendor/VendorLogin";
-import AdminLogin from "../Pages/admin/AdminLogin";
 import DeliveryAgentLogin from "../Pages/delivery/DeliveryAgentLogin";
-import DeliveryAgentLogin from "../pages/delivery/DeliveryAgentLogin";
 function AppRoutes() {
     return (
         <Routes>
