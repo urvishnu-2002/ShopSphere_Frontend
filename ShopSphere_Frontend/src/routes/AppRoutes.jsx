@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 // Customer Pages
 import Home from "../Pages/customer/Home";
@@ -10,6 +10,8 @@ import ContactUs from "../Pages/customer/ContactUs";
 import Login from "../Pages/customer/Login";
 import VendorLogin from "../Pages/vendor/VendorLogin";
 import DeliveryAgentLogin from "../Pages/delivery/DeliveryAgentLogin";
+import Profile from "../Pages/customer/Profile";
+
 function AppRoutes() {
     return (
         <Routes>
@@ -21,15 +23,20 @@ function AppRoutes() {
             <Route path="/wishlist" element={<WhishList />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/contact" element={<ContactUs />} />
+            <Route path="/profile" element={<Profile />} />
 
             {/* Auth Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/vendor" element={<VendorLogin />} />
 
             {/* Delivery Routes */}
-            <Route path="/delivery" element={<DeliveryAgentLogin />} />
+            <Route path="/delivery" element={<DeliveryAgentLogin onLoginSuccess={() => console.log("Delivery Login Successful")} />} />
+
+            {/* Fallback Route */}
+            <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
     );
 }
 
 export default AppRoutes;
+

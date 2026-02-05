@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 const DeliveryAgentLogin = ({ onLoginSuccess }) => {
+    console.log("DeliveryAgentLogin rendering...");
     const [activeTab, setActiveTab] = useState('login');
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
