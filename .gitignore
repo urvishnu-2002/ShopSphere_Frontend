@@ -1,0 +1,16 @@
+# Node
+node_modules/
+
+# Java
+target/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+
+# Backup
+.git_backup
