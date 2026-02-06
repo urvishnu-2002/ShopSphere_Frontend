@@ -27,3 +27,19 @@ function App() {
 }
 
 export default App;
+
+
+
+
+// import React from 'react'
+// import AddressPage from './Pages/customer/AdressPage'
+
+// const App = () => {
+//   return (
+//     <div>
+//       <AddressPage />
+//     </div>
+//   )
+// }
+
+// export default App
