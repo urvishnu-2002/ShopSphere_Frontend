@@ -19,6 +19,7 @@ import {
     FaMars,
     FaStore,
 } from "react-icons/fa";
+import AddressPage from "./AdressPage";
 
 // ============================================
 // PROFILE DASHBOARD COMPONENT
@@ -144,40 +145,10 @@ function Profile() {
             </div>
         </div>
     );
-
-    // 3. Manage Addresses Tab
-    const AddressTab = () => (
-        <div className="animate-in fade-in slide-in-from-right duration-500 bg-white rounded-[32px] p-8 lg:p-12 shadow-sm border border-gray-100">
-            <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl font-bold text-gray-900">Saved Addresses</h2>
-                <button className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-500/20 hover:bg-emerald-700 hover:-translate-y-0.5 transition-all">
-                    <FaPlus size={12} /> Add New
-                </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white border-2 border-emerald-500 p-8 rounded-3xl relative shadow-xl shadow-emerald-500/5 group hover:shadow-emerald-500/10 transition-all">
-                    <div className="absolute top-6 right-6 px-3 py-1 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg">Default</div>
-                    <div className="flex items-center gap-4 mb-6">
-                        <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-500">
-                            <FaRegAddressCard size={20} />
-                        </div>
-                        <div>
-                            <p className="text-xs font-bold text-emerald-600 uppercase tracking-widest">Home</p>
-                            <h4 className="text-lg font-bold text-gray-800">{user?.firstName} {user?.lastName}</h4>
-                        </div>
-                    </div>
-                    <p className="text-gray-500 font-medium leading-relaxed mb-6">
-                        123 Luxury Avenue, Penthouse 4B<br />
-                        Chelsea, New York, NY 10011<br />
-                        United States
-                    </p>
-                    <div className="flex items-center gap-4 pt-4 border-t border-gray-50">
-                        <button className="text-sm font-bold text-emerald-600 hover:underline">Edit</button>
-                        <button className="text-sm font-bold text-red-500 hover:underline">Remove</button>
-                    </div>
-                </div>
-            </div>
+ // 3. Adress Tab
+     const AddressTab = () => (
+        <div className="animate-in fade-in slide-in-from-right duration-500 bg-white rounded-[32px] shadow-sm border border-gray-100">
+            <AddressPage />
         </div>
     );
 
