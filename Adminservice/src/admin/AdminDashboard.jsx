@@ -10,10 +10,8 @@ import {
     ChevronDown,
     DollarSign,
     TrendingUp,
-    UserPlus,
     Download,
-    Calendar,
-    Filter
+    Calendar
 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import {
@@ -28,89 +26,60 @@ import {
     AreaChart,
     Area
 } from 'recharts';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 
-// Mock Data based on time ranges
-const allSalesData = {
-    '1month': [
-        { name: 'Week 1', sales: 1200, revenue: 800 },
-        { name: 'Week 2', sales: 1500, revenue: 1100 },
-        { name: 'Week 3', sales: 1800, revenue: 1400 },
-        { name: 'Week 4', sales: 2000, revenue: 1600 },
+// --- Fallback Data (Used as placeholders until backend is connected) ---
+const FALLBACK_DATA = {
+    allSalesData: {
+        '1month': [
+            { name: 'Week 1', sales: 1200, revenue: 800 },
+            { name: 'Week 2', sales: 1500, revenue: 1100 },
+            { name: 'Week 3', sales: 1800, revenue: 1400 },
+            { name: 'Week 4', sales: 2000, revenue: 1600 },
+        ],
+        '3months': [
+            { name: 'Apr', sales: 2780, revenue: 3908 },
+            { name: 'May', sales: 1890, revenue: 4800 },
+            { name: 'Jun', sales: 2390, revenue: 3800 },
+        ],
+        '6months': [
+            { name: 'Jan', sales: 4000, revenue: 2400 },
+            { name: 'Feb', sales: 3000, revenue: 1398 },
+            { name: 'Mar', sales: 2000, revenue: 9800 },
+            { name: 'Apr', sales: 2780, revenue: 3908 },
+            { name: 'May', sales: 1890, revenue: 4800 },
+            { name: 'Jun', sales: 2390, revenue: 3800 },
+        ],
+        '1year': [
+            { name: 'Jan', sales: 4000, revenue: 2400 },
+            { name: 'Feb', sales: 3000, revenue: 1398 },
+            { name: 'Mar', sales: 2000, revenue: 9800 },
+            { name: 'Apr', sales: 2780, revenue: 3908 },
+            { name: 'May', sales: 1890, revenue: 4800 },
+            { name: 'Jun', sales: 2390, revenue: 3800 },
+            { name: 'Jul', sales: 3490, revenue: 4300 },
+            { name: 'Aug', sales: 4200, revenue: 5100 },
+        ]
+    },
+    stats: [
+        { title: 'Total Revenue', value: '$949.93', change: '+12.5%', icon: DollarSign, color: 'text-green-500', bgColor: 'bg-green-50' },
+        { title: 'Total Orders', value: '4', change: '+8.2%', icon: ShoppingCart, color: 'text-blue-500', bgColor: 'bg-blue-50' },
+        { title: 'Total Users', value: '2', change: '+5.1%', icon: Users, color: 'text-purple-500', bgColor: 'bg-purple-50' },
+        { title: 'Active Vendors', value: '3', change: '+3 new', icon: Store, color: 'text-orange-500', bgColor: 'bg-orange-50' },
     ],
-    '3months': [
-        { name: 'Apr', sales: 2780, revenue: 3908 },
-        { name: 'May', sales: 1890, revenue: 4800 },
-        { name: 'Jun', sales: 2390, revenue: 3800 },
+    productData: [
+        { name: 'Electronics', value: 45 },
+        { name: 'Fashion', value: 30 },
+        { name: 'Home', value: 15 },
+        { name: 'Sports', value: 10 },
     ],
-    '6months': [
-        { name: 'Jan', sales: 4000, revenue: 2400 },
-        { name: 'Feb', sales: 3000, revenue: 1398 },
-        { name: 'Mar', sales: 2000, revenue: 9800 },
-        { name: 'Apr', sales: 2780, revenue: 3908 },
-        { name: 'May', sales: 1890, revenue: 4800 },
-        { name: 'Jun', sales: 2390, revenue: 3800 },
-    ],
-    '1year': [
-        { name: 'Jan', sales: 4000, revenue: 2400 },
-        { name: 'Feb', sales: 3000, revenue: 1398 },
-        { name: 'Mar', sales: 2000, revenue: 9800 },
-        { name: 'Apr', sales: 2780, revenue: 3908 },
-        { name: 'May', sales: 1890, revenue: 4800 },
-        { name: 'Jun', sales: 2390, revenue: 3800 },
-        { name: 'Jul', sales: 3490, revenue: 4300 },
-        { name: 'Aug', sales: 4200, revenue: 5100 },
+    recentOrders: [
+        { id: 'ORD001', user: 'John Doe', amount: '299.99', status: 'shipped' },
+        { id: 'ORD002', user: 'Jane Smith', amount: '399.98', status: 'processing' },
+        { id: 'ORD003', user: 'Mike Johnson', amount: '150.00', status: 'delivered' },
+        { id: 'ORD004', user: 'Sarah Wilson', amount: '89.50', status: 'shipped' },
     ]
 };
-
-const stats = [
-    {
-        title: 'Total Revenue',
-        value: '$949.93',
-        change: '+12.5% from last month',
-        icon: DollarSign,
-        color: 'text-green-500',
-        bgColor: 'bg-green-50'
-    },
-    {
-        title: 'Total Orders',
-        value: '4',
-        change: '+8.2% from last month',
-        icon: ShoppingCart,
-        color: 'text-blue-500',
-        bgColor: 'bg-blue-50'
-    },
-    {
-        title: 'Total Users',
-        value: '2',
-        change: '+5.1% from last month',
-        icon: Users,
-        color: 'text-purple-500',
-        bgColor: 'bg-purple-50'
-    },
-    {
-        title: 'Active Vendors',
-        value: '3',
-        change: '+3 new this month',
-        icon: Store,
-        color: 'text-orange-500',
-        bgColor: 'bg-orange-50'
-    },
-];
-
-const productData = [
-    { name: 'Electronics', value: 45, fill: '#8884d8' },
-    { name: 'Fashion', value: 30, fill: '#8884d8' },
-    { name: 'Home', value: 15, fill: '#8884d8' },
-    { name: 'Sports', value: 10, fill: '#8884d8' },
-];
-
-const recentOrders = [
-    { id: 'ORD001', user: 'John Doe', amount: '299.99', status: 'shipped' },
-    { id: 'ORD002', user: 'Jane Smith', amount: '399.98', status: 'processing' },
-    { id: 'ORD003', user: 'Mike Johnson', amount: '150.00', status: 'delivered' },
-    { id: 'ORD004', user: 'Sarah Wilson', amount: '89.50', status: 'shipped' },
-];
 
 const getStatusColor = (status) => {
     switch (status) {
@@ -123,27 +92,58 @@ const getStatusColor = (status) => {
 
 const AdminDashboard = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [selectedMetric, setSelectedMetric] = useState('both'); // 'sales', 'revenue', 'both'
-    const [dateRange, setDateRange] = useState('6months'); // '1month', '3months', '6months', '1year'
+    const [selectedMetric, setSelectedMetric] = useState('both');
+    const [dateRange, setDateRange] = useState('6months');
 
-    // Derived state
-    const salesData = allSalesData[dateRange] || allSalesData['6months'];
+    // Dashboard Data States (Connect to API here later)
+    const [data, setData] = useState({
+        stats: [],
+        salesHistory: {},
+        categoryData: [],
+        recentOrders: []
+    });
+    const [isLoading, setIsLoading] = useState(true);
 
-    console.log('Rendering AdminDashboard with data:', { salesData, productData, recentOrders });
+    // Initial Fetch Simulation (Replace with actual API calls later)
+    React.useEffect(() => {
+        const fetchDashboardData = async () => {
+            setIsLoading(true);
+            try {
+                // Simulate network latency
+                await new Promise(resolve => setTimeout(resolve, 800));
+
+                // Once backend is ready, use: const response = await fetch('/api/dashboard');
+                // For now, we populate state with our fallback structure
+                setData({
+                    stats: FALLBACK_DATA.stats,
+                    salesHistory: FALLBACK_DATA.allSalesData,
+                    categoryData: FALLBACK_DATA.productData,
+                    recentOrders: FALLBACK_DATA.recentOrders
+                });
+            } catch (error) {
+                console.error("Failed to fetch dashboard data:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchDashboardData();
+    }, []);
+
+    // Derived values with safe fallbacks
+    const currentSalesData = (data.salesHistory && data.salesHistory[dateRange]) || [];
 
     const handleLogout = () => {
-        // Clear any stored authentication tokens or user data
         localStorage.removeItem('authToken');
         sessionStorage.clear();
-
-        // Navigate to login page
         window.location.href = '/';
     };
 
     const handleExport = () => {
+        if (!currentSalesData.length) return;
         const csvContent = [
             ['Month', 'Sales', 'Revenue'],
-            ...salesData.map(item => [item.name, item.sales, item.revenue])
+            ...currentSalesData.map(item => [item.name, item.sales, item.revenue])
         ].map(row => row.join(',')).join('\n');
 
         const blob = new Blob([csvContent], { type: 'text/csv' });
@@ -194,7 +194,10 @@ const AdminDashboard = () => {
                                 className="pl-10 pr-4 py-2 rounded-full border border-gray-200 bg-gray-50 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none w-64 text-sm transition-all"
                             />
                         </div>
-                        <button className="relative p-2 text-slate-500 hover:bg-gray-100 rounded-full transition-colors">
+                        <button
+                            onClick={(e) => e.preventDefault()}
+                            className="relative p-2 text-slate-500 hover:bg-gray-100 rounded-full transition-colors"
+                        >
                             <Bell className="w-5 h-5" />
                             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
                         </button>
@@ -204,9 +207,16 @@ const AdminDashboard = () => {
                 <div className="p-8 space-y-8 max-w-7xl mx-auto">
                     {/* Stats Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {
-                            stats.map((stat, index) => (
-                                <motion.div
+                        {isLoading
+                            ? [1, 2, 3, 4].map((i) => (
+                                <div key={i} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 animate-pulse">
+                                    <div className="h-10 w-10 bg-gray-100 rounded-xl mb-4" />
+                                    <div className="h-6 w-24 bg-gray-100 rounded mb-2" />
+                                    <div className="h-4 w-16 bg-gray-50 rounded" />
+                                </div>
+                            ))
+                            : data.stats.map((stat, index) => (
+                                <Motion.div
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.1 }}
@@ -226,14 +236,14 @@ const AdminDashboard = () => {
                                         <TrendingUp className="w-4 h-4 text-emerald-500" />
                                         <span className="text-emerald-500 font-medium whitespace-nowrap">{stat.change}</span>
                                     </div>
-                                </motion.div>
+                                </Motion.div>
                             ))
                         }
                     </div>
 
                     {/* Sales Overview Section */}
                     <div className="grid grid-cols-1 gap-8">
-                        <motion.div
+                        <Motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.4 }}
@@ -295,72 +305,83 @@ const AdminDashboard = () => {
                             </div>
 
                             <div className="h-80">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <AreaChart data={salesData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                                        <defs>
-                                            <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1} />
-                                                <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
-                                            </linearGradient>
-                                            <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor="#10b981" stopOpacity={0.1} />
-                                                <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                                            </linearGradient>
-                                        </defs>
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                                        <XAxis
-                                            dataKey="name"
-                                            axisLine={false}
-                                            tickLine={false}
-                                            tick={{ fill: '#94a3b8', fontSize: 12 }}
-                                            dy={10}
-                                        />
-                                        <YAxis
-                                            axisLine={false}
-                                            tickLine={false}
-                                            tick={{ fill: '#94a3b8', fontSize: 12 }}
-                                        />
-                                        <Tooltip
-                                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                            formatter={(value, name) => [`$${value}`, name === 'sales' ? 'Sales' : 'Revenue']}
-                                        />
-                                        <Legend verticalAlign="top" height={36} iconType="circle" />
-
-                                        {(selectedMetric === 'sales' || selectedMetric === 'both') && (
-                                            <Area
-                                                type="monotone"
-                                                dataKey="sales"
-                                                name="Sales"
-                                                stroke="#6366f1"
-                                                strokeWidth={3}
-                                                fillOpacity={1}
-                                                fill="url(#colorSales)"
-                                                animationDuration={1500}
+                                {isLoading ? (
+                                    <div className="w-full h-full bg-gray-50 rounded-xl animate-pulse flex items-center justify-center">
+                                        <p className="text-slate-400 text-sm">Loading charts...</p>
+                                    </div>
+                                ) : currentSalesData.length > 0 ? (
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <AreaChart data={currentSalesData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                                            <defs>
+                                                <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1} />
+                                                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                                                </linearGradient>
+                                                <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.1} />
+                                                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                                                </linearGradient>
+                                            </defs>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                            <XAxis
+                                                dataKey="name"
+                                                axisLine={false}
+                                                tickLine={false}
+                                                tick={{ fill: '#94a3b8', fontSize: 12 }}
+                                                dy={10}
                                             />
-                                        )}
-
-                                        {(selectedMetric === 'revenue' || selectedMetric === 'both') && (
-                                            <Area
-                                                type="monotone"
-                                                dataKey="revenue"
-                                                name="Revenue"
-                                                stroke="#10b981"
-                                                strokeWidth={3}
-                                                fillOpacity={1}
-                                                fill="url(#colorRevenue)"
-                                                animationDuration={1500}
+                                            <YAxis
+                                                axisLine={false}
+                                                tickLine={false}
+                                                tick={{ fill: '#94a3b8', fontSize: 12 }}
                                             />
-                                        )}
-                                    </AreaChart>
-                                </ResponsiveContainer>
+                                            <Tooltip
+                                                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                                formatter={(value, name) => [`$${value}`, name === 'sales' ? 'Sales' : 'Revenue']}
+                                            />
+                                            <Legend verticalAlign="top" height={36} iconType="circle" />
+
+                                            {(selectedMetric === 'sales' || selectedMetric === 'both') && (
+                                                <Area
+                                                    type="monotone"
+                                                    dataKey="sales"
+                                                    name="Sales"
+                                                    stroke="#6366f1"
+                                                    strokeWidth={3}
+                                                    fillOpacity={1}
+                                                    fill="url(#colorSales)"
+                                                    animationDuration={1500}
+                                                />
+                                            )}
+
+                                            {(selectedMetric === 'revenue' || selectedMetric === 'both') && (
+                                                <Area
+                                                    type="monotone"
+                                                    dataKey="revenue"
+                                                    name="Revenue"
+                                                    stroke="#10b981"
+                                                    strokeWidth={3}
+                                                    fillOpacity={1}
+                                                    fill="url(#colorRevenue)"
+                                                    animationDuration={1500}
+                                                />
+                                            )}
+                                        </AreaChart>
+                                    </ResponsiveContainer>
+                                ) : (
+                                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 bg-gray-50 rounded-xl">
+                                        <Calendar className="w-12 h-12 mb-2 opacity-20" />
+                                        <p>No data available for this range</p>
+                                    </div>
+                                )}
                             </div>
-                        </motion.div>
+                        </Motion.div>
                     </div>
 
                     {/* Products and Recent Orders Section */}
                     <div className="grid grid-cols-1 gap-8">
                         {/* Products by Category Chart */}
-                        <motion.div
+                        <Motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.5 }}
@@ -368,28 +389,36 @@ const AdminDashboard = () => {
                         >
                             <h2 className="text-lg font-bold text-slate-800 mb-6">Products by Category</h2>
                             <div className="h-80 w-full">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={productData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b' }} dy={10} />
-                                        <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b' }} />
-                                        <Tooltip
-                                            cursor={{ fill: '#f1f5f9' }}
-                                            contentStyle={{
-                                                backgroundColor: '#fff',
-                                                border: 'none',
-                                                borderRadius: '8px',
-                                                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-                                            }}
-                                        />
-                                        <Bar dataKey="value" fill="#8b5cf6" radius={[4, 4, 0, 0]} barSize={60} />
-                                    </BarChart>
-                                </ResponsiveContainer>
+                                {isLoading ? (
+                                    <div className="w-full h-full bg-gray-50 rounded-xl animate-pulse" />
+                                ) : data.categoryData.length > 0 ? (
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart data={data.categoryData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b' }} dy={10} />
+                                            <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b' }} />
+                                            <Tooltip
+                                                cursor={{ fill: '#f1f5f9' }}
+                                                contentStyle={{
+                                                    backgroundColor: '#fff',
+                                                    border: 'none',
+                                                    borderRadius: '8px',
+                                                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                                                }}
+                                            />
+                                            <Bar dataKey="value" fill="#8b5cf6" radius={[4, 4, 0, 0]} barSize={60} />
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-slate-400 bg-gray-50 rounded-xl">
+                                        <p>No category data found</p>
+                                    </div>
+                                )}
                             </div>
-                        </motion.div>
+                        </Motion.div>
 
                         {/* Recent Orders List */}
-                        <motion.div
+                        <Motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.6 }}
@@ -407,22 +436,39 @@ const AdminDashboard = () => {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-50">
-                                        {recentOrders.map((order) => (
-                                            <tr key={order.id} className="group hover:bg-gray-50/50 transition-colors">
-                                                <td className="py-4 font-medium text-slate-800">{order.id}</td>
-                                                <td className="py-4 text-slate-600">{order.user}</td>
-                                                <td className="py-4 font-medium text-slate-800">${order.amount}</td>
-                                                <td className="py-4">
-                                                    <span className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor(order.status)}`}>
-                                                        {order.status}
-                                                    </span>
+                                        {isLoading ? (
+                                            [1, 2, 3].map(i => (
+                                                <tr key={i}>
+                                                    <td className="py-4"><div className="h-4 w-16 bg-gray-100 rounded animate-pulse" /></td>
+                                                    <td className="py-4"><div className="h-4 w-24 bg-gray-100 rounded animate-pulse" /></td>
+                                                    <td className="py-4"><div className="h-4 w-12 bg-gray-100 rounded animate-pulse" /></td>
+                                                    <td className="py-4"><div className="h-6 w-20 bg-gray-100 rounded-full animate-pulse" /></td>
+                                                </tr>
+                                            ))
+                                        ) : data.recentOrders.length > 0 ? (
+                                            data.recentOrders.map((order) => (
+                                                <tr key={order.id} className="group hover:bg-gray-50/50 transition-colors">
+                                                    <td className="py-4 font-medium text-slate-800">{order.id}</td>
+                                                    <td className="py-4 text-slate-600">{order.user}</td>
+                                                    <td className="py-4 font-medium text-slate-800">${order.amount}</td>
+                                                    <td className="py-4">
+                                                        <span className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor(order.status)}`}>
+                                                            {order.status}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan="4" className="py-8 text-center text-slate-400">
+                                                    No recent orders found
                                                 </td>
                                             </tr>
-                                        ))}
+                                        )}
                                     </tbody>
                                 </table>
                             </div>
-                        </motion.div>
+                        </Motion.div>
                     </div>
                 </div>
             </main>

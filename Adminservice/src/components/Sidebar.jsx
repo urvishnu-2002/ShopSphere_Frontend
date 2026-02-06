@@ -8,7 +8,7 @@ import {
     BarChart3,
     ArrowRight
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -20,12 +20,12 @@ const Sidebar = ({ isSidebarOpen, activePage = 'Dashboard', onLogout }) => {
         { name: 'Users', icon: Users, path: '/users' },
         { name: 'Vendors', icon: Store, path: '/vendors' },
         { name: 'Products', icon: Package, path: '/products' },
-        { name: 'Orders', icon: ShoppingCart, path: '/orders' },
-        { name: 'Reports', icon: BarChart3, path: '/reports' },
+        { name: 'Orders', icon: ShoppingCart, path: '/orders', isPlaceholder: true },
+        { name: 'Reports', icon: BarChart3, path: '/reports', isPlaceholder: true },
     ];
 
     return (
-        <motion.aside
+        <Motion.aside
             initial={false}
             animate={{
                 x: isSidebarOpen ? 0 : -256,
@@ -50,14 +50,18 @@ const Sidebar = ({ isSidebarOpen, activePage = 'Dashboard', onLogout }) => {
                         return (
                             <button
                                 key={item.name}
-                                onClick={() => navigate(item.path)}
+                                onClick={() => !item.isPlaceholder ? navigate(item.path) : null}
+                                title={item.isPlaceholder ? "Coming Soon" : ""}
                                 className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 group w-full text-left ${isActive
                                     ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/20'
                                     : 'text-slate-500 hover:bg-white hover:text-indigo-600 hover:shadow-md'
-                                    }`}
+                                    } ${item.isPlaceholder ? 'cursor-default' : ''}`}
                             >
                                 <item.icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-indigo-600'}`} />
                                 {item.name}
+                                {item.isPlaceholder && (
+                                    <span className="ml-auto text-[10px] bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity">Soon</span>
+                                )}
                             </button>
                         );
                     })}
@@ -82,7 +86,7 @@ const Sidebar = ({ isSidebarOpen, activePage = 'Dashboard', onLogout }) => {
                     </div>
                 </div>
             </div>
-        </motion.aside>
+        </Motion.aside>
     );
 };
 
