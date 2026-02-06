@@ -21,3 +21,10 @@ export const signupUser = async (signupData) => {
   );
   return response.data;
 };
+
+// LOGOUT FUNCTION
+export const logout = () => {
+  localStorage.removeItem("user");
+  // If you have a backend logout endpoint, call it here
+  // return axios.post(`${API_BASE_URL}/logout`);
+};

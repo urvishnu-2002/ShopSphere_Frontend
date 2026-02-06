@@ -36,6 +36,29 @@ function Navbar() {
     const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
     const wishlistCount = wishlistItems.length;
 
+    // Auth State
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        // Check for user in localStorage on mount
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            try {
+                setUser(JSON.parse(storedUser));
+            } catch (error) {
+                console.error("Failed to parse user data", error);
+                localStorage.removeItem("user");
+            }
+        }
+    }, [location.pathname]); // Re-check on route change (e.g. after login/redirect)
+
+    const handleLogout = () => {
+        localStorage.removeItem("user");
+        setUser(null);
+        setProfileDropdownOpen(false);
+        navigate('/login');
+    };
+
     // ============================================
     // NAVIGATION LINKS
     // ============================================
@@ -104,10 +127,7 @@ function Navbar() {
         navigate('/', { replace: true });
     };
 
-    const handleLogout = () => {
-        logout();
-        setProfileDropdownOpen(false);
-    };
+
 
     const isActive = (path) => location.pathname === path;
 
@@ -251,16 +271,82 @@ function Navbar() {
                             )}
                         </Link>
 
-                        {/* Profile */}
-                        <Link
-                            to="/login"
-                            className={`relative p-2.5 rounded-xl transition-all duration-300 ease-out group ${isActive("/login")
-                                    ? "bg-blue-50 text-blue-600"
-                                    : "text-gray-500 hover:text-blue-600 hover:bg-blue-50"
+                        {/* Profile / Login */}
+                        {user ? (
+                            <div className="relative" ref={dropdownRef}>
+                                <button
+                                    onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                                    className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 ${
+                                        profileDropdownOpen 
+                                            ? "bg-blue-50 text-blue-600 ring-2 ring-blue-100" 
+                                            : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                                    }`}
+                                >
+                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-bold shadow-md shadow-blue-500/20">
+                                        <FaUser size={14} />
+                                    </div>
+                                    <div className="hidden sm:flex flex-col items-start leading-tight">
+                                        <span className="text-xs text-gray-400 font-medium">Hello,</span>
+                                        <span className="text-sm font-bold text-gray-800 max-w-[100px] truncate">
+                                            {user.username}
+                                        </span>
+                                    </div>
+                                    <FaChevronDown 
+                                        size={12} 
+                                        className={`ml-1 transition-transform duration-300 ${profileDropdownOpen ? "rotate-180" : ""}`}
+                                    />
+                                </button>
+
+                                {/* Dropdown Menu */}
+                                {profileDropdownOpen && (
+                                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl shadow-gray-200/50 border border-gray-100 py-2 animate-in slide-in-from-top-2 duration-200">
+                                        <div className="px-4 py-3 border-b border-gray-100 mb-1">
+                                            <p className="text-sm font-semibold text-gray-900 truncate">{user.username}</p>
+                                            <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                                        </div>
+                                        
+                                        <Link 
+                                            to="/profile" 
+                                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
+                                            onClick={() => setProfileDropdownOpen(false)}
+                                        >
+                                            <FaUser size={14} className="text-gray-400" />
+                                            My Profile
+                                        </Link>
+                                        <Link 
+                                            to="/orders" 
+                                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
+                                            onClick={() => setProfileDropdownOpen(false)}
+                                        >
+                                            <FaBox size={14} className="text-gray-400" />
+                                            My Orders
+                                        </Link>
+                                        
+                                        <div className="border-t border-gray-100 my-1 pt-1">
+                                            <button 
+                                                onClick={handleLogout}
+                                                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors text-left"
+                                            >
+                                                <FaSignOutAlt size={14} />
+                                                Log Out
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <Link
+                                to="/login"
+                                className={`relative px-5 py-2.5 rounded-xl font-medium transition-all duration-300 ease-out ${
+                                    isActive("/login")
+                                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
+                                        : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
                                 }`}
-                            aria-label="login"
-                        ><button>login </button>
-                        </Link>
+                                aria-label="Login"
+                            >
+                                Login
+                            </Link>
+                        )}
 
                         {/* Mobile Menu Button */}
                         <button

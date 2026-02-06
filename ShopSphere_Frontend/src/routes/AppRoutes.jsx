@@ -11,7 +11,13 @@ import Login from "../Pages/customer/Login";
 import SignUp from "../Pages/customer/SignUp";
 import VendorLogin from "../Pages/vendor/VendorLogin";
 import DeliveryAgentLogin from "../Pages/delivery/DeliveryAgentLogin";
-import Profile from "../Pages/customer/Profile";
+import Profile, { 
+    ProfileInfoTab, 
+    OrdersTab, 
+    AddressTab, 
+    WishlistTab, 
+    SellTab 
+} from "../Pages/customer/Profile";
 import Success from "../Pages/customer/Success";
 
 function AppRoutes() {
@@ -25,7 +31,14 @@ function AppRoutes() {
             <Route path="/wishlist" element={<WhishList />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/contact" element={<ContactUs />} />
-            <Route path="/profile" element={<Profile />} />
+            {/* Nested Profile Routes */}
+            <Route path="/profile" element={<Profile />}>
+                <Route index element={<ProfileInfoTab />} />
+                <Route path="orders" element={<OrdersTab />} />
+                <Route path="addresses" element={<AddressTab />} />
+                <Route path="wishlist" element={<WishlistTab />} />
+                <Route path="sell" element={<SellTab />} />
+            </Route>
 
             {/* Auth Routes */}
             <Route path="/login" element={<Login />} />
