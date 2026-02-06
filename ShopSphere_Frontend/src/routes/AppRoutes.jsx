@@ -12,20 +12,41 @@ import SignUp from "../Pages/customer/SignUp";
 import VendorLogin from "../Pages/vendor/VendorLogin";
 import DeliveryAgentLogin from "../Pages/delivery/DeliveryAgentLogin";
 import Profile from "../Pages/customer/Profile";
+
+import LandingPage from "../Components/common/LandingPage";
+import VerifyGST from "../Pages/customer/VerifyGST";
+import VerifyPAN from "../Pages/customer/VerifyPAN";
+import StoreName from "../Pages/customer/StoreName";
+import ShippingAddress from "../Pages/customer/ShippingAddress";
+import ShippingMethod from "../Pages/customer/ShippingMethod";
+import ShippingFeePreferences from "../Pages/customer/ShippingFeePreferences";
+import BankDetails from "../Pages/customer/BankDetails";
+
 import Success from "../Pages/customer/Success";
+
 
 function AppRoutes() {
     return (
         <Routes>
             {/* Customer Routes */}
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<LandingPage />} />
             <Route path="/home" element={<Home />} />
+            <Route path="/verifyGST" element={<VerifyGST />} />
+            <Route path="/verifyPAN" element={<VerifyPAN />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/wishlist" element={<WhishList />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/contact" element={<ContactUs />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/store-name" element={<StoreName />} />
+            <Route path="/shipping-address" element={<ShippingAddress />} />
+            <Route path="/shipping-method" element={<ShippingMethod />} />
+            <Route path="/shipping-fee-preferences" element={<ShippingFeePreferences />} />
+            <Route path="/bank-details" element={<BankDetails />} />
+
+
+
 
             {/* Auth Routes */}
             <Route path="/login" element={<Login />} />
