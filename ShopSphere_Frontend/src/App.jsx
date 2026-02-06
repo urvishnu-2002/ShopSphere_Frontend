@@ -9,7 +9,7 @@ function Layout() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {!hideNavbarFooter && <Navbar />}
+      {!hideNavbarFooter && <Navbar/>}
       <main className={`flex-grow ${!hideNavbarFooter ? "pt-24" : ""}`}>
         <AppRoutes />
       </main>
