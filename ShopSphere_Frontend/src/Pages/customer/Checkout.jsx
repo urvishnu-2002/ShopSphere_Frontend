@@ -58,12 +58,74 @@ function Checkout() {
       icon: <FaMoneyBillWave className="text-gray-600" />,
     },
   ];
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    if (window.Razorpay) {
+      resolve(true);
+      return;
+    }
 
-  const handlePayment = () => {
-    // Simulated payment logic
-    alert(`Processing payment via ${selectedMethod.toUpperCase()}...`);
-    // navigate("/order-success");
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+
+    document.body.appendChild(script);
+  });
+};
+
+const handlePayment = async () => {
+  const loaded = await loadRazorpayScript();
+
+  if (!loaded) {
+    alert("Razorpay SDK failed to load. Check internet.");
+    return;
+  }
+
+  const options = {
+    key: "rzp_test_SCkSLubYDiWP48", // ✅ Test Key
+    amount: Math.round(totalAmount * 100), // 💰 dynamic amount
+    currency: "INR",
+    name: "My App",
+    description: "Order Payment",
+
+    handler: function (response) {
+      alert("Payment Successful 🎉");
+
+      console.log("Transaction ID:", response.razorpay_payment_id);
+
+      // Store complete order data for Success page
+      localStorage.setItem(
+        "orderSuccess",
+        JSON.stringify({
+          transactionId: response.razorpay_payment_id,
+          items: cartObjects,
+          totalAmount: totalAmount,
+          date: new Date().toLocaleString(),
+          status: "Shipped"
+        })
+      );
+
+      navigate("/success");
+    },
+
+    prefill: {
+      name: "Test User",
+      email: "test@example.com",
+      contact: "9999999999",
+    },
+
+    theme: {
+      color: "#2563eb",
+    },
   };
+
+  const razorpay = new window.Razorpay(options);
+  razorpay.open();
+};
+
 
   return (
     <div className="min-h-screen bg-gray-50/50 py-12 px-4 sm:px-6 lg:px-8">
