@@ -43,7 +43,7 @@ function Navbar() {
     // ============================================
     const navLinks = [
         { name: "Home", path: "/" },
-        { name: "Orders", path: "/orders" },
+        // { name: "Orders", path: "/orders" },
         { name: "AboutUs", path: "/about" },
         { name: "ContactUs", path: "/contact" },
     ];

@@ -16,8 +16,8 @@ import {
     FaShoppingBasket,
     FaRegAddressCard,
     FaEnvelope,
-    FaPhoneAlt,
     FaMars,
+    FaStore,
 } from "react-icons/fa";
 
 // ============================================
@@ -35,6 +35,7 @@ function Profile() {
         { id: "orders", label: "My Orders", icon: <FaShoppingBag /> },
         { id: "addresses", label: "Manage Addresses", icon: <FaMapMarkerAlt /> },
         { id: "wishlist", label: "My Wishlist", icon: <FaHeart /> },
+        { id: "sell", label: "Sell on ShopSphere", icon: <FaStore /> },
     ];
 
     const handleLogout = async () => {
@@ -199,6 +200,59 @@ function Profile() {
         </div>
     );
 
+    // 5. Sell on ShopSphere Tab
+    const SellTab = () => (
+        <div className="animate-in fade-in slide-in-from-right duration-500 bg-white rounded-[32px] p-8 lg:p-12 shadow-sm border border-gray-100">
+            <div className="flex items-center justify-between mb-10">
+                <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Sell Your Products</h2>
+                <div className="flex items-center gap-3">
+                    <span className="text-sm font-bold text-emerald-600 bg-emerald-50 px-4 py-1.5 rounded-full">Seller Mode</span>
+                </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[24px] p-10 text-white mb-10 shadow-xl shadow-blue-500/20 relative overflow-hidden group">
+                {/* Decorative background elements */}
+                <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700"></div>
+                <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-blue-400/20 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700"></div>
+
+                <div className="relative z-10">
+                    <h3 className="text-3xl font-black mb-4 leading-tight">Start Your Business <br />Journey with Us</h3>
+                    <p className="text-blue-100 mb-8 max-w-md font-medium text-lg leading-relaxed">
+                        List your products on ShopSphere and reach millions of customers worldwide.
+                        Safe payments, easy shipping, and low commission.
+                    </p>
+                    <button className="px-8 py-4 bg-white text-blue-600 font-black rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all flex items-center gap-3">
+                        <FaPlus size={16} /> List a New Product
+                    </button>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="p-8 rounded-[24px] border border-gray-100 bg-gray-50/50 hover:bg-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                    <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-blue-600 shadow-sm mb-6 border border-gray-50">
+                        <FaShoppingBag size={24} />
+                    </div>
+                    <h4 className="text-xl font-bold text-gray-900 mb-2">Manage Listings</h4>
+                    <p className="text-gray-500 font-medium mb-6">Track your active products, update stock, and modify prices.</p>
+                    <button className="text-blue-600 font-bold flex items-center gap-2 hover:gap-3 transition-all">
+                        View Products <FaChevronRight size={12} />
+                    </button>
+                </div>
+
+                <div className="p-8 rounded-[24px] border border-gray-100 bg-gray-50/50 hover:bg-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                    <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-emerald-500 shadow-sm mb-6 border border-gray-50">
+                        <FaWallet size={24} />
+                    </div>
+                    <h4 className="text-xl font-bold text-gray-900 mb-2">Earnings & Payouts</h4>
+                    <p className="text-gray-500 font-medium mb-6">View your sales reports and manage your withdrawal methods.</p>
+                    <button className="text-emerald-600 font-bold flex items-center gap-2 hover:gap-3 transition-all">
+                        View Wallet <FaChevronRight size={12} />
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+
     // ============================================
     // MAIN RENDER
     // ============================================
@@ -267,6 +321,7 @@ function Profile() {
                         {activeTab === "orders" && <OrdersTab />}
                         {activeTab === "addresses" && <AddressTab />}
                         {activeTab === "wishlist" && <WishlistTab />}
+                        {activeTab === "sell" && <SellTab />}
                     </main>
                 </div>
             </div>
