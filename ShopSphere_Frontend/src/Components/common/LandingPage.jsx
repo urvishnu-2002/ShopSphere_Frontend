@@ -5,11 +5,13 @@ import {
     Shirt, Footprints, Gift, CreditCard, Globe,
     Camera, Zap, Tag, Truck
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const LandingPage = () => {
 
     const [fadeOut, setFadeOut] = useState(false);
     const [zoomOut, setZoomOut] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         // Start fade
@@ -20,7 +22,7 @@ const LandingPage = () => {
 
         // Navigate AT PEAK ZOOM
         const navigateTimer = setTimeout(() => {
-            window.location.href = "/home"; // 🔁 change route if needed
+            navigate("/home");
         }, 5400);
 
         return () => {

@@ -16,13 +16,9 @@ import {
     FaRegAddressCard,
     FaStore,
 } from "react-icons/fa";
+
 import { logout } from "../../api/axios";
-
-// ============================================
-// SUB-COMPONENTS (TAB CONTENT)
-// ============================================
-
-// 1. Profile Information Tab
+import AddressPage from "./AdressPage";
 export const ProfileInfoTab = () => {
     const user = useOutletContext();
     return (
@@ -87,8 +83,37 @@ export const ProfileInfoTab = () => {
         </div>
     );
 };
+    // 2. My Orders Tab - Using the Orders component
+    const OrdersTab = () => (
+        <div className="animate-in fade-in slide-in-from-right duration-500 bg-white rounded-[32px] shadow-sm border border-gray-100 overflow-hidden">
+            <Orders />
+        </div>
+    );
+ // 3. Adress Tab
+     const AddressTab = () => (
+        <div className="animate-in fade-in slide-in-from-right duration-500 bg-white rounded-[32px] shadow-sm border border-gray-100">
+            <AddressPage />
+        </div>
+    );
 
-
+    // 4. My Wishlist Tab
+    const WishlistTab = () => (
+        <div className="animate-in fade-in slide-in-from-right duration-500 h-[600px] flex flex-col items-center justify-center text-center px-6">
+            <div className="w-32 h-32 bg-gray-50 rounded-full flex items-center justify-center text-gray-200 mb-8">
+                <FaHeart size={64} />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">Your wishlist is empty</h3>
+            <p className="text-gray-500 max-w-sm mb-8 font-medium">
+                Explore our curated collection of fresh organics and premium essentials to add them to your wishlist.
+            </p>
+            <button
+                onClick={() => navigate("/")}
+                className="px-8 py-4 bg-emerald-600 text-white font-bold rounded-2xl shadow-xl shadow-emerald-500/20 hover:bg-emerald-700 hover:-translate-y-1 transition-all"
+            >
+                Explore Products
+            </button>
+        </div>
+    );
 function Profile() {
     const navigate = useNavigate();
     const [user, setUser] = useState(() => {
