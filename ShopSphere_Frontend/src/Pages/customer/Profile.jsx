@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import Orders from "./Orders";
 import {
     FaUser,
     FaShoppingBag,
@@ -26,7 +26,6 @@ import AddressPage from "./AdressPage";
 // Premium, modern account management reflecting the requested UI
 // ============================================
 function Profile() {
-    const { user, logout } = useAuth();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState("profile");
 
@@ -111,38 +110,10 @@ function Profile() {
         </div>
     );
 
-    // 2. My Orders Tab
+    // 2. My Orders Tab - Using the Orders component
     const OrdersTab = () => (
-        <div className="animate-in fade-in slide-in-from-right duration-500 bg-white rounded-[32px] p-8 lg:p-12 shadow-sm border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-8">Order History</h2>
-            <div className="space-y-4">
-                {[1, 2, 3].map((order) => (
-                    <div key={order} className="bg-white border border-gray-100 p-6 rounded-2xl flex items-center gap-6 group hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-                        <div className="w-20 h-20 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0">
-                            <div className="w-full h-full bg-emerald-100 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform duration-500">
-                                <FaShoppingBasket size={32} />
-                            </div>
-                        </div>
-                        <div className="flex-grow">
-                            <div className="flex items-center justify-between mb-2">
-                                <span className="text-sm font-bold text-gray-400 uppercase tracking-wider">Order #SHP-2024-00{order}</span>
-                                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${order === 1 ? "bg-emerald-100 text-emerald-600" : "bg-blue-100 text-blue-600"
-                                    }`}>
-                                    {order === 1 ? "Delivered" : "Shipped"}
-                                </span>
-                            </div>
-                            <h4 className="text-lg font-bold text-gray-800 mb-1">Items: Organic Fruits, Dairy Pack...</h4>
-                            <p className="text-sm text-gray-500 font-medium">Ordered on Oct 12, 2024 • 5 Items</p>
-                        </div>
-                        <div className="text-right flex flex-col items-end gap-3">
-                            <p className="text-xl font-black text-gray-900">$89.90</p>
-                            <button className="flex items-center gap-2 text-sm font-bold text-emerald-600 hover:text-emerald-700 transition-colors">
-                                View Details <FaChevronRight size={10} />
-                            </button>
-                        </div>
-                    </div>
-                ))}
-            </div>
+        <div className="animate-in fade-in slide-in-from-right duration-500 bg-white rounded-[32px] shadow-sm border border-gray-100 overflow-hidden">
+            <Orders />
         </div>
     );
  // 3. Adress Tab

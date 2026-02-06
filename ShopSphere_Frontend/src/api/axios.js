@@ -1,40 +1,23 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
-const axiosInstance = axios.create({
-    baseURL: API_BASE_URL,
-    timeout: 10000,
-    headers: {
-        'Content-Type': 'application/json',
-    },
-});
+// LOGIN FUNCTION
+export const loginUser = async (loginData) => {
+  const response = await axios.post(
+    `${API_BASE_URL}/login`,
+    loginData
+  );
+  return response.data;
+};
 
-// Request interceptor to add auth token
-axiosInstance.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem('authToken');
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
-
-// Response interceptor to handle errors
-axiosInstance.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if (error.response?.status === 401) {
-            // Handle unauthorized - redirect to login
-            localStorage.removeItem('authToken');
-            window.location.href = '/login';
-        }
-        return Promise.reject(error);
-    }
-);
-
-export default axiosInstance;
+// SIGNUP FUNCTION
+export const signupUser = async (signupData) => {
+    console.log(signupData);
+  const response = await axios.post(
+    `${API_BASE_URL}/register/`,
+    signupData
+  );
+  return response.data;
+};

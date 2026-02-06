@@ -8,9 +8,11 @@ import WhishList from "../Pages/customer/WhishList";
 import AboutUs from "../Pages/customer/AboutUs";
 import ContactUs from "../Pages/customer/ContactUs";
 import Login from "../Pages/customer/Login";
+import SignUp from "../Pages/customer/SignUp";
 import VendorLogin from "../Pages/vendor/VendorLogin";
 import DeliveryAgentLogin from "../Pages/delivery/DeliveryAgentLogin";
 import Profile from "../Pages/customer/Profile";
+import Success from "../Pages/customer/Success";
 
 function AppRoutes() {
     return (
@@ -27,7 +29,10 @@ function AppRoutes() {
 
             {/* Auth Routes */}
             <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
             <Route path="/vendor" element={<VendorLogin />} />
+            <Route path="/success" element={<Success />} /> 
+
 
             {/* Delivery Routes */}
             <Route path="/delivery" element={<DeliveryAgentLogin onLoginSuccess={() => console.log("Delivery Login Successful")} />} />
