@@ -1,6 +1,4 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-
-// Customer Pages
 import Home from "../Pages/customer/Home";
 import Cart from "../Pages/customer/Cart";
 import Checkout from "../Pages/customer/Checkout";
@@ -11,6 +9,13 @@ import Login from "../Pages/customer/Login";
 import SignUp from "../Pages/customer/SignUp";
 import VendorLogin from "../Pages/vendor/VendorLogin";
 import DeliveryAgentLogin from "../Pages/delivery/DeliveryAgentLogin";
+import Profile, { 
+    ProfileInfoTab, 
+    OrdersTab, 
+    AddressTab, 
+    WishlistTab, 
+    SellTab 
+} from "../Pages/customer/Profile";
 import Profile from "../Pages/customer/Profile";
 
 import LandingPage from "../Components/common/LandingPage";
@@ -21,7 +26,6 @@ import ShippingAddress from "../Pages/customer/ShippingAddress";
 import ShippingMethod from "../Pages/customer/ShippingMethod";
 import ShippingFeePreferences from "../Pages/customer/ShippingFeePreferences";
 import BankDetails from "../Pages/customer/BankDetails";
-
 import Success from "../Pages/customer/Success";
 
 
@@ -38,16 +42,20 @@ function AppRoutes() {
             <Route path="/wishlist" element={<WhishList />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/contact" element={<ContactUs />} />
+            {/* Nested Profile Routes */}
+            <Route path="/profile" element={<Profile />}>
+                <Route index element={<ProfileInfoTab />} />
+                <Route path="orders" element={<OrdersTab />} />
+                <Route path="addresses" element={<AddressTab />} />
+                <Route path="wishlist" element={<WishlistTab />} />
+                <Route path="sell" element={<SellTab />} />
+            </Route>
             <Route path="/profile" element={<Profile />} />
             <Route path="/store-name" element={<StoreName />} />
             <Route path="/shipping-address" element={<ShippingAddress />} />
             <Route path="/shipping-method" element={<ShippingMethod />} />
             <Route path="/shipping-fee-preferences" element={<ShippingFeePreferences />} />
             <Route path="/bank-details" element={<BankDetails />} />
-
-
-
-
             {/* Auth Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
