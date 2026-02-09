@@ -8,9 +8,11 @@ import WhishList from "../Pages/customer/WhishList";
 import AboutUs from "../Pages/customer/AboutUs";
 import ContactUs from "../Pages/customer/ContactUs";
 import Login from "../Pages/customer/Login";
+import SignUp from "../Pages/customer/SignUp";
 import VendorLogin from "../Pages/vendor/VendorLogin";
 import DeliveryAgentLogin from "../Pages/delivery/DeliveryAgentLogin";
 import Profile from "../Pages/customer/Profile";
+
 import LandingPage from "../Components/common/LandingPage";
 import VerifyGST from "../Pages/customer/VerifyGST";
 import VerifyPAN from "../Pages/customer/VerifyPAN";
@@ -19,6 +21,9 @@ import ShippingAddress from "../Pages/customer/ShippingAddress";
 import ShippingMethod from "../Pages/customer/ShippingMethod";
 import ShippingFeePreferences from "../Pages/customer/ShippingFeePreferences";
 import BankDetails from "../Pages/customer/BankDetails";
+
+import Success from "../Pages/customer/Success";
+
 
 function AppRoutes() {
     const hasSeenLanding = sessionStorage.getItem("hasSeenLanding");
@@ -55,7 +60,10 @@ function AppRoutes() {
 
             {/* Auth Routes */}
             <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
             <Route path="/vendor" element={<VendorLogin />} />
+            <Route path="/success" element={<Success />} /> 
+
 
             {/* Delivery Routes */}
             <Route
