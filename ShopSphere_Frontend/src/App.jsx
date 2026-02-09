@@ -5,7 +5,7 @@ import Footer from "./Components/common/Footer";
 
 function Layout() {
   const location = useLocation();
-  const hideNavbarFooter = ["/vendor", "/delivery", "/login"].includes(location.pathname);
+  const hideNavbarFooter = ["/vendor", "/delivery", "/login", "/delivery/dashboard", "/delivery/assigned", "/delivery/earnings"].includes(location.pathname);
 
   return (
     <div className="flex flex-col min-h-screen">

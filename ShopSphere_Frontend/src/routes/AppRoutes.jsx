@@ -10,6 +10,9 @@ import ContactUs from "../Pages/customer/ContactUs";
 import Login from "../Pages/customer/Login";
 import VendorLogin from "../Pages/vendor/VendorLogin";
 import DeliveryAgentLogin from "../Pages/delivery/DeliveryAgentLogin";
+import DeliveryDashboard from "../Pages/delivery/dashboard";
+import AssignedOrders from "../Pages/delivery/assignedorder";
+import EarningsPage from "../Pages/delivery/earnings";
 import Profile from "../Pages/customer/Profile";
 
 function AppRoutes() {
@@ -31,6 +34,9 @@ function AppRoutes() {
 
             {/* Delivery Routes */}
             <Route path="/delivery" element={<DeliveryAgentLogin onLoginSuccess={() => console.log("Delivery Login Successful")} />} />
+            <Route path="/delivery/dashboard" element={<DeliveryDashboard />} />
+            <Route path="/delivery/assigned" element={<AssignedOrders />} />
+            <Route path="/delivery/earnings" element={<EarningsPage />} />
 
             {/* Fallback Route */}
             <Route path="*" element={<Navigate to="/" replace />} />
