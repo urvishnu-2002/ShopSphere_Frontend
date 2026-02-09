@@ -19,7 +19,7 @@ import {
 
 import { logout } from "../../api/axios";
 import AddressPage from "./AdressPage";
-import WhishList from "./WhishList";
+import Wishlist from "./Wishlist";
 export const ProfileInfoTab = () => {
     const user = useOutletContext();
     return (
@@ -100,14 +100,7 @@ export const AddressTab = () => (
 // 4. My Wishlist Tab
 export const WishlistTab = () => (
     <div className="animate-in fade-in slide-in-from-right duration-500 bg-white rounded-[32px] shadow-sm border border-gray-100">
-        <WhishList />
-    </div>
-);
-
-// 4. My Wishlist Tab
-export const WishlistTab = () => (
-    <div className="animate-in fade-in slide-in-from-right duration-500 bg-white rounded-[32px] shadow-sm border border-gray-100">
-        <WhishList />
+        <Wishlist />
     </div>
 );
 

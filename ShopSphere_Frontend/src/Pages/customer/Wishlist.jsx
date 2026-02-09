@@ -7,7 +7,7 @@ import { FaHeart, FaShoppingCart, FaTrash, FaArrowLeft } from 'react-icons/fa';
 // ============================================
 // WISHLIST PAGE COMPONENT
 // ============================================
-function WhishList() {
+function Wishlist() {
   // Get wishlist state from Redux store
   const wishlist = useSelector((state) => state.wishlist);
   const dispatch = useDispatch();
@@ -122,4 +122,4 @@ function WhishList() {
   );
 }
 
-export default WhishList;
+export default Wishlist;
