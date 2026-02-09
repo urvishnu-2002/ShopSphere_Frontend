@@ -6,6 +6,7 @@ import {
     Package,
     ShoppingCart,
     BarChart3,
+    Settings,
     ArrowRight
 } from 'lucide-react';
 import { motion as Motion } from 'framer-motion';
@@ -20,21 +21,22 @@ const Sidebar = ({ isSidebarOpen, activePage = 'Dashboard', onLogout }) => {
         { name: 'Users', icon: Users, path: '/users' },
         { name: 'Vendors', icon: Store, path: '/vendors' },
         { name: 'Products', icon: Package, path: '/products' },
-        { name: 'Orders', icon: ShoppingCart, path: '/orders', isPlaceholder: true },
-        { name: 'Reports', icon: BarChart3, path: '/reports', isPlaceholder: true },
+        { name: 'Orders', icon: ShoppingCart, path: '/orders' },
+        { name: 'Reports', icon: BarChart3, path: '/reports' },
+        { name: 'Commission Settings', icon: Settings, path: '/settings/commission' },
     ];
 
     return (
         <Motion.aside
             initial={false}
             animate={{
-                x: isSidebarOpen ? 0 : -256,
-                opacity: isSidebarOpen ? 1 : 0
+                width: isSidebarOpen ? '16rem' : '0rem',
+                opacity: isSidebarOpen ? 1 : 0,
             }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-100 md:relative"
+            className="fixed inset-y-0 left-0 z-50 bg-white border-r border-gray-100 md:relative overflow-hidden"
         >
-            <div className="flex flex-col h-full bg-slate-50">
+            <div className="flex flex-col h-full bg-slate-50 w-64">
                 <div className="flex items-center justify-between p-6 border-b border-white/50">
                     <div className="flex items-center gap-2 text-indigo-600 font-bold text-xl">
                         <div className="p-1.5 bg-indigo-600 rounded-lg">

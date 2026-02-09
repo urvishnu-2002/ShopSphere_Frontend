@@ -8,12 +8,13 @@ import {
     Bell,
     Search,
     ChevronDown,
-    DollarSign,
+    IndianRupee,
     TrendingUp,
     Download,
     Calendar
 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
+import NotificationBell from '../components/NotificationBell';
 import {
     XAxis,
     YAxis,
@@ -62,7 +63,7 @@ const FALLBACK_DATA = {
         ]
     },
     stats: [
-        { title: 'Total Revenue', value: '$949.93', change: '+12.5%', icon: DollarSign, color: 'text-green-500', bgColor: 'bg-green-50' },
+        { title: 'Total Revenue', value: '₹94,993', change: '+12.5%', icon: IndianRupee, color: 'text-green-500', bgColor: 'bg-green-50' },
         { title: 'Total Orders', value: '4', change: '+8.2%', icon: ShoppingCart, color: 'text-blue-500', bgColor: 'bg-blue-50' },
         { title: 'Total Users', value: '2', change: '+5.1%', icon: Users, color: 'text-purple-500', bgColor: 'bg-purple-50' },
         { title: 'Active Vendors', value: '3', change: '+3 new', icon: Store, color: 'text-orange-500', bgColor: 'bg-orange-50' },
@@ -74,12 +75,13 @@ const FALLBACK_DATA = {
         { name: 'Sports', value: 10 },
     ],
     recentOrders: [
-        { id: 'ORD001', user: 'John Doe', amount: '299.99', status: 'shipped' },
-        { id: 'ORD002', user: 'Jane Smith', amount: '399.98', status: 'processing' },
-        { id: 'ORD003', user: 'Mike Johnson', amount: '150.00', status: 'delivered' },
-        { id: 'ORD004', user: 'Sarah Wilson', amount: '89.50', status: 'shipped' },
+        { id: 'ORD001', user: 'John Doe', amount: '29,999', status: 'shipped' },
+        { id: 'ORD002', user: 'Jane Smith', amount: '39,998', status: 'processing' },
+        { id: 'ORD003', user: 'Mike Johnson', amount: '15,000', status: 'delivered' },
+        { id: 'ORD004', user: 'Sarah Wilson', amount: '8,950', status: 'shipped' },
     ]
 };
+
 
 const getStatusColor = (status) => {
     switch (status) {
@@ -158,16 +160,14 @@ const AdminDashboard = () => {
     return (
         <div className="flex h-screen bg-gray-50 font-sans text-slate-800">
             {/* Sidebar */}
-            {isSidebarOpen && (
-                <Sidebar
-                    isSidebarOpen={isSidebarOpen}
-                    activePage="Dashboard"
-                    onLogout={handleLogout}
-                />
-            )}
+            <Sidebar
+                isSidebarOpen={isSidebarOpen}
+                activePage="Dashboard"
+                onLogout={handleLogout}
+            />
 
             {/* Main Content */}
-            <main className={`flex-1 overflow-y-auto transition-all duration-300 ${!isSidebarOpen ? 'ml-0' : ''}`}>
+            <main className="flex-1 overflow-y-auto transition-all duration-300">
                 {/* Header */}
                 <header className="bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-gray-100 px-8 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -194,13 +194,7 @@ const AdminDashboard = () => {
                                 className="pl-10 pr-4 py-2 rounded-full border border-gray-200 bg-gray-50 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none w-64 text-sm transition-all"
                             />
                         </div>
-                        <button
-                            onClick={(e) => e.preventDefault()}
-                            className="relative p-2 text-slate-500 hover:bg-gray-100 rounded-full transition-colors"
-                        >
-                            <Bell className="w-5 h-5" />
-                            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-                        </button>
+                        <NotificationBell />
                     </div>
                 </header>
 
@@ -337,7 +331,7 @@ const AdminDashboard = () => {
                                             />
                                             <Tooltip
                                                 contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                                formatter={(value, name) => [`$${value}`, name === 'sales' ? 'Sales' : 'Revenue']}
+                                                formatter={(value, name) => [`₹${value}`, name === 'sales' ? 'Sales' : 'Revenue']}
                                             />
                                             <Legend verticalAlign="top" height={36} iconType="circle" />
 
@@ -450,7 +444,7 @@ const AdminDashboard = () => {
                                                 <tr key={order.id} className="group hover:bg-gray-50/50 transition-colors">
                                                     <td className="py-4 font-medium text-slate-800">{order.id}</td>
                                                     <td className="py-4 text-slate-600">{order.user}</td>
-                                                    <td className="py-4 font-medium text-slate-800">${order.amount}</td>
+                                                    <td className="py-4 font-medium text-slate-800">₹{order.amount}</td>
                                                     <td className="py-4">
                                                         <span className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor(order.status)}`}>
                                                             {order.status}
