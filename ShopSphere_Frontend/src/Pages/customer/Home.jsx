@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { AddToCart, AddToWishlist, RemoveFromWishlist } from "../../Store";
 import { FaHeart, FaShoppingBag, FaArrowRight } from "react-icons/fa";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 
@@ -56,6 +56,7 @@ function Home() {
   const wishlist = useSelector((state) => state.wishlist);
   const dispatch = useDispatch();
   const location = useLocation();
+  const navigate = useNavigate();
 
   // ============================================
   // LOCAL STATE
@@ -307,6 +308,7 @@ function Home() {
               filteredProducts.map((item, index) => (
                 <div
                   key={`${item.name}-${index}`}
+                  onClick={() => navigate(`/product/${encodeURIComponent(item.name)}`)}
                   className="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 cursor-pointer border border-gray-100"
                 >
                   <div className="relative overflow-hidden bg-gradient-to-br from-green-100 to-yellow-100 h-48 flex items-center justify-center">
