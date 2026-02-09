@@ -21,10 +21,23 @@ import ShippingFeePreferences from "../Pages/customer/ShippingFeePreferences";
 import BankDetails from "../Pages/customer/BankDetails";
 
 function AppRoutes() {
+    const hasSeenLanding = sessionStorage.getItem("hasSeenLanding");
+
     return (
         <Routes>
+            {/* ✅ Landing Page – show ONLY once */}
+            <Route
+                path="/"
+                element={
+                    hasSeenLanding ? (
+                        <Navigate to="/home" replace />
+                    ) : (
+                        <LandingPage />
+                    )
+                }
+            />
+
             {/* Customer Routes */}
-            <Route path="/" element={<LandingPage />} />
             <Route path="/home" element={<Home />} />
             <Route path="/verifyGST" element={<VerifyGST />} />
             <Route path="/verifyPAN" element={<VerifyPAN />} />
@@ -40,21 +53,20 @@ function AppRoutes() {
             <Route path="/shipping-fee-preferences" element={<ShippingFeePreferences />} />
             <Route path="/bank-details" element={<BankDetails />} />
 
-
-
-
             {/* Auth Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/vendor" element={<VendorLogin />} />
 
             {/* Delivery Routes */}
-            <Route path="/delivery" element={<DeliveryAgentLogin onLoginSuccess={() => console.log("Delivery Login Successful")} />} />
+            <Route
+                path="/delivery"
+                element={<DeliveryAgentLogin onLoginSuccess={() => console.log("Delivery Login Successful")} />}
+            />
 
-            {/* Fallback Route */}
+            {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
     );
 }
 
 export default AppRoutes;
-
