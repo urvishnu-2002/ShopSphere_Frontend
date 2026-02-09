@@ -3,8 +3,6 @@ import Home from "../Pages/customer/Home";
 import Cart from "../Pages/customer/Cart";
 import Checkout from "../Pages/customer/Checkout";
 import WhishList from "../Pages/customer/WhishList";
-import AboutUs from "../Pages/customer/AboutUs";
-import ContactUs from "../Pages/customer/ContactUs";
 import Login from "../Pages/customer/Login";
 import SignUp from "../Pages/customer/SignUp";
 import VendorLogin from "../Pages/vendor/VendorLogin";
@@ -16,14 +14,10 @@ import Profile, {
     WishlistTab,
     SellTab
 } from "../Pages/customer/Profile";
-import Profile, {
-    ProfileInfoTab,
-    OrdersTab,
-    AddressTab,
-    WishlistTab
-} from "../Pages/customer/Profile";
-
-
+import SellerPage from "../Pages/customer/SellerPage";
+import DeliveryDashboard from "../Pages/delivery/dashboard";
+import AssignedOrders from "../Pages/delivery/assignedorder";
+import EarningsPage from "../Pages/delivery/earnings";
 import LandingPage from "../Components/common/LandingPage";
 import VerifyGST from "../Pages/customer/VerifyGST";
 import VerifyPAN from "../Pages/customer/VerifyPAN";
@@ -33,7 +27,6 @@ import ShippingMethod from "../Pages/customer/ShippingMethod";
 import ShippingFeePreferences from "../Pages/customer/ShippingFeePreferences";
 import BankDetails from "../Pages/customer/BankDetails";
 import Success from "../Pages/customer/Success";
-
 
 function AppRoutes() {
     const hasSeenLanding = sessionStorage.getItem("hasSeenLanding");
@@ -59,6 +52,7 @@ function AppRoutes() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/wishlist" element={<WhishList />} />
+
             <Route path="/about" element={<AboutUs />} />
             <Route path="/contact" element={<ContactUs />} />
 
@@ -68,6 +62,7 @@ function AppRoutes() {
                 <Route path="orders" element={<OrdersTab />} />
                 <Route path="addresses" element={<AddressTab />} />
                 <Route path="wishlist" element={<WishlistTab />} />
+                <Route path="sell" element={<SellerPage />} />
             </Route>
 
             <Route path="/store-name" element={<StoreName />} />
@@ -83,10 +78,10 @@ function AppRoutes() {
             <Route path="/success" element={<Success />} />
 
             {/* Delivery Routes */}
-            <Route
-                path="/delivery"
-                element={<DeliveryAgentLogin onLoginSuccess={() => console.log("Delivery Login Successful")} />}
-            />
+            <Route path="/delivery" element={<DeliveryAgentLogin onLoginSuccess={() => console.log("Delivery Login Successful")} />} />
+            <Route path="/delivery/dashboard" element={<DeliveryDashboard />} />
+            <Route path="/delivery/assigned" element={<AssignedOrders />} />
+            <Route path="/delivery/earnings" element={<EarningsPage />} />
 
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />

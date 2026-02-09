@@ -137,8 +137,8 @@ function Navbar() {
     return (
         <nav
             className={`fixed top-0 left-0 right-0 z-50 py-3 transition-all duration-500 ease-out ${scrolled
-                    ? "bg-white/95 backdrop-blur-xl shadow-lg shadow-gray-900/5"
-                    : "bg-white/80 backdrop-blur-md"
+                ? "bg-white/95 backdrop-blur-xl shadow-lg shadow-gray-900/5"
+                : "bg-white/80 backdrop-blur-md"
                 }`}
             role="navigation"
             aria-label="Main navigation"
@@ -180,8 +180,8 @@ function Navbar() {
                                 onFocus={() => setSearchFocused(true)}
                                 onBlur={() => setSearchFocused(false)}
                                 className={`w-full pl-11 pr-10 py-2.5 bg-gray-50 border-2 rounded-xl text-sm text-gray-800 placeholder-gray-400 transition-all duration-300 ease-out outline-none ${searchFocused
-                                        ? "border-emerald-500 bg-white shadow-lg shadow-emerald-500/10 ring-4 ring-emerald-500/10"
-                                        : "border-gray-200 hover:border-gray-300 hover:bg-gray-100"
+                                    ? "border-emerald-500 bg-white shadow-lg shadow-emerald-500/10 ring-4 ring-emerald-500/10"
+                                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-100"
                                     }`}
                                 aria-label="Search products"
                             />
@@ -212,15 +212,15 @@ function Navbar() {
                                 key={link.name}
                                 to={link.path}
                                 className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 ease-out group ${isActive(link.path)
-                                        ? "text-emerald-600"
-                                        : "text-gray-600 hover:text-gray-900"
+                                    ? "text-emerald-600"
+                                    : "text-gray-600 hover:text-gray-900"
                                     }`}
                             >
                                 {link.name}
                                 <span
                                     className={`absolute bottom-0.5 left-4 right-4 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-300 ease-out ${isActive(link.path)
-                                            ? "opacity-100 scale-x-100"
-                                            : "opacity-0 scale-x-0 group-hover:opacity-100 group-hover:scale-x-100"
+                                        ? "opacity-100 scale-x-100"
+                                        : "opacity-0 scale-x-0 group-hover:opacity-100 group-hover:scale-x-100"
                                         }`}
                                 />
                             </Link>
@@ -235,8 +235,8 @@ function Navbar() {
                         <Link
                             to="/wishlist"
                             className={`relative p-2.5 rounded-xl transition-all duration-300 ease-out group ${isActive("/wishlist")
-                                    ? "bg-red-50 text-red-500"
-                                    : "text-gray-500 hover:text-red-500 hover:bg-red-50"
+                                ? "bg-red-50 text-red-500"
+                                : "text-gray-500 hover:text-red-500 hover:bg-red-50"
                                 }`}
                             aria-label={`Wishlist with ${wishlistCount} items`}
                         >
@@ -255,8 +255,8 @@ function Navbar() {
                         <Link
                             to="/cart"
                             className={`relative p-2.5 rounded-xl transition-all duration-300 ease-out group ${isActive("/cart")
-                                    ? "bg-emerald-50 text-emerald-600"
-                                    : "text-gray-500 hover:text-emerald-600 hover:bg-emerald-50"
+                                ? "bg-emerald-50 text-emerald-600"
+                                : "text-gray-500 hover:text-emerald-600 hover:bg-emerald-50"
                                 }`}
                             aria-label={`Shopping cart with ${cartCount} items`}
                         >
@@ -276,11 +276,10 @@ function Navbar() {
                             <div className="relative" ref={dropdownRef}>
                                 <button
                                     onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                                    className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 ${
-                                        profileDropdownOpen 
-                                            ? "bg-blue-50 text-blue-600 ring-2 ring-blue-100" 
+                                    className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 ${profileDropdownOpen
+                                            ? "bg-blue-50 text-blue-600 ring-2 ring-blue-100"
                                             : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                                    }`}
+                                        }`}
                                 >
                                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-bold shadow-md shadow-blue-500/20">
                                         <FaUser size={14} />
@@ -291,8 +290,8 @@ function Navbar() {
                                             {user.username}
                                         </span>
                                     </div>
-                                    <FaChevronDown 
-                                        size={12} 
+                                    <FaChevronDown
+                                        size={12}
                                         className={`ml-1 transition-transform duration-300 ${profileDropdownOpen ? "rotate-180" : ""}`}
                                     />
                                 </button>
@@ -304,26 +303,26 @@ function Navbar() {
                                             <p className="text-sm font-semibold text-gray-900 truncate">{user.username}</p>
                                             <p className="text-xs text-gray-500 truncate">{user.email}</p>
                                         </div>
-                                        
-                                        <Link 
-                                            to="/profile" 
+
+                                        <Link
+                                            to="/profile"
                                             className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
                                             onClick={() => setProfileDropdownOpen(false)}
                                         >
                                             <FaUser size={14} className="text-gray-400" />
                                             My Profile
                                         </Link>
-                                        <Link 
-                                            to="/orders" 
+                                        <Link
+                                            to="/orders"
                                             className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
                                             onClick={() => setProfileDropdownOpen(false)}
                                         >
                                             <FaBox size={14} className="text-gray-400" />
                                             My Orders
                                         </Link>
-                                        
+
                                         <div className="border-t border-gray-100 my-1 pt-1">
-                                            <button 
+                                            <button
                                                 onClick={handleLogout}
                                                 className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors text-left"
                                             >
@@ -337,11 +336,10 @@ function Navbar() {
                         ) : (
                             <Link
                                 to="/login"
-                                className={`relative px-5 py-2.5 rounded-xl font-medium transition-all duration-300 ease-out ${
-                                    isActive("/login")
+                                className={`relative px-5 py-2.5 rounded-xl font-medium transition-all duration-300 ease-out ${isActive("/login")
                                         ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
                                         : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
-                                }`}
+                                    }`}
                                 aria-label="Login"
                             >
                                 Login

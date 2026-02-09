@@ -16,40 +16,40 @@ const toast = {
     }
 };
 
+import { useNavigate } from 'react-router-dom';
+
+// ... imports ...
+
 export default function DeliveryDashboard({ onLogout }) {
+    const navigate = useNavigate();
     const deliveryPersonId = 'd1';
     const [orders, setOrders] = useState(mockOrders);
-    const [activeNav, setActiveNav] = useState('dashboard');
     const [sidebarOpen, setSidebarOpen] = useState(true);
 
+    // ... filters ...
     const assignedOrders = orders.filter(o => o.deliveryPersonId === deliveryPersonId);
     const availableOrders = orders.filter(o => !o.deliveryPersonId && o.status === 'confirmed');
     const completedOrders = assignedOrders.filter(o => o.status === 'delivered');
-    const activeDeliveries = assignedOrders.filter(o => o.status === 'shipped');
+    // Active deliveries are now handled in the Assigned Orders page
+
     const totalEarnings = completedOrders.length * 10;
 
+    // ... handlers ...
     const handleAcceptOrder = (orderId) => {
         setOrders(orders.map(o =>
             o.id === orderId
                 ? { ...o, deliveryPersonId, deliveryPersonName: 'Delivery Person', status: 'shipped' }
                 : o
         ));
-        toast.success('Order accepted!');
+        toast.success('Order accepted! Go to Assigned Orders to track it.');
     };
 
-    const handleCompleteDelivery = (orderId) => {
-        setOrders(orders.map(o =>
-            o.id === orderId
-                ? { ...o, status: 'delivered' }
-                : o
-        ));
-        toast.success('Delivery completed!');
-    };
+    // ... (rest of handlers) ...
 
     const navItems = [
-        { id: 'dashboard', label: 'Dashboard', icon: FaTachometerAlt },
-        { id: 'assigned', label: 'Assigned Orders', icon: FaClipboardList },
-        { id: 'earnings', label: 'Earnings', icon: FaMoneyBillWave },
+        { id: 'dashboard', label: 'Dashboard', icon: FaTachometerAlt, path: '/delivery/dashboard' },
+        { id: 'assigned', label: 'Assigned Orders', icon: FaClipboardList, path: '/delivery/assigned' },
+        { id: 'earnings', label: 'Earnings', icon: FaMoneyBillWave, path: '/delivery/earnings' },
     ];
 
     return (
@@ -72,11 +72,12 @@ export default function DeliveryDashboard({ onLogout }) {
                 <nav className="flex-1 p-4 space-y-2">
                     {navItems.map((item) => {
                         const Icon = item.icon;
+                        const isActive = item.id === 'dashboard'; // Highlighting only dashboard on this page
                         return (
                             <button
                                 key={item.id}
-                                onClick={() => setActiveNav(item.id)}
-                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${activeNav === item.id
+                                onClick={() => navigate(item.path)}
+                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${isActive
                                     ? 'bg-purple-600 text-white'
                                     : 'text-gray-400 hover:bg-gray-800 hover:text-white'
                                     }`}
@@ -123,11 +124,11 @@ export default function DeliveryDashboard({ onLogout }) {
                     {/* Welcome Section */}
                     <div className="mb-8">
                         <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome back!</h2>
-                        <p className="text-gray-500">Manage your deliveries and track your earnings.</p>
+                        <p className="text-gray-500">Pick up new orders and track your earnings.</p>
                     </div>
 
                     {/* Stats Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                         <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-100 hover:shadow-lg transition-all duration-300">
                             <div className="flex items-center justify-between mb-4">
                                 <span className="text-gray-700 font-semibold">Total Earnings</span>
@@ -150,17 +151,6 @@ export default function DeliveryDashboard({ onLogout }) {
                             <p className="text-sm text-gray-500 mt-2">Deliveries</p>
                         </div>
 
-                        <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl p-6 border border-orange-100 hover:shadow-lg transition-all duration-300">
-                            <div className="flex items-center justify-between mb-4">
-                                <span className="text-gray-700 font-semibold">Active</span>
-                                <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center">
-                                    <FaBox className="w-5 h-5 text-white" />
-                                </div>
-                            </div>
-                            <div className="text-3xl font-bold text-gray-900">{activeDeliveries.length}</div>
-                            <p className="text-sm text-gray-500 mt-2">In progress</p>
-                        </div>
-
                         <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-2xl p-6 border border-purple-100 hover:shadow-lg transition-all duration-300">
                             <div className="flex items-center justify-between mb-4">
                                 <span className="text-gray-700 font-semibold">Available</span>
@@ -174,7 +164,7 @@ export default function DeliveryDashboard({ onLogout }) {
                     </div>
 
                     {/* Available Orders */}
-                    {availableOrders.length > 0 && (
+                    {availableOrders.length > 0 ? (
                         <div className="mb-8">
                             <h3 className="text-xl font-bold text-gray-900 mb-4">Available Orders</h3>
                             <div className="space-y-4">
@@ -209,50 +199,20 @@ export default function DeliveryDashboard({ onLogout }) {
                                 ))}
                             </div>
                         </div>
-                    )}
-
-                    {/* Active Deliveries */}
-                    {activeDeliveries.length > 0 && (
-                        <div className="mb-8">
-                            <h3 className="text-xl font-bold text-gray-900 mb-4">Active Deliveries</h3>
-                            <div className="space-y-4">
-                                {activeDeliveries.map((order) => (
-                                    <div key={order.id} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300">
-                                        <div className="flex items-start justify-between mb-4">
-                                            <div>
-                                                <h4 className="font-bold text-gray-900">Order {order.id}</h4>
-                                                <p className="text-gray-500">{order.userName}</p>
-                                            </div>
-                                            <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-medium">
-                                                In Progress
-                                            </span>
-                                        </div>
-                                        <div className="flex items-start gap-2 mb-4 text-gray-500">
-                                            <FaMapMarkerAlt className="w-4 h-4 mt-1 flex-shrink-0" />
-                                            <p className="text-sm">{order.deliveryAddress}</p>
-                                        </div>
-                                        <div className="flex gap-3">
-                                            <button
-                                                onClick={() => handleCompleteDelivery(order.id)}
-                                                className="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
-                                            >
-                                                <FaCheck className="w-4 h-4" />
-                                                Mark as Delivered
-                                            </button>
-                                            <button className="px-6 py-3 border-2 border-gray-200 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                                                Get Directions
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
+                    ) : (
+                        <div className="text-center py-20 bg-white rounded-xl shadow-sm border border-gray-100 mb-8">
+                            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <FaBox className="w-6 h-6 text-gray-400" />
                             </div>
+                            <h3 className="text-lg font-bold text-gray-900">No New Orders</h3>
+                            <p className="text-gray-500">Check back later for new delivery requests.</p>
                         </div>
                     )}
 
                     {/* Recent Deliveries */}
                     {completedOrders.length > 0 && (
                         <div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-4">Recent Deliveries</h3>
+                            <h3 className="text-xl font-bold text-gray-900 mb-4">Recent History</h3>
                             <div className="bg-white rounded-xl shadow-sm border divide-y">
                                 {completedOrders.slice(0, 5).map((order) => (
                                     <div key={order.id} className="flex items-center justify-between p-4">
