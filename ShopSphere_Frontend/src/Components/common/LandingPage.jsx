@@ -5,22 +5,26 @@ import {
     Shirt, Footprints, Gift, CreditCard, Globe,
     Camera, Zap, Tag, Truck
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const LandingPage = () => {
-
     const [fadeOut, setFadeOut] = useState(false);
     const [zoomOut, setZoomOut] = useState(false);
+    const [exit, setExit] = useState(false); // ✅ NEW
+    const navigate = useNavigate();
 
     useEffect(() => {
-        // Start fade
         const fadeTimer = setTimeout(() => setFadeOut(true), 4200);
-
-        // Start full zoom
         const zoomTimer = setTimeout(() => setZoomOut(true), 4600);
 
-        // Navigate AT PEAK ZOOM
         const navigateTimer = setTimeout(() => {
-            window.location.href = "/home"; // 🔁 change route if needed
+            sessionStorage.setItem("hasSeenLanding", "true");
+
+            // Navigate FIRST
+            navigate("/home", { replace: true });
+
+            // Keep landing mounted slightly longer
+            setTimeout(() => setExit(true), 300);
         }, 5400);
 
         return () => {
@@ -28,7 +32,9 @@ const LandingPage = () => {
             clearTimeout(zoomTimer);
             clearTimeout(navigateTimer);
         };
-    }, []);
+    }, [navigate]);
+
+    if (exit) return null; // ✅ prevents white flash
 
     const products = [
         ShoppingBag, Smartphone, Watch, Headphones, Laptop,
@@ -59,15 +65,14 @@ const LandingPage = () => {
     return (
         <div
             className={`fixed inset-0 z-[9999] bg-[#0d0415] flex items-center justify-center
-      transition-opacity duration-1000 ease-in-out
-      ${fadeOut ? "opacity-0" : "opacity-100"}`}
+            transition-opacity duration-300
+            ${fadeOut ? "opacity-0" : "opacity-100"}`}
         >
-
             {/* Background Icons */}
             <div
                 className={`absolute inset-0 flex flex-col justify-center space-y-14 rotate-[-5deg] scale-110
-        transition-transform duration-1000
-        ${zoomOut ? "scale-150" : ""}`}
+                transition-transform duration-1000
+                ${zoomOut ? "scale-150" : ""}`}
             >
                 <MarqueeRow direction="left" speed={32} />
                 <MarqueeRow direction="right" speed={38} />
@@ -75,16 +80,8 @@ const LandingPage = () => {
                 <MarqueeRow direction="right" speed={42} />
             </div>
 
-            {/* Overlay */}
             <div className="absolute inset-0 bg-[#0d0415]/60" />
 
-            {/* Glow */}
-            <div className="absolute inset-0 opacity-40">
-                <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-violet-900/30 rounded-full blur-[140px]" />
-                <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-indigo-900/20 rounded-full blur-[140px]" />
-            </div>
-
-            {/* LOGO */}
             <motion.div
                 initial={{ scale: 0.7, opacity: 0, y: 30 }}
                 animate={{
@@ -102,10 +99,9 @@ const LandingPage = () => {
                     src="/s_logo.png"
                     alt="ShopSphere Logo"
                     className="w-64 h-64 md:w-80 md:h-80 object-contain
-          drop-shadow-[0_0_45px_rgba(139,92,246,0.6)]"
+                    drop-shadow-[0_0_45px_rgba(139,92,246,0.6)]"
                 />
 
-                {/* Loading line */}
                 <motion.div
                     initial={{ width: 0, opacity: 0 }}
                     animate={{ width: "10rem", opacity: 1 }}
@@ -117,4 +113,4 @@ const LandingPage = () => {
     );
 };
 
-export default LandingPage;
+export default LandingPage

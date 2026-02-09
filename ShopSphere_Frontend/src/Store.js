@@ -504,6 +504,19 @@ const wishlistSlice = createSlice({
   }
 });
 
+
+const orderSlice = createSlice({
+  name: 'order',
+  initialState: [],
+  reducers: {
+    addOrder: (state, action) => {
+      state.push(action.payload);
+    }
+  }
+});
+
+export let { addOrder } = orderSlice.actions;
+
 export let { AddToWishlist, RemoveFromWishlist, clearWishlist } = wishlistSlice.actions;
 
 const store = configureStore({
@@ -511,6 +524,7 @@ const store = configureStore({
     products: productsSlice.reducer,
     cart: cartSlice.reducer,
     wishlist: wishlistSlice.reducer,
+    order: orderSlice.reducer,
   },
 });
 

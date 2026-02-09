@@ -5,11 +5,11 @@ import Footer from "./Components/common/Footer";
 
 function Layout() {
   const location = useLocation();
-  const hideNavbarFooter = ["/vendor", "/delivery", "/login"].includes(location.pathname);
+  const hideNavbarFooter = ["/", "/vendor", "/delivery", "/login", "/verifyGST", "/verifyPAN", "/store-name", "/shipping-address", "/shipping-method", "/shipping-fee-preferences", "/bank-details"].includes(location.pathname);
 
   return (
     <div className="flex flex-col min-h-screen">
-      {!hideNavbarFooter && <Navbar />}
+      {!hideNavbarFooter && <Navbar/>}
       <main className={`flex-grow ${!hideNavbarFooter ? "pt-24" : ""}`}>
         <AppRoutes />
       </main>

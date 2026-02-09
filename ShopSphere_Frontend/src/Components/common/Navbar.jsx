@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { useAuth } from "../../context/AuthContext";
 import {
     FaShoppingCart,
     FaHeart,
@@ -30,7 +29,6 @@ function Navbar() {
     const dropdownRef = useRef(null);
     const location = useLocation();
     const navigate = useNavigate();
-    const { user, logout } = useAuth();
 
     // Redux state
     const cartItems = useSelector((state) => state.cart);
@@ -38,14 +36,37 @@ function Navbar() {
     const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
     const wishlistCount = wishlistItems.length;
 
+    // Auth State
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        // Check for user in localStorage on mount
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            try {
+                setUser(JSON.parse(storedUser));
+            } catch (error) {
+                console.error("Failed to parse user data", error);
+                localStorage.removeItem("user");
+            }
+        }
+    }, [location.pathname]); // Re-check on route change (e.g. after login/redirect)
+
+    const handleLogout = () => {
+        localStorage.removeItem("user");
+        setUser(null);
+        setProfileDropdownOpen(false);
+        navigate('/login');
+    };
+
     // ============================================
     // NAVIGATION LINKS
     // ============================================
     const navLinks = [
         { name: "Home", path: "/" },
-        { name: "Orders", path: "/orders" },
-        { name: "AboutUs", path: "/about" },
-        { name: "ContactUs", path: "/contact" },
+        // { name: "Orders", path: "/orders" },
+        // { name: "AboutUs", path: "/about" },
+        // { name: "ContactUs", path: "/contact" },
     ];
 
     // ============================================
@@ -106,10 +127,7 @@ function Navbar() {
         navigate('/', { replace: true });
     };
 
-    const handleLogout = () => {
-        logout();
-        setProfileDropdownOpen(false);
-    };
+
 
     const isActive = (path) => location.pathname === path;
 
@@ -258,75 +276,75 @@ function Navbar() {
                             <div className="relative" ref={dropdownRef}>
                                 <button
                                     onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                                    className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 ease-out ${profileDropdownOpen
-                                            ? "bg-gray-100 text-gray-900"
-                                            : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                                        }`}
-                                    aria-expanded={profileDropdownOpen}
-                                    aria-haspopup="true"
+                                    className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 ${
+                                        profileDropdownOpen 
+                                            ? "bg-blue-50 text-blue-600 ring-2 ring-blue-100" 
+                                            : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                                    }`}
                                 >
-                                    <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center text-white text-sm font-semibold shadow-sm">
-                                        {user.firstName?.charAt(0)?.toUpperCase() || "U"}
+                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-bold shadow-md shadow-blue-500/20">
+                                        <FaUser size={14} />
                                     </div>
-                                    <span className="hidden sm:block text-sm font-medium max-w-[100px] truncate">
-                                        {user.firstName || "User"}
-                                    </span>
-                                    <FaChevronDown
-                                        size={10}
-                                        className={`transition-transform duration-300 ${profileDropdownOpen ? "rotate-180" : ""
-                                            }`}
+                                    <div className="hidden sm:flex flex-col items-start leading-tight">
+                                        <span className="text-xs text-gray-400 font-medium">Hello,</span>
+                                        <span className="text-sm font-bold text-gray-800 max-w-[100px] truncate">
+                                            {user.username}
+                                        </span>
+                                    </div>
+                                    <FaChevronDown 
+                                        size={12} 
+                                        className={`ml-1 transition-transform duration-300 ${profileDropdownOpen ? "rotate-180" : ""}`}
                                     />
                                 </button>
 
                                 {/* Dropdown Menu */}
-                                <div
-                                    className={`absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl shadow-gray-900/10 border border-gray-100 overflow-hidden transition-all duration-300 ease-out origin-top-right ${profileDropdownOpen
-                                            ? "opacity-100 scale-100 translate-y-0"
-                                            : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
-                                        }`}
-                                >
-                                    <div className="p-3 border-b border-gray-100">
-                                        <p className="text-sm font-semibold text-gray-900 truncate">
-                                            {user.firstName} {user.lastName}
-                                        </p>
-                                        <p className="text-xs text-gray-500 truncate">
-                                            {user.email || "user@example.com"}
-                                        </p>
-                                    </div>
-                                    <div className="p-1">
-                                        <Link
-                                            to="/profile"
-                                            className="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+                                {profileDropdownOpen && (
+                                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl shadow-gray-200/50 border border-gray-100 py-2 animate-in slide-in-from-top-2 duration-200">
+                                        <div className="px-4 py-3 border-b border-gray-100 mb-1">
+                                            <p className="text-sm font-semibold text-gray-900 truncate">{user.username}</p>
+                                            <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                                        </div>
+                                        
+                                        <Link 
+                                            to="/profile" 
+                                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
+                                            onClick={() => setProfileDropdownOpen(false)}
                                         >
                                             <FaUser size={14} className="text-gray-400" />
                                             My Profile
                                         </Link>
-                                        <Link
-                                            to="/orders"
-                                            className="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+                                        <Link 
+                                            to="/orders" 
+                                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
+                                            onClick={() => setProfileDropdownOpen(false)}
                                         >
                                             <FaBox size={14} className="text-gray-400" />
                                             My Orders
                                         </Link>
+                                        
+                                        <div className="border-t border-gray-100 my-1 pt-1">
+                                            <button 
+                                                onClick={handleLogout}
+                                                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors text-left"
+                                            >
+                                                <FaSignOutAlt size={14} />
+                                                Log Out
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div className="p-1 border-t border-gray-100">
-                                        <button
-                                            onClick={handleLogout}
-                                            className="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
-                                        >
-                                            <FaSignOutAlt size={14} />
-                                            Sign Out
-                                        </button>
-                                    </div>
-                                </div>
+                                )}
                             </div>
                         ) : (
                             <Link
                                 to="/login"
-                                className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-xl shadow-lg shadow-gray-900/20 hover:bg-gray-800 hover:shadow-xl hover:shadow-gray-900/25 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 ease-out"
+                                className={`relative px-5 py-2.5 rounded-xl font-medium transition-all duration-300 ease-out ${
+                                    isActive("/login")
+                                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
+                                        : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+                                }`}
+                                aria-label="Login"
                             >
-                                <FaUser size={12} />
-                                <span>Login</span>
+                                Login
                             </Link>
                         )}
 
@@ -346,136 +364,6 @@ function Navbar() {
                             </div>
                         </button>
                     </div>
-                </div>
-            </div>
-
-            {/* ============================================
-                MOBILE MENU
-                ============================================ */}
-            <div
-                className={`lg:hidden absolute top-full left-0 right-0 bg-white border-t border-gray-100 shadow-xl transition-all duration-500 ease-out overflow-hidden ${isOpen ? "max-h-[calc(100vh-80px)] opacity-100" : "max-h-0 opacity-0"
-                    }`}
-            >
-                <div className="p-4 space-y-2">
-                    {/* Mobile Search */}
-                    <form onSubmit={handleSearch} className="mb-4">
-                        <div className="relative">
-                            <input
-                                type="text"
-                                placeholder="Search products..."
-                                value={searchQuery}
-                                onChange={handleSearchChange}
-                                className="w-full pl-11 pr-10 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl text-sm text-gray-800 placeholder-gray-400 focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 transition-all duration-300 outline-none"
-                            />
-                            <FaSearch
-                                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-                                size={14}
-                            />
-                            {searchQuery && (
-                                <button
-                                    type="button"
-                                    onClick={handleClearSearch}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 transition-colors duration-200"
-                                    aria-label="Clear search"
-                                >
-                                    <FaTimes size={12} />
-                                </button>
-                            )}
-                        </div>
-                    </form>
-
-                    {/* Mobile Nav Links */}
-                    {navLinks.map((link, index) => (
-                        <Link
-                            key={link.name}
-                            to={link.path}
-                            className={`flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-300 ${isActive(link.path)
-                                    ? "bg-emerald-50 text-emerald-600"
-                                    : "text-gray-700 hover:bg-gray-50"
-                                }`}
-                        >
-                            {link.name}
-                        </Link>
-                    ))}
-
-                    <div className="h-px bg-gray-100 my-3" />
-
-                    {/* Mobile Quick Links */}
-                    <div className="grid grid-cols-2 gap-2 mb-3">
-                        <Link
-                            to="/wishlist"
-                            className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-xl text-gray-700 hover:bg-emerald-50 transition-all duration-300"
-                        >
-                            <span className="flex items-center gap-2">
-                                <FaHeart className="text-red-400" /> Wishlist
-                            </span>
-                            {wishlistCount > 0 && (
-                                <span className="px-2 py-0.5 bg-red-100 text-red-600 text-[10px] font-bold rounded-full">
-                                    {wishlistCount}
-                                </span>
-                            )}
-                        </Link>
-                        <Link
-                            to="/cart"
-                            className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-xl text-gray-700 hover:bg-emerald-50 transition-all duration-300"
-                        >
-                            <span className="flex items-center gap-2">
-                                <FaShoppingCart className="text-emerald-500" /> Cart
-                            </span>
-                            {cartCount > 0 && (
-                                <span className="px-2 py-0.5 bg-emerald-100 text-emerald-600 text-[10px] font-bold rounded-full">
-                                    {cartCount}
-                                </span>
-                            )}
-                        </Link>
-                    </div>
-
-                    <div className="h-px bg-gray-100 my-3" />
-
-                    {/* Mobile Auth */}
-                    {user ? (
-                        <div className="space-y-2">
-                            <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl">
-                                <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center text-white font-semibold">
-                                    {user.firstName?.charAt(0)?.toUpperCase() || "U"}
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                    <p className="text-sm font-bold text-gray-900 truncate">
-                                        {user.firstName} {user.lastName}
-                                    </p>
-                                    <p className="text-xs text-gray-500 truncate">{user.email || "user@example.com"}</p>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-1 gap-1">
-                                <Link
-                                    to="/profile"
-                                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 transition-all duration-300"
-                                >
-                                    <FaUser className="text-gray-400" size={14} /> My Profile
-                                </Link>
-                                <Link
-                                    to="/orders"
-                                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-50 transition-all duration-300"
-                                >
-                                    <FaBox className="text-gray-400" size={14} /> My Orders
-                                </Link>
-                                <button
-                                    onClick={handleLogout}
-                                    className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition-all duration-300"
-                                >
-                                    <FaSignOutAlt size={14} /> Sign Out
-                                </button>
-                            </div>
-                        </div>
-                    ) : (
-                        <Link
-                            to="/login"
-                            className="flex items-center justify-center gap-2 w-full px-4 py-4 bg-gray-900 text-white font-bold rounded-xl shadow-lg hover:bg-gray-800 transition-all duration-300"
-                        >
-                            <FaUser size={14} />
-                            Login / Register
-                        </Link>
-                    )}
                 </div>
             </div>
         </nav>
