@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaBox, FaMapMarkerAlt, FaCheck, FaSignOutAlt, FaBars, FaTruck, FaClipboardList, FaMoneyBillWave, FaTachometerAlt, FaPhoneAlt, FaDirections, FaDotCircle, FaStore, FaUser, FaClock, FaListUl } from 'react-icons/fa';
-import { mockOrders } from '../../data/mockData';
+
 
 // Simple toast notification helper
 const toast = {

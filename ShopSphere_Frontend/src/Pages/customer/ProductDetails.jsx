@@ -236,6 +236,10 @@ const ProductDetails = () => {
                                     <FaShoppingCart size={18} /> Add to Cart
                                 </button>
                                 <button
+                                    onClick={() => {
+                                        handleAddToCart();
+                                        navigate('/checkout');
+                                    }}
                                     className="flex-1 py-5 bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-[24px] font-black text-lg shadow-xl shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-1 transition-all flex items-center justify-center gap-3 active:scale-95"
                                 >
                                     <FaBolt size={18} /> Buy it Now
