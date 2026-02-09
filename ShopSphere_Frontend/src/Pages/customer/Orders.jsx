@@ -30,7 +30,7 @@ function Orders() {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-black text-gray-900 mb-6 flex items-center gap-3">
-        <FaReceipt className="text-blue-600" />
+        <FaReceipt className="text-violet-600" />
         Order History
       </h1>
 
@@ -46,8 +46,8 @@ function Orders() {
               className="p-5 cursor-pointer hover:bg-gray-50 transition-colors flex items-center justify-between"
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
-                  <FaBox className="text-blue-600 text-xl" />
+                <div className="w-12 h-12 bg-violet-50 rounded-xl flex items-center justify-center">
+                  <FaBox className="text-violet-600 text-xl" />
                 </div>
                 <div>
                   <p className="font-bold text-gray-900 text-sm">
@@ -62,8 +62,8 @@ function Orders() {
 
               <div className="flex items-center gap-4">
                 <div className="text-right">
-                  <p className="font-black text-blue-600">₹{order.totalAmount?.toFixed(2)}</p>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                  <p className="font-black text-violet-600">₹{order.totalAmount?.toFixed(2)}</p>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full">
                     {order.status || "Completed"}
                   </span>
                 </div>

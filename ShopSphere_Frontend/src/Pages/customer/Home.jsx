@@ -118,7 +118,7 @@ function Home() {
   // RENDER
   // ============================================
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-yellow-50">
+    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-purple-50">
       {/* ============================================
           HERO BANNER SECTION
           ============================================ */}
@@ -127,12 +127,12 @@ function Home() {
           }`}
       >
         {/* Hero Background with Soft Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-green-100 via-emerald-50 via-40% to-yellow-100 opacity-80"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-100 via-purple-50 via-40% to-indigo-50 opacity-80"></div>
 
         {/* Decorative Floating Elements */}
-        <div className="absolute top-10 left-10 w-72 h-72 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: "1s" }}></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-emerald-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style={{ animationDelay: "2s" }}></div>
+        <div className="absolute top-10 left-10 w-72 h-72 bg-violet-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
+        <div className="absolute bottom-10 right-10 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: "1s" }}></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-indigo-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style={{ animationDelay: "2s" }}></div>
 
         {/* Hero Content */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 lg:py-32">
@@ -142,7 +142,7 @@ function Home() {
               className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6 transition-all duration-700 delay-200 ${heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
                 }`}
             >
-              <span className="bg-gradient-to-r from-green-600 via-emerald-500 to-teal-500 bg-clip-text text-transparent drop-shadow-sm">
+              <span className="bg-gradient-to-r from-violet-600 via-purple-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-sm">
                 Discover Premium
               </span>
               <br />
@@ -169,7 +169,7 @@ function Home() {
                 onClick={() => {
                   document.getElementById("products-section")?.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="group relative inline-flex items-center gap-3 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white font-semibold text-lg px-8 py-4 rounded-full shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 transform hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 ease-out overflow-hidden"
+                className="group relative inline-flex items-center gap-3 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white font-semibold text-lg px-8 py-4 rounded-full shadow-lg shadow-violet-500/30 hover:shadow-xl hover:shadow-violet-500/40 transform hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 ease-out overflow-hidden"
               >
                 {/* Button Shine Effect */}
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></span>
@@ -179,7 +179,7 @@ function Home() {
               </button>
 
               {/* Secondary CTA Button */}
-              <button className="group inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm text-gray-700 font-semibold text-lg px-8 py-4 rounded-full border-2 border-gray-200 hover:border-green-300 hover:bg-white shadow-md hover:shadow-lg transform hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 ease-out">
+              <button className="group inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm text-gray-700 font-semibold text-lg px-8 py-4 rounded-full border-2 border-gray-200 hover:border-violet-300 hover:bg-white shadow-md hover:shadow-lg transform hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 ease-out">
                 <span>View Collections</span>
                 <FaArrowRight className="text-sm opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
               </button>
@@ -191,15 +191,15 @@ function Home() {
                 }`}
             >
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                <span className="w-2 h-2 bg-violet-500 rounded-full animate-pulse"></span>
                 <span>Free Shipping</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" style={{ animationDelay: "0.5s" }}></span>
+                <span className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" style={{ animationDelay: "0.5s" }}></span>
                 <span>24/7 Support</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-teal-500 rounded-full animate-pulse" style={{ animationDelay: "1s" }}></span>
+                <span className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" style={{ animationDelay: "1s" }}></span>
                 <span>Secure Payment</span>
               </div>
             </div>
@@ -213,8 +213,8 @@ function Home() {
               fill="url(#wave-gradient)" fillOpacity="0.1" />
             <defs>
               <linearGradient id="wave-gradient" x1="0" y1="0" x2="1440" y2="0">
-                <stop stopColor="#22c55e" />
-                <stop offset="1" stopColor="#eab308" />
+                <stop stopColor="#7c3aed" /> // violet-600
+                <stop offset="1" stopColor="#a855f7" /> // purple-500
               </linearGradient>
             </defs>
           </svg>
@@ -235,14 +235,14 @@ function Home() {
                   onClick={() => handleCategoryChange(category.id)}
                   className={`relative px-5 sm:px-6 py-2.5 sm:py-3 rounded-full font-medium text-sm sm:text-base whitespace-nowrap transition-all duration-300 ease-out
                     ${activeCategory === category.id
-                      ? "text-white shadow-lg shadow-green-500/25"
+                      ? "text-white shadow-lg shadow-violet-500/25"
                       : "text-gray-600 hover:text-gray-800 hover:bg-white/60"
                     }
                   `}
                 >
                   {/* Active Background Pill */}
                   <span
-                    className={`absolute inset-0 rounded-full bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 transition-all duration-300 ease-out
+                    className={`absolute inset-0 rounded-full bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 transition-all duration-300 ease-out
                       ${activeCategory === category.id
                         ? "opacity-100 scale-100"
                         : "opacity-0 scale-95"
@@ -255,7 +255,7 @@ function Home() {
 
                   {/* Animated Underline for Active State */}
                   <span
-                    className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-0.5 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full transition-all duration-300 ease-out
+                    className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-0.5 bg-gradient-to-r from-violet-400 to-purple-400 rounded-full transition-all duration-300 ease-out
                       ${activeCategory === category.id
                         ? "opacity-100 scale-x-100"
                         : "opacity-0 scale-x-0"
@@ -284,7 +284,7 @@ function Home() {
             <p className="text-gray-500 text-lg">
               Showing {filteredProducts.length} product{filteredProducts.length !== 1 ? "s" : ""}
             </p>
-            <div className="w-20 h-1 bg-gradient-to-r from-green-500 to-emerald-500 mx-auto mt-4 rounded-full"></div>
+            <div className="w-20 h-1 bg-gradient-to-r from-violet-500 to-purple-500 mx-auto mt-4 rounded-full"></div>
           </div>
 
           {/* Products Grid with Smooth Transitions */}
@@ -302,7 +302,7 @@ function Home() {
                   }}
                 >
                   {/* Image Container */}
-                  <div className="relative overflow-hidden bg-gradient-to-br from-green-100 to-yellow-100 h-48 flex items-center justify-center">
+                  <div className="relative overflow-hidden bg-gradient-to-br from-violet-100 to-purple-100 h-48 flex items-center justify-center">
                     <img
                       src={item.image}
                       alt={item.name}
@@ -335,7 +335,7 @@ function Home() {
 
                   {/* Content Container */}
                   <div className="p-5 sm:p-6">
-                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 group-hover:text-green-600 transition-colors duration-300">
+                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 group-hover:text-violet-600 transition-colors duration-300">
                       {item.name}
                     </h3>
                     <p className="text-gray-500 mb-4 line-clamp-2 text-sm leading-relaxed">
@@ -344,7 +344,7 @@ function Home() {
 
                     {/* Price and Add to Cart */}
                     <div className="flex items-center justify-between">
-                      <span className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                      <span className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
                         ₹{item.price}
                       </span>
                       <button
@@ -352,7 +352,7 @@ function Home() {
                           e.stopPropagation();
                           dispatch(AddToCart(item));
                         }}
-                        className="group/btn relative bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold py-2.5 px-5 rounded-xl shadow-md shadow-green-500/20 hover:shadow-lg hover:shadow-green-500/30 transform hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 overflow-hidden"
+                        className="group/btn relative bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white font-semibold py-2.5 px-5 rounded-xl shadow-md shadow-violet-500/20 hover:shadow-lg hover:shadow-violet-500/30 transform hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 overflow-hidden"
                       >
                         <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-500"></span>
                         <span className="relative">Add to Cart</span>
@@ -374,7 +374,7 @@ function Home() {
                     setActiveCategory("all");
                     window.history.pushState({}, "", "/");
                   }}
-                  className="inline-flex items-center gap-2 text-green-600 hover:text-green-700 font-medium transition-colors duration-300"
+                  className="inline-flex items-center gap-2 text-violet-600 hover:text-violet-700 font-medium transition-colors duration-300"
                 >
                   <span>View all products</span>
                   <FaArrowRight className="text-sm" />

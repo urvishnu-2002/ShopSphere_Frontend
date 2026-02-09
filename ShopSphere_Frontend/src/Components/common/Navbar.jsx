@@ -117,8 +117,8 @@ function Navbar() {
     return (
         <nav
             className={`fixed top-0 left-0 right-0 z-50 py-3 transition-all duration-500 ease-out ${scrolled
-                    ? "bg-white/95 backdrop-blur-xl shadow-lg shadow-gray-900/5"
-                    : "bg-white/80 backdrop-blur-md"
+                ? "bg-white/95 backdrop-blur-xl shadow-lg shadow-gray-900/5"
+                : "bg-white/80 backdrop-blur-md"
                 }`}
             role="navigation"
             aria-label="Main navigation"
@@ -134,12 +134,12 @@ function Navbar() {
                         aria-label="ShopSphere Home"
                     >
                         <div className="relative">
-                            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center text-white text-lg font-bold shadow-lg shadow-emerald-500/25 group-hover:shadow-emerald-500/40 group-hover:scale-105 transition-all duration-300 ease-out">
-                                S
+                            <div className="w-10 h-10 bg-gradient-to-br from-violet-600 to-purple-700 rounded-xl flex items-center justify-center text-white text-lg font-bold shadow-lg shadow-violet-500/25 group-hover:shadow-violet-500/40 group-hover:scale-105 transition-all duration-300 ease-out">
+                                <img src="s_logo.png" alt="" />
                             </div>
-                            <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-300" />
+                            <div className="absolute inset-0 bg-gradient-to-br from-violet-400 to-purple-500 rounded-xl opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-300" />
                         </div>
-                        <span className="text-xl sm:text-2xl font-bold text-gray-800 group-hover:text-emerald-600 transition-colors duration-300 hidden sm:block">
+                        <span className="text-xl sm:text-2xl font-bold text-gray-800 group-hover:text-violet-600 transition-colors duration-300 hidden sm:block">
                             ShopSphere
                         </span>
                     </Link>
@@ -160,13 +160,13 @@ function Navbar() {
                                 onFocus={() => setSearchFocused(true)}
                                 onBlur={() => setSearchFocused(false)}
                                 className={`w-full pl-11 pr-10 py-2.5 bg-gray-50 border-2 rounded-xl text-sm text-gray-800 placeholder-gray-400 transition-all duration-300 ease-out outline-none ${searchFocused
-                                        ? "border-emerald-500 bg-white shadow-lg shadow-emerald-500/10 ring-4 ring-emerald-500/10"
-                                        : "border-gray-200 hover:border-gray-300 hover:bg-gray-100"
+                                    ? "border-violet-500 bg-white shadow-lg shadow-violet-500/10 ring-4 ring-violet-500/10"
+                                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-100"
                                     }`}
                                 aria-label="Search products"
                             />
                             <FaSearch
-                                className={`absolute left-4 top-1/2 -translate-y-1/2 transition-all duration-300 ${searchFocused ? "text-emerald-500" : "text-gray-400"
+                                className={`absolute left-4 top-1/2 -translate-y-1/2 transition-all duration-300 ${searchFocused ? "text-violet-500" : "text-gray-400"
                                     }`}
                                 size={14}
                             />
@@ -192,15 +192,15 @@ function Navbar() {
                                 key={link.name}
                                 to={link.path}
                                 className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 ease-out group ${isActive(link.path)
-                                        ? "text-emerald-600"
-                                        : "text-gray-600 hover:text-gray-900"
+                                    ? "text-violet-600"
+                                    : "text-gray-600 hover:text-gray-900"
                                     }`}
                             >
                                 {link.name}
                                 <span
-                                    className={`absolute bottom-0.5 left-4 right-4 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-300 ease-out ${isActive(link.path)
-                                            ? "opacity-100 scale-x-100"
-                                            : "opacity-0 scale-x-0 group-hover:opacity-100 group-hover:scale-x-100"
+                                    className={`absolute bottom-0.5 left-4 right-4 h-0.5 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full transition-all duration-300 ease-out ${isActive(link.path)
+                                        ? "opacity-100 scale-x-100"
+                                        : "opacity-0 scale-x-0 group-hover:opacity-100 group-hover:scale-x-100"
                                         }`}
                                 />
                             </Link>
@@ -215,8 +215,8 @@ function Navbar() {
                         <Link
                             to="/wishlist"
                             className={`relative p-2.5 rounded-xl transition-all duration-300 ease-out group ${isActive("/wishlist")
-                                    ? "bg-red-50 text-red-500"
-                                    : "text-gray-500 hover:text-red-500 hover:bg-red-50"
+                                ? "bg-red-50 text-red-500"
+                                : "text-gray-500 hover:text-red-500 hover:bg-red-50"
                                 }`}
                             aria-label={`Wishlist with ${wishlistCount} items`}
                         >
@@ -235,8 +235,8 @@ function Navbar() {
                         <Link
                             to="/cart"
                             className={`relative p-2.5 rounded-xl transition-all duration-300 ease-out group ${isActive("/cart")
-                                    ? "bg-emerald-50 text-emerald-600"
-                                    : "text-gray-500 hover:text-emerald-600 hover:bg-emerald-50"
+                                ? "bg-violet-50 text-violet-600"
+                                : "text-gray-500 hover:text-violet-600 hover:bg-violet-50"
                                 }`}
                             aria-label={`Shopping cart with ${cartCount} items`}
                         >
@@ -245,7 +245,7 @@ function Navbar() {
                                 className="transition-transform duration-300 group-hover:scale-110"
                             />
                             {cartCount > 0 && (
-                                <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-emerald-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/30 animate-in zoom-in duration-200">
+                                <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-violet-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg shadow-violet-500/30 animate-in zoom-in duration-200">
                                     {cartCount > 99 ? "99+" : cartCount}
                                 </span>
                             )}
@@ -255,8 +255,8 @@ function Navbar() {
                         <Link
                             to="/login"
                             className={`relative p-2.5 rounded-xl transition-all duration-300 ease-out group ${isActive("/login")
-                                    ? "bg-blue-50 text-blue-600"
-                                    : "text-gray-500 hover:text-blue-600 hover:bg-blue-50"
+                                ? "bg-purple-50 text-purple-600"
+                                : "text-gray-500 hover:text-purple-600 hover:bg-purple-50"
                                 }`}
                             aria-label="login"
                         ><button>login </button>

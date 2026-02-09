@@ -18,11 +18,11 @@ function Success() {
       const alreadyExists = existingHistory.some(
         (o) => o.transactionId === parsedOrder.transactionId
       );
-      
+
       if (!alreadyExists) {
         const updatedHistory = [parsedOrder, ...existingHistory];
         localStorage.setItem("ordersHistory", JSON.stringify(updatedHistory));
-        
+
         // Clear the cart after successful order
         dispatch(clearCart());
       }
@@ -36,9 +36,9 @@ function Success() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="bg-white max-w-xl w-full rounded-3xl shadow-lg p-8">
-        
+
         <div className="text-center mb-6">
-          <FaCheckCircle className="text-green-500 text-6xl mx-auto mb-4" />
+          <FaCheckCircle className="text-purple-500 text-6xl mx-auto mb-4" />
           <h1 className="text-2xl font-black text-gray-900">
             Order Placed Successfully 🎉
           </h1>
@@ -64,7 +64,7 @@ function Success() {
 
         <div className="border-t mt-4 pt-4 flex justify-between font-black text-lg">
           <span>Total Paid</span>
-          <span className="text-blue-600">₹{order.totalAmount.toFixed(2)}</span>
+          <span className="text-violet-600">₹{order.totalAmount.toFixed(2)}</span>
         </div>
 
         <p className="text-xs text-center text-gray-400 mt-6">

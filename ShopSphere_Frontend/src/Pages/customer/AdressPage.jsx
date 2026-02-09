@@ -115,124 +115,121 @@ export default function AddressPage() {
   };
 
   return (
-  <div className="max-w-5xl mx-auto p-6">
+    <div className="max-w-5xl mx-auto p-6">
 
-    <h2 className="text-2xl font-bold mb-6">Select Delivery Address</h2>
+      <h2 className="text-2xl font-bold mb-6">Select Delivery Address</h2>
 
-    {/* CURRENT LOCATION */}
-    <div className="bg-white rounded-2xl shadow-lg p-5 flex gap-4 mb-6 hover:-translate-y-0.5 transition-all">
+      {/* CURRENT LOCATION */}
+      <div className="bg-white rounded-2xl shadow-lg p-5 flex gap-4 mb-6 hover:-translate-y-0.5 transition-all">
 
-      <input type="radio" checked={useCurrent} onChange={getCurrentLocation} />
+        <input type="radio" checked={useCurrent} onChange={getCurrentLocation} />
 
-      <div>
-        <p className="font-bold">Use Current Location</p>
-        <p className="text-sm text-gray-500">Auto detect your address using GPS</p>
+        <div>
+          <p className="font-bold">Use Current Location</p>
+          <p className="text-sm text-gray-500">Auto detect your address using GPS</p>
+        </div>
+
       </div>
 
-    </div>
+      {/* SAVED ADDRESSES */}
+      <div className="grid md:grid-cols-2 gap-6">
 
-    {/* SAVED ADDRESSES */}
-    <div className="grid md:grid-cols-2 gap-6">
+        {savedAddresses.map((addr, i) => (
+          <div
+            key={addr.id}
+            className={`bg-white rounded-3xl p-6 shadow-lg transition-all hover:-translate-y-0.5 border-2 ${selectedAddress === addr.id ? "border-violet-600" : "border-transparent"
+              }`}
+          >
 
-      {savedAddresses.map((addr, i) => (
-        <div
-          key={addr.id}
-          className={`bg-white rounded-3xl p-6 shadow-lg transition-all hover:-translate-y-0.5 border-2 ${
-            selectedAddress === addr.id ? "border-emerald-600" : "border-transparent"
-          }`}
-        >
+            {i === 0 && (
+              <span className="absolute right-4 top-4 bg-violet-600 text-white text-xs px-3 py-1 rounded-lg">
+                Default
+              </span>
+            )}
 
-          {i === 0 && (
-            <span className="absolute right-4 top-4 bg-emerald-600 text-white text-xs px-3 py-1 rounded-lg">
-              Default
-            </span>
-          )}
+            <div className="flex gap-4">
 
-          <div className="flex gap-4">
+              <input
+                type="radio"
+                checked={!useCurrent && selectedAddress === addr.id}
+                onChange={() => {
+                  setUseCurrent(false);
+                  setSelectedAddress(addr.id);
+                }}
+              />
 
-            <input
-              type="radio"
-              checked={!useCurrent && selectedAddress === addr.id}
-              onChange={() => {
-                setUseCurrent(false);
-                setSelectedAddress(addr.id);
-              }}
-            />
+              <div>
+                <p className="font-bold">{addr.name}</p>
+                <p className="text-sm text-gray-500">{addr.address}, {addr.city}</p>
+                <p className="text-xs text-gray-400 mt-1">{addr.phone}</p>
+              </div>
 
-            <div>
-              <p className="font-bold">{addr.name}</p>
-              <p className="text-sm text-gray-500">{addr.address}, {addr.city}</p>
-              <p className="text-xs text-gray-400 mt-1">{addr.phone}</p>
+            </div>
+
+            <div className="flex gap-4 mt-4 pt-4 border-t text-sm font-bold">
+              <button onClick={() => handleEdit(addr)} className="text-violet-600 hover:underline">Edit</button>
+              <button onClick={() => handleDelete(addr.id)} className="text-red-500 hover:underline">Delete</button>
             </div>
 
           </div>
+        ))}
 
-          <div className="flex gap-4 mt-4 pt-4 border-t text-sm font-bold">
-            <button onClick={() => handleEdit(addr)} className="text-emerald-600 hover:underline">Edit</button>
-            <button onClick={() => handleDelete(addr.id)} className="text-red-500 hover:underline">Delete</button>
+      </div>
+
+      <button
+        className="mt-8 bg-violet-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-violet-700 hover:-translate-y-0.5 transition-all"
+        onClick={() => setShowForm(true)}
+      >
+        + Add New Address
+      </button>
+
+      {/* FORM */}
+      {showForm && (
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white rounded-3xl shadow-lg p-8 mt-10 space-y-5 animate-in fade-in"
+        >
+
+          <div className="grid md:grid-cols-2 gap-4">
+
+            {["name", "phone", "pincode", "city", "state"].map((field) => (
+              <input
+                key={field}
+                name={field}
+                value={formData[field]}
+                onChange={handleChange}
+                placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+                className={`border rounded-xl p-3 focus:ring-2 focus:ring-violet-500 outline-none ${error && !formData[field] ? "border-red-500" : ""
+                  }`}
+              />
+            ))}
+
           </div>
 
-        </div>
-      ))}
+          <textarea
+            name="address"
+            value={formData.address}
+            onChange={handleChange}
+            placeholder="Full Address"
+            rows="3"
+            className={`w-full border rounded-xl p-3 focus:ring-2 focus:ring-violet-500 outline-none ${error && !formData.address ? "border-red-500" : ""
+              }`}
+          />
+
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+
+          <button
+            type="submit"
+            className="w-full bg-violet-600 text-white py-3 rounded-xl font-bold hover:bg-violet-700 hover:-translate-y-0.5 transition-all"
+          >
+            {editId ? "Update Address" : "Save Address"}
+          </button>
+
+        </form>
+      )}
 
     </div>
-
-    <button
-      className="mt-8 bg-emerald-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-emerald-700 hover:-translate-y-0.5 transition-all"
-      onClick={() => setShowForm(true)}
-    >
-      + Add New Address
-    </button>
-
-    {/* FORM */}
-    {showForm && (
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white rounded-3xl shadow-lg p-8 mt-10 space-y-5 animate-in fade-in"
-      >
-
-        <div className="grid md:grid-cols-2 gap-4">
-
-          {["name","phone","pincode","city","state"].map((field) => (
-            <input
-              key={field}
-              name={field}
-              value={formData[field]}
-              onChange={handleChange}
-              placeholder={field.charAt(0).toUpperCase()+field.slice(1)}
-              className={`border rounded-xl p-3 focus:ring-2 focus:ring-emerald-500 outline-none ${
-                error && !formData[field] ? "border-red-500" : ""
-              }`}
-            />
-          ))}
-
-        </div>
-
-        <textarea
-          name="address"
-          value={formData.address}
-          onChange={handleChange}
-          placeholder="Full Address"
-          rows="3"
-          className={`w-full border rounded-xl p-3 focus:ring-2 focus:ring-emerald-500 outline-none ${
-            error && !formData.address ? "border-red-500" : ""
-          }`}
-        />
-
-        {error && <p className="text-red-500 text-sm">{error}</p>}
-
-        <button
-          type="submit"
-          className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 hover:-translate-y-0.5 transition-all"
-        >
-          {editId ? "Update Address" : "Save Address"}
-        </button>
-
-      </form>
-    )}
-
-  </div>
-);
+  );
 
 }
 

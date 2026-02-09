@@ -20,7 +20,6 @@ const LandingPage = () => {
         const navigateTimer = setTimeout(() => {
             sessionStorage.setItem("hasSeenLanding", "true");
 
-            // Navigate FIRST
             navigate("/home", { replace: true });
 
             // Keep landing mounted slightly longer
@@ -34,7 +33,7 @@ const LandingPage = () => {
         };
     }, [navigate]);
 
-    if (exit) return null; // ✅ prevents white flash
+    if (exit) return null;
 
     const products = [
         ShoppingBag, Smartphone, Watch, Headphones, Laptop,

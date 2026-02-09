@@ -12,7 +12,7 @@ const Footer = () => {
                     {/* Brand Column */}
                     <div>
                         <Link to="/" className="flex items-center gap-2 mb-6 group">
-                            <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                            <div className="w-10 h-10 bg-gradient-to-br from-violet-600 to-purple-700 rounded-xl flex items-center justify-center text-white text-xl font-bold shadow-lg">
                                 S
                             </div>
                             <span className="text-2xl font-bold text-white">ShopSphere</span>
@@ -21,7 +21,7 @@ const Footer = () => {
                             Your one-stop destination for premium quality products. We believe in providing the best shopping experience with carefully curated items.
                         </p>
                         <div className="flex gap-4">
-                            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-green-600 params-transition text-white transition-all duration-300 transform hover:-translate-y-1">
+                            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-violet-600 params-transition text-white transition-all duration-300 transform hover:-translate-y-1">
                                 <FaFacebook size={18} />
                             </a>
                             <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-sky-500 text-white transition-all duration-300 transform hover:-translate-y-1">
@@ -41,8 +41,8 @@ const Footer = () => {
                         <h3 className="text-white text-lg font-bold mb-6">Quick Links</h3>
                         <ul className="space-y-4">
                             <li>
-                                <Link to="/" className="hover:text-green-500 transition-colors duration-300 flex items-center gap-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 opacity-0 hover:opacity-100 transition-opacity"></span>
+                                <Link to="/" className="hover:text-violet-500 transition-colors duration-300 flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-violet-500 opacity-0 hover:opacity-100 transition-opacity"></span>
                                     Home
                                 </Link>
                             </li>
@@ -72,7 +72,7 @@ const Footer = () => {
                         <h3 className="text-white text-lg font-bold mb-6">Customer Service</h3>
                         <ul className="space-y-4">
                             <li>
-                                <Link to="/cart" className="hover:text-green-500 transition-colors duration-300">Ordering & Payment</Link>
+                                <Link to="/cart" className="hover:text-violet-500 transition-colors duration-300">Ordering & Payment</Link>
                             </li>
                             <li>
                                 <Link to="/contact" className="hover:text-green-500 transition-colors duration-300">Shipping Policy</Link>
@@ -91,15 +91,15 @@ const Footer = () => {
                         <h3 className="text-white text-lg font-bold mb-6">Contact Info</h3>
                         <ul className="space-y-4 text-gray-400">
                             <li className="flex items-start gap-3">
-                                <span className="text-green-500 mt-1">📍</span>
+                                <span className="text-violet-500 mt-1">📍</span>
                                 <span>123 Shopping Avenue, Market City, ST 12345</span>
                             </li>
                             <li className="flex items-center gap-3">
-                                <span className="text-green-500">📞</span>
+                                <span className="text-violet-500">📞</span>
                                 <span>+1 (234) 567-8900</span>
                             </li>
                             <li className="flex items-center gap-3">
-                                <span className="text-green-500">✉️</span>
+                                <span className="text-violet-500">✉️</span>
                                 <span>support@shopsphere.com</span>
                             </li>
                         </ul>
@@ -113,7 +113,7 @@ const Footer = () => {
                     </p>
                     <div className="flex items-center gap-2 text-sm text-gray-500">
                         <span>Made with</span>
-                        <FaHeart className="text-red-500 animate-pulse" />
+                        <FaHeart className="text-purple-500 animate-pulse" />
                         <span>by ShopSphere Team</span>
                     </div>
                 </div>
