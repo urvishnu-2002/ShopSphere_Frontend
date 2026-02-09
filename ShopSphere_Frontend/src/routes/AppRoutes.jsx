@@ -26,6 +26,7 @@ import ShippingMethod from "../Pages/customer/ShippingMethod";
 import ShippingFeePreferences from "../Pages/customer/ShippingFeePreferences";
 import BankDetails from "../Pages/customer/BankDetails";
 import Success from "../Pages/customer/Success";
+import ProductDetails from "../Pages/customer/ProductDetails";
 
 
 function AppRoutes() {
@@ -76,6 +77,7 @@ function AppRoutes() {
             <Route path="/signup" element={<SignUp />} />
             <Route path="/vendor" element={<VendorLogin />} />
             <Route path="/success" element={<Success />} />
+            <Route path="/product/:id" element={<ProductDetails />} />
 
             {/* Delivery Routes */}
             <Route

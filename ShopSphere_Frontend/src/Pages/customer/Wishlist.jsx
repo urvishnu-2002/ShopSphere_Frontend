@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { RemoveFromWishlist, AddToCart } from '../../Store';
 import { FaHeart, FaShoppingCart, FaTrash, FaArrowLeft } from 'react-icons/fa';
 
@@ -11,6 +11,7 @@ function Wishlist() {
   // Get wishlist state from Redux store
   const wishlist = useSelector((state) => state.wishlist);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   // ============================================
   // HANDLERS
@@ -46,7 +47,8 @@ function Wishlist() {
             {wishlist.map((item, index) => (
               <div
                 key={`${item.name}-${index}`}
-                className="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-red-100"
+                onClick={() => navigate(`/product/${encodeURIComponent(item.name)}`)}
+                className="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-red-100 cursor-pointer"
               >
                 {/* Image Container */}
                 <div className="relative overflow-hidden bg-gradient-to-br from-pink-100 to-red-100 h-48 flex items-center justify-center">
