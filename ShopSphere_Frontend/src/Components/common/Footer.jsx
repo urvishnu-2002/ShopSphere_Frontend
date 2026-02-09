@@ -2,120 +2,44 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaHeart } from "react-icons/fa";
 
-const Footer = () => {
-    const currentYear = new Date().getFullYear();
+import React from 'react';
 
+const Footer = () => {
     return (
-        <footer className="bg-gray-900 text-gray-300 pt-16 pb-8">
+        <footer className="bg-gray-900 text-white py-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-                    {/* Brand Column */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div>
-                        <Link to="/" className="flex items-center gap-2 mb-6 group">
-                            <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center text-white text-xl font-bold shadow-lg">
-                                S
-                            </div>
-                            <span className="text-2xl font-bold text-white">ShopSphere</span>
-                        </Link>
-                        <p className="text-gray-400 leading-relaxed mb-6">
-                            Your one-stop destination for premium quality products. We believe in providing the best shopping experience with carefully curated items.
-                        </p>
-                        <div className="flex gap-4">
-                            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-green-600 params-transition text-white transition-all duration-300 transform hover:-translate-y-1">
-                                <FaFacebook size={18} />
-                            </a>
-                            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-sky-500 text-white transition-all duration-300 transform hover:-translate-y-1">
-                                <FaTwitter size={18} />
-                            </a>
-                            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-pink-600 text-white transition-all duration-300 transform hover:-translate-y-1">
-                                <FaInstagram size={18} />
-                            </a>
-                            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 text-white transition-all duration-300 transform hover:-translate-y-1">
-                                <FaLinkedin size={18} />
-                            </a>
+                        <h3 className="text-2xl font-bold mb-4">ShopSphere</h3>
+                        <p className="text-gray-400">Your one-stop shop for everything you need. Quality products, best prices.</p>
+                    </div>
+                    <div>
+                        <h4 className="text-lg font-bold mb-4">Quick Links</h4>
+                        <ul className="space-y-2 text-gray-400">
+                            <li><a href="/" className="hover:text-white">Home</a></li>
+                            <li><a href="/shop" className="hover:text-white">Shop</a></li>
+                            <li><a href="/about" className="hover:text-white">About Us</a></li>
+                            <li><a href="/contact" className="hover:text-white">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="text-lg font-bold mb-4">Customer Service</h4>
+                        <ul className="space-y-2 text-gray-400">
+                            <li><a href="/profile" className="hover:text-white">My Account</a></li>
+                            <li><a href="/orders" className="hover:text-white">Order History</a></li>
+                            <li><a href="/faq" className="hover:text-white">FAQ</a></li>
+                            <li><a href="/returns" className="hover:text-white">Returns</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="text-lg font-bold mb-4">Connect With Us</h4>
+                        <div className="flex space-x-4">
+                            {/* Add social icons here if needed */}
                         </div>
                     </div>
-
-                    {/* Quick Links */}
-                    <div>
-                        <h3 className="text-white text-lg font-bold mb-6">Quick Links</h3>
-                        <ul className="space-y-4">
-                            <li>
-                                <Link to="/" className="hover:text-green-500 transition-colors duration-300 flex items-center gap-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 opacity-0 hover:opacity-100 transition-opacity"></span>
-                                    Home
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="/about" className="hover:text-green-500 transition-colors duration-300 flex items-center gap-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 opacity-0 hover:opacity-100 transition-opacity"></span>
-                                    About Us
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="/contact" className="hover:text-green-500 transition-colors duration-300 flex items-center gap-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 opacity-0 hover:opacity-100 transition-opacity"></span>
-                                    Contact Us
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="/login" className="hover:text-green-500 transition-colors duration-300 flex items-center gap-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 opacity-0 hover:opacity-100 transition-opacity"></span>
-                                    Login
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
-
-                    {/* Customer Service */}
-                    <div>
-                        <h3 className="text-white text-lg font-bold mb-6">Customer Service</h3>
-                        <ul className="space-y-4">
-                            <li>
-                                <Link to="/cart" className="hover:text-green-500 transition-colors duration-300">Ordering & Payment</Link>
-                            </li>
-                            <li>
-                                <Link to="/contact" className="hover:text-green-500 transition-colors duration-300">Shipping Policy</Link>
-                            </li>
-                            <li>
-                                <Link to="/contact" className="hover:text-green-500 transition-colors duration-300">Returns & Refunds</Link>
-                            </li>
-                            <li>
-                                <Link to="/contact" className="hover:text-green-500 transition-colors duration-300">FAQ</Link>
-                            </li>
-                        </ul>
-                    </div>
-
-                    {/* Contact Info */}
-                    <div>
-                        <h3 className="text-white text-lg font-bold mb-6">Contact Info</h3>
-                        <ul className="space-y-4 text-gray-400">
-                            <li className="flex items-start gap-3">
-                                <span className="text-green-500 mt-1">📍</span>
-                                <span>123 Shopping Avenue, Market City, ST 12345</span>
-                            </li>
-                            <li className="flex items-center gap-3">
-                                <span className="text-green-500">📞</span>
-                                <span>+1 (234) 567-8900</span>
-                            </li>
-                            <li className="flex items-center gap-3">
-                                <span className="text-green-500">✉️</span>
-                                <span>support@shopsphere.com</span>
-                            </li>
-                        </ul>
-                    </div>
                 </div>
-
-                {/* Bottom Bar */}
-                <div className="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p className="text-sm text-gray-500">
-                        © {currentYear} ShopSphere. All rights reserved.
-                    </p>
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <span>Made with</span>
-                        <FaHeart className="text-red-500 animate-pulse" />
-                        <span>by ShopSphere Team</span>
-                    </div>
+                <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                    <p>&copy; {new Date().getFullYear()} ShopSphere. All rights reserved.</p>
                 </div>
             </div>
         </footer>

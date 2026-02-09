@@ -16,6 +16,13 @@ import Profile, {
     WishlistTab,
     SellTab
 } from "../Pages/customer/Profile";
+import Profile, {
+    ProfileInfoTab,
+    OrdersTab,
+    AddressTab,
+    WishlistTab
+} from "../Pages/customer/Profile";
+
 
 import LandingPage from "../Components/common/LandingPage";
 import VerifyGST from "../Pages/customer/VerifyGST";
@@ -48,7 +55,6 @@ function AppRoutes() {
                 <Route path="orders" element={<OrdersTab />} />
                 <Route path="addresses" element={<AddressTab />} />
                 <Route path="wishlist" element={<WishlistTab />} />
-                <Route path="sell" element={<SellTab />} />
             </Route>
 
             <Route path="/store-name" element={<StoreName />} />
