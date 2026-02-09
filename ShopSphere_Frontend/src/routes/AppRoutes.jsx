@@ -3,8 +3,6 @@ import Home from "../Pages/customer/Home";
 import Cart from "../Pages/customer/Cart";
 import Checkout from "../Pages/customer/Checkout";
 import WhishList from "../Pages/customer/WhishList";
-import AboutUs from "../Pages/customer/AboutUs";
-import ContactUs from "../Pages/customer/ContactUs";
 import Login from "../Pages/customer/Login";
 import SignUp from "../Pages/customer/SignUp";
 import VendorLogin from "../Pages/vendor/VendorLogin";
@@ -13,6 +11,7 @@ import Profile, {
     ProfileInfoTab,
     OrdersTab,
     AddressTab,
+
     WishlistTab,
     SellTab
 } from "../Pages/customer/Profile";
@@ -22,6 +21,7 @@ import Profile, {
     AddressTab,
     WishlistTab
 } from "../Pages/customer/Profile";
+import SellerPage from "../Pages/customer/SellerPage";
 
 
 import LandingPage from "../Components/common/LandingPage";
@@ -59,6 +59,7 @@ function AppRoutes() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/wishlist" element={<WhishList />} />
+
             <Route path="/about" element={<AboutUs />} />
             <Route path="/contact" element={<ContactUs />} />
 
@@ -68,6 +69,7 @@ function AppRoutes() {
                 <Route path="orders" element={<OrdersTab />} />
                 <Route path="addresses" element={<AddressTab />} />
                 <Route path="wishlist" element={<WishlistTab />} />
+                <Route path="sell" element={<SellerPage />} />
             </Route>
 
             <Route path="/store-name" element={<StoreName />} />

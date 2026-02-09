@@ -12,11 +12,13 @@ import {
   FaCalendarAlt,
 } from "react-icons/fa";
 import { MdOutlinePayments, MdOutlineTimer } from "react-icons/md";
+import { processPayment } from "../../api/axios";
 
 function Checkout() {
   const navigate = useNavigate();
   const cartObjects = useSelector((state) => state.cart || []);
   const [selectedMethod, setSelectedMethod] = useState("upi");
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Calculations
   const subtotal = cartObjects.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -58,73 +60,93 @@ function Checkout() {
       icon: <FaMoneyBillWave className="text-gray-600" />,
     },
   ];
-const loadRazorpayScript = () => {
-  return new Promise((resolve) => {
-    if (window.Razorpay) {
-      resolve(true);
+
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) {
+        resolve(true);
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.async = true;
+
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+
+      document.body.appendChild(script);
+    });
+  };
+
+  const handlePayment = async () => {
+    if (cartObjects.length === 0) {
+      alert("Your cart is empty!");
       return;
     }
 
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
+    const loaded = await loadRazorpayScript();
 
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
+    if (!loaded) {
+      alert("Razorpay SDK failed to load. Check internet.");
+      return;
+    }
 
-    document.body.appendChild(script);
-  });
-};
+    const options = {
+      key: "rzp_test_SCkSLubYDiWP48",
+      amount: Math.round(totalAmount * 100),
+      currency: "INR",
+      name: "ShopSphere",
+      description: "Order Payment",
 
-const handlePayment = async () => {
-  const loaded = await loadRazorpayScript();
+      handler: async function (response) {
+        setIsProcessing(true);
+        try {
+          // Sync with Backend
+          await processPayment({
+            payment_mode: selectedMethod,
+            transaction_id: response.razorpay_payment_id,
+            items: cartObjects.map(item => ({
+              name: item.name,
+              quantity: item.quantity,
+              price: item.price
+            }))
+          });
 
-  if (!loaded) {
-    alert("Razorpay SDK failed to load. Check internet.");
-    return;
-  }
+          // Store for Success page display
+          localStorage.setItem(
+            "orderSuccess",
+            JSON.stringify({
+              transactionId: response.razorpay_payment_id,
+              items: cartObjects,
+              totalAmount: totalAmount,
+              date: new Date().toLocaleString()
+            })
+          );
 
-  const options = {
-    key: "rzp_test_SCkSLubYDiWP48", // ✅ Test Key
-    amount: Math.round(totalAmount * 100), // 💰 dynamic amount
-    currency: "INR",
-    name: "My App",
-    description: "Order Payment",
+          navigate("/success");
+        } catch (error) {
+          console.error("Order processing failed:", error);
+          alert("Payment received, but order recording failed. Please check your Orders history or contact support.");
+        } finally {
+          setIsProcessing(false);
+        }
+      },
 
-    handler: function (response) {
-      alert("Payment Successful 🎉");
+      prefill: {
+        name: "Customer",
+        email: "customer@example.com",
+        contact: "9999999999",
+      },
 
-      console.log("Transaction ID:", response.razorpay_payment_id);
+      theme: {
+        color: "#2563eb",
+      },
+    };
 
-      // Store complete order data for Success page
-      localStorage.setItem(
-        "orderSuccess",
-        JSON.stringify({
-          transactionId: response.razorpay_payment_id,
-          items: cartObjects,
-          totalAmount: totalAmount,
-          date: new Date().toLocaleString(),
-          status: "Shipped"
-        })
-      );
-
-      navigate("/success");
-    },
-
-    prefill: {
-      name: "Test User",
-      email: "test@example.com",
-      contact: "9999999999",
-    },
-
-    theme: {
-      color: "#2563eb",
-    },
+    const razorpay = new window.Razorpay(options);
+    razorpay.open();
   };
-
-  const razorpay = new window.Razorpay(options);
-  razorpay.open();
-};
 
 
   return (
@@ -150,8 +172,8 @@ const handlePayment = async () => {
                   key={method.id}
                   onClick={() => setSelectedMethod(method.id)}
                   className={`group cursor-pointer bg-white rounded-[32px] p-6 border-2 transition-all duration-300 flex items-center gap-6 ${selectedMethod === method.id
-                      ? "border-blue-600 shadow-xl shadow-blue-500/10 translate-x-2"
-                      : "border-gray-100 hover:border-blue-200"
+                    ? "border-blue-600 shadow-xl shadow-blue-500/10 translate-x-2"
+                    : "border-gray-100 hover:border-blue-200"
                     }`}
                 >
                   <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl transition-all ${selectedMethod === method.id ? "bg-blue-600 text-white shadow-lg" : "bg-gray-50 group-hover:bg-blue-50"
@@ -241,9 +263,14 @@ const handlePayment = async () => {
                 <div className="mt-8">
                   <button
                     onClick={handlePayment}
-                    className="w-full py-5 bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-[24px] font-black text-lg shadow-xl shadow-blue-500/20 hover:shadow-blue-500/30 hover:-translate-y-1 transition-all active:scale-[0.98] flex items-center justify-center gap-3 mb-6"
+                    disabled={isProcessing}
+                    className={`w-full py-5 bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-[24px] font-black text-lg shadow-xl shadow-blue-500/20 hover:shadow-blue-500/30 hover:-translate-y-1 transition-all active:scale-[0.98] flex items-center justify-center gap-3 mb-6 ${isProcessing ? 'opacity-70 cursor-not-allowed' : ''}`}
                   >
-                    Pay ₹{totalAmount.toFixed(2)} <FaLock size={16} />
+                    {isProcessing ? (
+                      <>Processing Order... <FaLock size={16} className="animate-pulse" /></>
+                    ) : (
+                      <>Pay ₹{totalAmount.toFixed(2)} <FaLock size={16} /></>
+                    )}
                   </button>
                   <p className="text-[10px] text-center text-gray-400 font-black uppercase tracking-[2px] px-4">
                     By clicking pay, you agree to our terms and safe payment policies.

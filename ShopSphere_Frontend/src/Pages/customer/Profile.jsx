@@ -104,6 +104,13 @@ export const WishlistTab = () => (
     </div>
 );
 
+// 4. My Wishlist Tab
+export const WishlistTab = () => (
+    <div className="animate-in fade-in slide-in-from-right duration-500 bg-white rounded-[32px] shadow-sm border border-gray-100">
+        <WhishList />
+    </div>
+);
+
 // 5. Sell Tab
 export const SellTab = () => {
     const navigate = useNavigate();
