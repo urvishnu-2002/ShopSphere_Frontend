@@ -83,37 +83,60 @@ export const ProfileInfoTab = () => {
         </div>
     );
 };
-    // 2. My Orders Tab - Using the Orders component
-    const OrdersTab = () => (
-        <div className="animate-in fade-in slide-in-from-right duration-500 bg-white rounded-[32px] shadow-sm border border-gray-100 overflow-hidden">
-            <Orders />
-        </div>
-    );
- // 3. Adress Tab
-     const AddressTab = () => (
-        <div className="animate-in fade-in slide-in-from-right duration-500 bg-white rounded-[32px] shadow-sm border border-gray-100">
-            <AddressPage />
-        </div>
-    );
+// 2. My Orders Tab - Using the Orders component
+export const OrdersTab = () => (
+    <div className="animate-in fade-in slide-in-from-right duration-500 bg-white rounded-[32px] shadow-sm border border-gray-100 overflow-hidden">
+        <Orders />
+    </div>
+);
+// 3. Adress Tab
+export const AddressTab = () => (
+    <div className="animate-in fade-in slide-in-from-right duration-500 bg-white rounded-[32px] shadow-sm border border-gray-100">
+        <AddressPage />
+    </div>
+);
 
-    // 4. My Wishlist Tab
-    const WishlistTab = () => (
-        <div className="animate-in fade-in slide-in-from-right duration-500 h-[600px] flex flex-col items-center justify-center text-center px-6">
-            <div className="w-32 h-32 bg-gray-50 rounded-full flex items-center justify-center text-gray-200 mb-8">
-                <FaHeart size={64} />
+// 4. My Wishlist Tab
+export const WishlistTab = () => (
+    <div className="animate-in fade-in slide-in-from-right duration-500 h-[600px] flex flex-col items-center justify-center text-center px-6">
+        <div className="w-32 h-32 bg-gray-50 rounded-full flex items-center justify-center text-gray-200 mb-8">
+            <FaHeart size={64} />
+        </div>
+        <h3 className="text-2xl font-bold text-gray-800 mb-2">Your wishlist is empty</h3>
+        <p className="text-gray-500 max-w-sm mb-8 font-medium">
+            Explore our curated collection of fresh organics and premium essentials to add them to your wishlist.
+        </p>
+        <button
+            onClick={() => navigate("/")}
+            className="px-8 py-4 bg-emerald-600 text-white font-bold rounded-2xl shadow-xl shadow-emerald-500/20 hover:bg-emerald-700 hover:-translate-y-1 transition-all"
+        >
+            Explore Products
+        </button>
+    </div>
+);
+
+// 5. Sell Tab
+export const SellTab = () => {
+    const navigate = useNavigate();
+    return (
+        <div className="animate-in fade-in slide-in-from-right duration-500 h-[600px] flex flex-col items-center justify-center text-center px-6 bg-white rounded-[32px] shadow-sm border border-gray-100">
+            <div className="w-32 h-32 bg-purple-50 rounded-full flex items-center justify-center text-purple-600 mb-8">
+                <FaStore size={64} />
             </div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">Your wishlist is empty</h3>
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">Become a Seller</h3>
             <p className="text-gray-500 max-w-sm mb-8 font-medium">
-                Explore our curated collection of fresh organics and premium essentials to add them to your wishlist.
+                Start your business journey with ShopSphere. Reach millions of customers with our easy onboarding.
             </p>
             <button
-                onClick={() => navigate("/")}
-                className="px-8 py-4 bg-emerald-600 text-white font-bold rounded-2xl shadow-xl shadow-emerald-500/20 hover:bg-emerald-700 hover:-translate-y-1 transition-all"
+                onClick={() => navigate("/verifyGST")}
+                className="px-8 py-4 bg-purple-600 text-white font-bold rounded-2xl shadow-xl shadow-purple-500/20 hover:bg-purple-700 hover:-translate-y-1 transition-all"
             >
-                Explore Products
+                Start Selling Now
             </button>
         </div>
     );
+};
+
 function Profile() {
     const navigate = useNavigate();
     const [user, setUser] = useState(() => {
@@ -151,7 +174,7 @@ function Profile() {
                                 <div className="w-28 h-28 bg-gray-200 rounded-full overflow-hidden mx-auto border-4 border-white shadow-xl">
                                     {/* Placeholder for John Doe Image or User Initial */}
                                     <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white text-4xl font-black">
-                                        {user?.username?.charAt(0).toUpperCase() }
+                                        {user?.username?.charAt(0).toUpperCase()}
                                     </div>
                                 </div>
                                 <button className="absolute bottom-1 right-1 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center border-2 border-white shadow-lg hover:scale-110 transition-transform duration-200">

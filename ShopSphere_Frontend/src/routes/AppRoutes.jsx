@@ -9,14 +9,13 @@ import Login from "../Pages/customer/Login";
 import SignUp from "../Pages/customer/SignUp";
 import VendorLogin from "../Pages/vendor/VendorLogin";
 import DeliveryAgentLogin from "../Pages/delivery/DeliveryAgentLogin";
-import Profile, { 
-    ProfileInfoTab, 
-    OrdersTab, 
-    AddressTab, 
-    WishlistTab, 
-    SellTab 
+import Profile, {
+    ProfileInfoTab,
+    OrdersTab,
+    AddressTab,
+    WishlistTab,
+    SellTab
 } from "../Pages/customer/Profile";
-import Profile from "../Pages/customer/Profile";
 
 import LandingPage from "../Components/common/LandingPage";
 import VerifyGST from "../Pages/customer/VerifyGST";
@@ -42,6 +41,7 @@ function AppRoutes() {
             <Route path="/wishlist" element={<WhishList />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/contact" element={<ContactUs />} />
+
             {/* Nested Profile Routes */}
             <Route path="/profile" element={<Profile />}>
                 <Route index element={<ProfileInfoTab />} />
@@ -50,18 +50,18 @@ function AppRoutes() {
                 <Route path="wishlist" element={<WishlistTab />} />
                 <Route path="sell" element={<SellTab />} />
             </Route>
-            <Route path="/profile" element={<Profile />} />
+
             <Route path="/store-name" element={<StoreName />} />
             <Route path="/shipping-address" element={<ShippingAddress />} />
             <Route path="/shipping-method" element={<ShippingMethod />} />
             <Route path="/shipping-fee-preferences" element={<ShippingFeePreferences />} />
             <Route path="/bank-details" element={<BankDetails />} />
+
             {/* Auth Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/vendor" element={<VendorLogin />} />
-            <Route path="/success" element={<Success />} /> 
-
+            <Route path="/success" element={<Success />} />
 
             {/* Delivery Routes */}
             <Route path="/delivery" element={<DeliveryAgentLogin onLoginSuccess={() => console.log("Delivery Login Successful")} />} />
