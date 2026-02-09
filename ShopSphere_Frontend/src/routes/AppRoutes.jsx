@@ -3,18 +3,17 @@ import Home from "../Pages/customer/Home";
 import Cart from "../Pages/customer/Cart";
 import Checkout from "../Pages/customer/Checkout";
 import WhishList from "../Pages/customer/WhishList";
-import AboutUs from "../Pages/customer/AboutUs";
-import ContactUs from "../Pages/customer/ContactUs";
 import Login from "../Pages/customer/Login";
 import SignUp from "../Pages/customer/SignUp";
 import VendorLogin from "../Pages/vendor/VendorLogin";
 import DeliveryAgentLogin from "../Pages/delivery/DeliveryAgentLogin";
-import Profile, { 
-    ProfileInfoTab, 
-    OrdersTab, 
-    AddressTab, 
+import Profile, {
+    ProfileInfoTab,
+    OrdersTab,
+    AddressTab,
     WishlistTab
 } from "../Pages/customer/Profile";
+import SellerPage from "../Pages/customer/SellerPage";
 
 
 import LandingPage from "../Components/common/LandingPage";
@@ -39,14 +38,13 @@ function AppRoutes() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/wishlist" element={<WhishList />} />
-            <Route path="/about" element={<AboutUs />} />
-            <Route path="/contact" element={<ContactUs />} />
             {/* Nested Profile Routes */}
             <Route path="/profile" element={<Profile />}>
                 <Route index element={<ProfileInfoTab />} />
                 <Route path="orders" element={<OrdersTab />} />
                 <Route path="addresses" element={<AddressTab />} />
                 <Route path="wishlist" element={<WishlistTab />} />
+                <Route path="sell" element={<SellerPage />} />
             </Route>
 
             <Route path="/store-name" element={<StoreName />} />
@@ -58,7 +56,7 @@ function AppRoutes() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/vendor" element={<VendorLogin />} />
-            <Route path="/success" element={<Success />} /> 
+            <Route path="/success" element={<Success />} />
 
 
             {/* Delivery Routes */}
@@ -71,4 +69,3 @@ function AppRoutes() {
 }
 
 export default AppRoutes;
-
