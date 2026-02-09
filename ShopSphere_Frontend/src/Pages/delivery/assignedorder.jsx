@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaBox, FaMapMarkerAlt, FaCheck, FaSignOutAlt, FaBars, FaTruck, FaClipboardList, FaMoneyBillWave, FaTachometerAlt, FaPhoneAlt, FaDirections, FaDotCircle, FaStore, FaUser, FaClock, FaListUl } from 'react-icons/fa';
-import { mockOrders } from '../../data/mockData';
 
 // Simple toast notification helper
 const toast = {
@@ -17,7 +16,7 @@ const toast = {
 export default function AssignedOrders() {
     const navigate = useNavigate();
     const deliveryPersonId = 'd1';
-    const [orders, setOrders] = useState(mockOrders);
+
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [activeTab, setActiveTab] = useState('active'); // 'active' or 'history'
 
