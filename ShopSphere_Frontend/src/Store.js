@@ -1,4 +1,5 @@
-import { configureStore, createSlice } from "@reduxjs/toolkit";
+import { configureStore, createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { getMyOrders } from "./api/axios";
 
 const productsSlice = createSlice({
   name: 'products',
@@ -32,7 +33,7 @@ const productsSlice = createSlice({
         name: 'computer',
         price: 90.0,
         image: '/Images/computer.png',
-        description: 'Enjoy the sweet, tangy flavor, free from harmful chemicals.' 
+        description: 'Enjoy the sweet, tangy flavor, free from harmful chemicals.'
       },
       {
         name: 'mouse',
@@ -56,7 +57,7 @@ const productsSlice = createSlice({
         name: 'remote',
         price: 55.0,
         image: '/Images/remote.png',
-        description: ' "Queen of fruits", A highly prolific fruit crop, it is globally renowned.' 
+        description: ' "Queen of fruits", A highly prolific fruit crop, it is globally renowned.'
       },
       {
         name: 'Kiwi',
@@ -504,21 +505,70 @@ const wishlistSlice = createSlice({
   }
 });
 
-
-const orderSlice = createSlice({
-  name: 'order',
-  initialState: [],
-  reducers: {
-    addOrder: (state, action) => {
-      state.push(action.payload);
-    }
-  }
-});
-
-export let { addOrder } = orderSlice.actions;
-
 export let { AddToWishlist, RemoveFromWishlist, clearWishlist } = wishlistSlice.actions;
 
+
+
+export const fetchOrders = createAsyncThunk(
+  "order/fetchOrders",
+  async (_, { rejectWithValue }) => {
+    try {
+      const data = await getMyOrders();
+
+      return data.map((order) => ({
+        id: order.id,
+        transactionId: order.transaction_id || `ORD-${order.id}`,
+        payment_mode: order.payment_mode,
+        date: order.order_date,
+        totalAmount:
+          order.items?.reduce(
+            (sum, item) =>
+              sum + Number(item.price) * item.quantity,
+            0
+          ) || 0,
+        status: "Completed",
+        items:
+          order.items?.map((item) => ({
+            name: item.product_name,
+            price: Number(item.price),
+            quantity: item.quantity,
+          })) || [],
+      }));
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || error.message
+      );
+    }
+  }
+);
+
+/* ================================
+   SLICE
+================================ */
+
+const orderSlice = createSlice({
+  name: "order",
+  initialState: {
+    orders: [],
+    isLoading: false,
+    error: null,
+  },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchOrders.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchOrders.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.orders = action.payload;
+      })
+      .addCase(fetchOrders.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+  },
+});
 const store = configureStore({
   reducer: {
     products: productsSlice.reducer,

@@ -12,11 +12,13 @@ import {
   FaCalendarAlt,
 } from "react-icons/fa";
 import { MdOutlinePayments, MdOutlineTimer } from "react-icons/md";
+import { processPayment } from "../../api/axios";
 
 function Checkout() {
   const navigate = useNavigate();
   const cartObjects = useSelector((state) => state.cart || []);
   const [selectedMethod, setSelectedMethod] = useState("upi");
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Calculations
   const subtotal = cartObjects.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -29,7 +31,7 @@ function Checkout() {
       id: "upi",
       title: "UPI (Google Pay, PhonePe, Paytm)",
       description: "Pay instantly using your preferred UPI app",
-      icon: <FaMobileAlt className="text-violet-500" />,
+      icon: <FaMobileAlt className="text-blue-500" />,
       tag: "Popular",
     },
     {
@@ -42,7 +44,7 @@ function Checkout() {
       id: "netbanking",
       title: "Net Banking",
       description: "All major Indian banks supported",
-      icon: <FaUniversity className="text-purple-500" />,
+      icon: <FaUniversity className="text-emerald-500" />,
     },
     {
       id: "emi",
@@ -58,6 +60,7 @@ function Checkout() {
       icon: <FaMoneyBillWave className="text-gray-600" />,
     },
   ];
+
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
       if (window.Razorpay) {
@@ -77,6 +80,11 @@ function Checkout() {
   };
 
   const handlePayment = async () => {
+    if (cartObjects.length === 0) {
+      alert("Your cart is empty!");
+      return;
+    }
+
     const loaded = await loadRazorpayScript();
 
     if (!loaded) {
@@ -85,40 +93,54 @@ function Checkout() {
     }
 
     const options = {
-      key: "rzp_test_SCkSLubYDiWP48", // ✅ Test Key
-      amount: Math.round(totalAmount * 100), // 💰 dynamic amount
+      key: "rzp_test_SCkSLubYDiWP48",
+      amount: Math.round(totalAmount * 100),
       currency: "INR",
-      name: "My App",
+      name: "ShopSphere",
       description: "Order Payment",
 
-      handler: function (response) {
-        alert("Payment Successful 🎉");
+      handler: async function (response) {
+        setIsProcessing(true);
+        try {
+          // Sync with Backend
+          await processPayment({
+            payment_mode: selectedMethod,
+            transaction_id: response.razorpay_payment_id,
+            items: cartObjects.map(item => ({
+              name: item.name,
+              quantity: item.quantity,
+              price: item.price
+            }))
+          });
 
-        console.log("Transaction ID:", response.razorpay_payment_id);
+          // Store for Success page display
+          localStorage.setItem(
+            "orderSuccess",
+            JSON.stringify({
+              transactionId: response.razorpay_payment_id,
+              items: cartObjects,
+              totalAmount: totalAmount,
+              date: new Date().toLocaleString()
+            })
+          );
 
-        // Store complete order data for Success page
-        localStorage.setItem(
-          "orderSuccess",
-          JSON.stringify({
-            transactionId: response.razorpay_payment_id,
-            items: cartObjects,
-            totalAmount: totalAmount,
-            date: new Date().toLocaleString(),
-            status: "Shipped"
-          })
-        );
-
-        navigate("/success");
+          navigate("/success");
+        } catch (error) {
+          console.error("Order processing failed:", error);
+          alert("Payment received, but order recording failed. Please check your Orders history or contact support.");
+        } finally {
+          setIsProcessing(false);
+        }
       },
 
       prefill: {
-        name: "Test User",
-        email: "test@example.com",
+        name: "Customer",
+        email: "customer@example.com",
         contact: "9999999999",
       },
 
       theme: {
-        color: "#7c3aed",
+        color: "#2563eb",
       },
     };
 
@@ -150,11 +172,11 @@ function Checkout() {
                   key={method.id}
                   onClick={() => setSelectedMethod(method.id)}
                   className={`group cursor-pointer bg-white rounded-[32px] p-6 border-2 transition-all duration-300 flex items-center gap-6 ${selectedMethod === method.id
-                    ? "border-violet-600 shadow-xl shadow-violet-500/10 translate-x-2"
-                    : "border-gray-100 hover:border-violet-200"
+                    ? "border-blue-600 shadow-xl shadow-blue-500/10 translate-x-2"
+                    : "border-gray-100 hover:border-blue-200"
                     }`}
                 >
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl transition-all ${selectedMethod === method.id ? "bg-violet-600 text-white shadow-lg" : "bg-gray-50 group-hover:bg-violet-50"
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl transition-all ${selectedMethod === method.id ? "bg-blue-600 text-white shadow-lg" : "bg-gray-50 group-hover:bg-blue-50"
                     }`}>
                     {method.icon}
                   </div>
@@ -163,7 +185,7 @@ function Checkout() {
                     <div className="flex items-center gap-3 mb-1">
                       <h3 className="text-lg font-black text-gray-900">{method.title}</h3>
                       {method.tag && (
-                        <span className="bg-violet-50 text-violet-600 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border border-violet-100">
+                        <span className="bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border border-blue-100">
                           {method.tag}
                         </span>
                       )}
@@ -171,7 +193,7 @@ function Checkout() {
                     <p className="text-sm text-gray-400 font-bold">{method.description}</p>
                   </div>
 
-                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${selectedMethod === method.id ? "border-violet-600 bg-violet-600 text-white" : "border-gray-200"
+                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${selectedMethod === method.id ? "border-blue-600 bg-blue-600 text-white" : "border-gray-200"
                     }`}>
                     {selectedMethod === method.id && <FaCheckCircle size={12} />}
                   </div>
@@ -186,15 +208,15 @@ function Checkout() {
                 <div className="grid grid-cols-2 gap-6">
                   <div className="col-span-2">
                     <label className="text-[11px] font-black text-gray-400 uppercase tracking-[2px] block mb-2">Card Number</label>
-                    <input type="text" placeholder="XXXX XXXX XXXX XXXX" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all" />
+                    <input type="text" placeholder="XXXX XXXX XXXX XXXX" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
                   </div>
                   <div>
                     <label className="text-[11px] font-black text-gray-400 uppercase tracking-[2px] block mb-2">Expiry Date</label>
-                    <input type="text" placeholder="MM / YY" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all" />
+                    <input type="text" placeholder="MM / YY" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
                   </div>
                   <div>
                     <label className="text-[11px] font-black text-gray-400 uppercase tracking-[2px] block mb-2">CVV</label>
-                    <input type="password" placeholder="XXX" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all" />
+                    <input type="password" placeholder="XXX" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
                   </div>
                 </div>
               </div>
@@ -224,7 +246,7 @@ function Checkout() {
                     <span>Subtotal</span>
                     <span className="text-gray-900">₹{subtotal.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between items-center text-sm font-bold text-purple-500 uppercase tracking-widest">
+                  <div className="flex justify-between items-center text-sm font-bold text-emerald-500 uppercase tracking-widest">
                     <span>Shipping</span>
                     <span>{deliveryCharges === 0 ? "FREE" : `₹${deliveryCharges.toFixed(2)}`}</span>
                   </div>
@@ -234,16 +256,21 @@ function Checkout() {
                   </div>
                   <div className="pt-4 border-t border-gray-50 flex justify-between items-center">
                     <span className="text-xl font-black text-gray-900">Amount to Pay</span>
-                    <span className="text-3xl font-black text-violet-600 font-mono tracking-tighter">₹{totalAmount.toFixed(2)}</span>
+                    <span className="text-3xl font-black text-blue-600 font-mono tracking-tighter">₹{totalAmount.toFixed(2)}</span>
                   </div>
                 </div>
 
                 <div className="mt-8">
                   <button
                     onClick={handlePayment}
-                    className="w-full py-5 bg-gradient-to-br from-violet-600 to-purple-800 text-white rounded-[24px] font-black text-lg shadow-xl shadow-violet-500/20 hover:shadow-violet-500/30 hover:-translate-y-1 transition-all active:scale-[0.98] flex items-center justify-center gap-3 mb-6"
+                    disabled={isProcessing}
+                    className={`w-full py-5 bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-[24px] font-black text-lg shadow-xl shadow-blue-500/20 hover:shadow-blue-500/30 hover:-translate-y-1 transition-all active:scale-[0.98] flex items-center justify-center gap-3 mb-6 ${isProcessing ? 'opacity-70 cursor-not-allowed' : ''}`}
                   >
-                    Pay ₹{totalAmount.toFixed(2)} <FaLock size={16} />
+                    {isProcessing ? (
+                      <>Processing Order... <FaLock size={16} className="animate-pulse" /></>
+                    ) : (
+                      <>Pay ₹{totalAmount.toFixed(2)} <FaLock size={16} /></>
+                    )}
                   </button>
                   <p className="text-[10px] text-center text-gray-400 font-black uppercase tracking-[2px] px-4">
                     By clicking pay, you agree to our terms and safe payment policies.
@@ -252,13 +279,13 @@ function Checkout() {
               </div>
 
               {/* Secure Checkout Badge */}
-              <div className="bg-purple-50 rounded-[32px] p-6 border border-purple-100 flex items-center gap-5">
-                <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-purple-500 shadow-sm shadow-purple-500/10">
+              <div className="bg-emerald-50 rounded-[32px] p-6 border border-emerald-100 flex items-center gap-5">
+                <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-emerald-500 shadow-sm shadow-emerald-500/10">
                   <MdOutlinePayments size={28} />
                 </div>
                 <div>
-                  <h4 className="font-black text-purple-900 text-base mb-0.5">Zero Processing Fee</h4>
-                  <p className="text-purple-700/60 text-[10px] font-bold uppercase tracking-[1px]">No hidden charges on payment</p>
+                  <h4 className="font-black text-emerald-900 text-base mb-0.5">Zero Processing Fee</h4>
+                  <p className="text-emerald-700/60 text-[10px] font-bold uppercase tracking-[1px]">No hidden charges on payment</p>
                 </div>
               </div>
             </div>

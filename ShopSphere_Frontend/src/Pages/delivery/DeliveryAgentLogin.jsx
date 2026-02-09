@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const DeliveryAgentLogin = ({ onLoginSuccess }) => {
+    const navigate = useNavigate();
     console.log("DeliveryAgentLogin rendering...");
     const [activeTab, setActiveTab] = useState('login');
     const [showPassword, setShowPassword] = useState(false);
@@ -38,6 +40,7 @@ const DeliveryAgentLogin = ({ onLoginSuccess }) => {
             setIsLoading(false);
             console.log('Login submitted:', loginForm);
             // Navigate to dashboard after successful login
+            navigate('/delivery/dashboard');
             if (onLoginSuccess) {
                 onLoginSuccess();
             }

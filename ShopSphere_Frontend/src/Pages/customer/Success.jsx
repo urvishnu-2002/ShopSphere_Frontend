@@ -1,76 +1,124 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 import { clearCart } from "../../Store";
-import { FaCheckCircle } from "react-icons/fa";
+import { CheckCircle, ShoppingBag, ArrowRight, ExternalLink } from "lucide-react";
+import { motion } from "framer-motion";
 
 function Success() {
   const [order, setOrder] = useState(null);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const data = localStorage.getItem("orderSuccess");
     if (data) {
-      const parsedOrder = JSON.parse(data);
-      setOrder(parsedOrder);
-
-      // Save to orders history (only if not already saved)
-      const existingHistory = JSON.parse(localStorage.getItem("ordersHistory") || "[]");
-      const alreadyExists = existingHistory.some(
-        (o) => o.transactionId === parsedOrder.transactionId
-      );
-
-      if (!alreadyExists) {
-        const updatedHistory = [parsedOrder, ...existingHistory];
-        localStorage.setItem("ordersHistory", JSON.stringify(updatedHistory));
-
-        // Clear the cart after successful order
-        dispatch(clearCart());
-      }
+      setOrder(JSON.parse(data));
+      // Clear the cart in Redux
+      dispatch(clearCart());
     }
   }, [dispatch]);
 
   if (!order) {
-    return <h2 className="text-center mt-20">No Order Found</h2>;
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-50">
+        <div className="w-16 h-16 bg-gray-200 rounded-2xl mb-4 animate-pulse"></div>
+        <h2 className="text-xl font-black text-gray-400 uppercase tracking-widest">No recent order</h2>
+        <Link to="/" className="mt-6 text-blue-600 font-black hover:underline flex items-center gap-2">
+          Return to Store <ArrowRight size={16} />
+        </Link>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="bg-white max-w-xl w-full rounded-3xl shadow-lg p-8">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-white max-w-2xl w-full rounded-[48px] shadow-2xl shadow-gray-200/50 p-10 md:p-14 relative overflow-hidden text-center"
+      >
+        {/* Decorative elements */}
+        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600"></div>
+        <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-50 rounded-full blur-3xl opacity-60"></div>
+        <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-indigo-50 rounded-full blur-3xl opacity-60"></div>
 
-        <div className="text-center mb-6">
-          <FaCheckCircle className="text-purple-500 text-6xl mx-auto mb-4" />
-          <h1 className="text-2xl font-black text-gray-900">
-            Order Placed Successfully 🎉
-          </h1>
-          <p className="text-gray-500 text-sm mt-2">
-            Transaction ID: <span className="font-bold">{order.transactionId}</span>
-          </p>
-        </div>
+        <div className="relative z-10">
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="w-24 h-24 bg-blue-50 rounded-[32px] flex items-center justify-center mx-auto mb-8 shadow-inner"
+          >
+            <CheckCircle className="text-blue-600 text-5xl" size={48} />
+          </motion.div>
 
-        <div className="border-t pt-4">
-          <h2 className="font-black text-lg mb-4">Order Items</h2>
+          <motion.h1
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-4xl font-black text-gray-900 tracking-tight mb-4"
+          >
+            Order Confirmed! 🎉
+          </motion.h1>
 
-          {order.items.map((item, index) => (
-            <div
-              key={index}
-              className="flex justify-between items-center mb-3 text-sm font-semibold text-gray-700"
-            >
-              <span>{item.image}</span>
-              <span>{item.name} × {item.quantity}</span>
-              <span>₹{(item.price * item.quantity).toFixed(2)}</span>
+          <motion.p
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="text-gray-400 font-bold text-lg max-w-md mx-auto leading-relaxed"
+          >
+            Your payment was successful and your order has been placed. We're getting it ready for you!
+          </motion.p>
+
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="mt-10 p-6 bg-gray-50 rounded-[32px] border border-gray-100 flex flex-col md:flex-row items-center justify-between gap-6"
+          >
+            <div className="text-left">
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-[3px] block mb-1">Transaction Identity</span>
+              <span className="text-sm font-black text-blue-600 font-mono">{order.transactionId}</span>
             </div>
-          ))}
-        </div>
+            <div className="text-right">
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-[3px] block mb-1 text-left md:text-right">Total Amount Paid</span>
+              <span className="text-2xl font-black text-gray-900 tracking-tighter">₹{order.totalAmount.toFixed(2)}</span>
+            </div>
+          </motion.div>
 
-        <div className="border-t mt-4 pt-4 flex justify-between font-black text-lg">
-          <span>Total Paid</span>
-          <span className="text-violet-600">₹{order.totalAmount.toFixed(2)}</span>
-        </div>
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="mt-12 flex flex-col sm:flex-row gap-4 justify-center"
+          >
+            <button
+              onClick={() => navigate("/orders")}
+              className="px-10 py-5 bg-blue-600 text-white font-black rounded-2xl shadow-xl shadow-blue-500/30 hover:shadow-blue-500/40 hover:-translate-y-1 transition-all flex items-center justify-center gap-3 group"
+            >
+              Track Your Order
+              <ShoppingBag size={18} className="group-hover:scale-110 transition-transform" />
+            </button>
+            <button
+              onClick={() => navigate("/")}
+              className="px-10 py-5 bg-white text-gray-900 font-black rounded-2xl border-2 border-gray-100 hover:bg-gray-50 transition-all flex items-center justify-center gap-3"
+            >
+              Back to Shopping
+              <ExternalLink size={18} className="text-gray-400" />
+            </button>
+          </motion.div>
 
-        <p className="text-xs text-center text-gray-400 mt-6">
-          Payment Date: {order.date}
-        </p>
-      </div>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            className="mt-10 text-[10px] text-gray-300 font-black uppercase tracking-[2px]"
+          >
+            A confirmation email has been sent to your inbox.
+          </motion.p>
+        </div>
+      </motion.div>
     </div>
   );
 }

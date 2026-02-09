@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { AddToCart, AddToWishlist, RemoveFromWishlist } from "../../Store";
 import { FaHeart, FaShoppingBag, FaArrowRight } from "react-icons/fa";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 
 // ============================================
-// CATEGORY CONFIGURATION
+// CONFIGURATION
 // ============================================
 const CATEGORIES = [
   { id: "all", label: "All", key: null },
@@ -16,6 +18,36 @@ const CATEGORIES = [
   { id: "accessories", label: "Accessories", key: "chocolates" },
 ];
 
+const BANNERS = [
+  {
+    id: 1,
+    title: "Next-Gen Electronics",
+    subtitle: "Premium Gadgets 2024",
+    description: "Upgrade your lifestyle with the latest tech innovations and high-performance devices.",
+    image: "Banner1.jpg",
+    cta: "Shop Technology",
+    color: "from-blue-600 to-indigo-700"
+  },
+  {
+    id: 2,
+    title: "Eco-Friendly Living",
+    subtitle: "Organic & Fresh",
+    description: "Discover a healthier choice with our handpicked collection of fresh, organic essentials.",
+    image: "Banner2.jpg",
+    cta: "Browse Organic",
+    color: "from-emerald-600 to-teal-700"
+  },
+  {
+    id: 3,
+    title: "The Fashion Edit",
+    subtitle: "New Season Styles",
+    description: "Define your look with our exclusive collection of trendy apparel and accessories.",
+    image: "Banner3.jpg",
+    cta: "Explore Fashion",
+    color: "from-violet-600 to-rose-700"
+  }
+];
+
 function Home() {
   // ============================================
   // REDUX STATE & HOOKS
@@ -24,6 +56,7 @@ function Home() {
   const wishlist = useSelector((state) => state.wishlist);
   const dispatch = useDispatch();
   const location = useLocation();
+  const navigate = useNavigate();
 
   // ============================================
   // LOCAL STATE
@@ -31,17 +64,21 @@ function Home() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [heroVisible, setHeroVisible] = useState(false);
+  const [currentBanner, setCurrentBanner] = useState(0);
   const categoryRefs = useRef({});
 
   // ============================================
-  // HERO BANNER ANIMATION ON MOUNT
+  // BANNER CAROUSEL LOGIC
   // ============================================
   useEffect(() => {
-    // Trigger hero fade-in animation on page load
-    const timer = setTimeout(() => setHeroVisible(true), 100);
-    return () => clearTimeout(timer);
+    const timer = setInterval(() => {
+      setCurrentBanner((prev) => (prev + 1) % BANNERS.length);
+    }, 5000);
+    return () => clearInterval(timer);
   }, []);
+
+  const nextBanner = () => setCurrentBanner((prev) => (prev + 1) % BANNERS.length);
+  const prevBanner = () => setCurrentBanner((prev) => (prev - 1 + BANNERS.length) % BANNERS.length);
 
   // ============================================
   // PRODUCT FILTERING LOGIC
@@ -50,7 +87,6 @@ function Home() {
     const searchParams = new URLSearchParams(location.search);
     const searchQuery = searchParams.get("search")?.toLowerCase() || "";
 
-    // Combine all products from all categories
     const allProducts = [
       ...products.fruit,
       ...products.veg,
@@ -61,7 +97,6 @@ function Home() {
 
     let result = [];
 
-    // Filter by category first
     if (activeCategory === "all") {
       result = allProducts;
     } else {
@@ -71,7 +106,6 @@ function Home() {
       }
     }
 
-    // Then filter by search query if present
     if (searchQuery) {
       result = result.filter(
         (item) =>
@@ -80,7 +114,6 @@ function Home() {
       );
     }
 
-    // Animate product transitions
     setIsAnimating(true);
     const animTimer = setTimeout(() => {
       setFilteredProducts(result);
@@ -90,18 +123,12 @@ function Home() {
     return () => clearTimeout(animTimer);
   }, [location.search, products, activeCategory]);
 
-  // ============================================
-  // CATEGORY CHANGE HANDLER
-  // ============================================
   const handleCategoryChange = (categoryId) => {
     if (categoryId !== activeCategory) {
       setActiveCategory(categoryId);
     }
   };
 
-  // ============================================
-  // WISHLIST HELPERS
-  // ============================================
   const isInWishlist = (itemName) => {
     return wishlist.some((item) => item.name === itemName);
   };
@@ -114,117 +141,109 @@ function Home() {
     }
   };
 
-  // ============================================
-  // RENDER
-  // ============================================
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-yellow-50">
       {/* ============================================
-          HERO BANNER SECTION
+          HERO BANNER SECTION (CAROUSEL)
           ============================================ */}
-      <section
-        className={`relative overflow-hidden transition-all duration-1000 ease-out ${heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-      >
-        {/* Hero Background with Soft Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-violet-100 via-purple-50 via-40% to-indigo-50 opacity-80"></div>
-
-        {/* Decorative Floating Elements */}
-        <div className="absolute top-10 left-10 w-72 h-72 bg-violet-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: "1s" }}></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-indigo-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style={{ animationDelay: "2s" }}></div>
-
-        {/* Hero Content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 lg:py-32">
-          <div className="text-center">
-            {/* Main Heading with Gradient Text */}
-            <h1
-              className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6 transition-all duration-700 delay-200 ${heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-                }`}
+      <section className="pt-8 px-4 sm:px-6 lg:px-8">
+        <div className="relative w-full max-w-[1440px] mx-auto h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden lg:rounded-[48px] shadow-2xl">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentBanner}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.8 }}
+              className="absolute inset-0"
             >
-              <span className="bg-gradient-to-r from-violet-600 via-purple-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-sm">
-                Discover Premium
-              </span>
-              <br />
-              <span className="text-gray-800">Products for You</span>
-            </h1>
+              {/* Background Image with Overlay */}
+              <div className="absolute inset-0 bg-black/40 z-10" />
+              <img
+                src={BANNERS[currentBanner].image}
+                alt={BANNERS[currentBanner].title}
+                className="w-full h-full object-cover origin-center"
+              />
 
-            {/* Subtitle */}
-            <p
-              className={`text-lg sm:text-xl md:text-2xl text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed transition-all duration-700 delay-400 ${heroVisible ? "opacity-70 translate-y-0" : "opacity-0 translate-y-6"
-                }`}
-            >
-              Explore our curated collection of high-quality products
-              <br className="hidden sm:block" />
-              delivered fresh to your doorstep with care and precision.
-            </p>
-
-            {/* CTA Buttons */}
-            <div
-              className={`flex flex-col sm:flex-row gap-4 justify-center items-center transition-all duration-700 delay-500 ${heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-                }`}
-            >
-              {/* Primary CTA Button */}
-              <button
-                onClick={() => {
-                  document.getElementById("products-section")?.scrollIntoView({ behavior: "smooth" });
-                }}
-                className="group relative inline-flex items-center gap-3 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white font-semibold text-lg px-8 py-4 rounded-full shadow-lg shadow-violet-500/30 hover:shadow-xl hover:shadow-violet-500/40 transform hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 ease-out overflow-hidden"
-              >
-                {/* Button Shine Effect */}
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></span>
-                <FaShoppingBag className="text-xl" />
-                <span className="relative">Shop Now</span>
-                <FaArrowRight className="text-sm group-hover:translate-x-1 transition-transform duration-300" />
-              </button>
-
-              {/* Secondary CTA Button */}
-              <button className="group inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm text-gray-700 font-semibold text-lg px-8 py-4 rounded-full border-2 border-gray-200 hover:border-violet-300 hover:bg-white shadow-md hover:shadow-lg transform hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 ease-out">
-                <span>View Collections</span>
-                <FaArrowRight className="text-sm opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
-              </button>
-            </div>
-
-            {/* Trust Badges */}
-            <div
-              className={`mt-12 flex flex-wrap justify-center gap-6 sm:gap-10 text-gray-500 text-sm transition-all duration-700 delay-700 ${heroVisible ? "opacity-60 translate-y-0" : "opacity-0 translate-y-6"
-                }`}
-            >
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-violet-500 rounded-full animate-pulse"></span>
-                <span>Free Shipping</span>
+              {/* Content */}
+              <div className="absolute inset-0 z-20 flex flex-col justify-center px-8 md:px-20 lg:px-32">
+                <motion.p
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-white/80 font-bold tracking-widest uppercase text-sm mb-4"
+                >
+                  {BANNERS[currentBanner].subtitle}
+                </motion.p>
+                <motion.h1
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 max-w-2xl leading-tight"
+                >
+                  {BANNERS[currentBanner].title}
+                </motion.h1>
+                <motion.p
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                  className="text-gray-200 text-lg md:text-xl mb-10 max-w-xl"
+                >
+                  {BANNERS[currentBanner].description}
+                </motion.p>
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <button
+                    onClick={() => {
+                      document.getElementById("products-section")?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    className={`px-8 py-4 bg-gradient-to-r ${BANNERS[currentBanner].color} text-white font-bold rounded-2xl flex items-center gap-3 hover:scale-105 transition-transform shadow-lg shadow-black/20`}
+                  >
+                    {BANNERS[currentBanner].cta}
+                    <ArrowRight size={20} />
+                  </button>
+                </motion.div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" style={{ animationDelay: "0.5s" }}></span>
-                <span>24/7 Support</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" style={{ animationDelay: "1s" }}></span>
-                <span>Secure Payment</span>
-              </div>
-            </div>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Navigation Controls */}
+          <div className="absolute bottom-10 right-8 md:right-20 z-30 flex items-center gap-4">
+            <button
+              onClick={prevBanner}
+              className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all"
+            >
+              <ChevronLeft size={24} />
+            </button>
+            <button
+              onClick={nextBanner}
+              className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all"
+            >
+              <ChevronRight size={24} />
+            </button>
           </div>
-        </div>
 
-        {/* Bottom Wave Separator */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
-            <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
-              fill="url(#wave-gradient)" fillOpacity="0.1" />
-            <defs>
-              <linearGradient id="wave-gradient" x1="0" y1="0" x2="1440" y2="0">
-                <stop stopColor="#7c3aed" /> // violet-600
-                <stop offset="1" stopColor="#a855f7" /> // purple-500
-              </linearGradient>
-            </defs>
-          </svg>
+          {/* Dots Indicator */}
+          <div className="absolute bottom-10 left-8 md:left-20 z-30 flex gap-2">
+            {BANNERS.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentBanner(idx)}
+                className={`h-2 transition-all duration-300 rounded-full ${idx === currentBanner ? 'w-10 bg-white' : 'w-2 bg-white/40 hover:bg-white/60'
+                  }`}
+              />
+            ))}
+          </div>
         </div>
       </section>
 
       {/* ============================================
           CATEGORY FILTER SECTION
           ============================================ */}
-      <section className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm">
+      <section className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm mt-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center py-4 overflow-x-auto scrollbar-hide">
             <div className="flex gap-2 sm:gap-3 p-1 bg-gray-100/80 rounded-full">
@@ -235,27 +254,22 @@ function Home() {
                   onClick={() => handleCategoryChange(category.id)}
                   className={`relative px-5 sm:px-6 py-2.5 sm:py-3 rounded-full font-medium text-sm sm:text-base whitespace-nowrap transition-all duration-300 ease-out
                     ${activeCategory === category.id
-                      ? "text-white shadow-lg shadow-violet-500/25"
+                      ? "text-white shadow-lg shadow-green-500/25"
                       : "text-gray-600 hover:text-gray-800 hover:bg-white/60"
                     }
                   `}
                 >
-                  {/* Active Background Pill */}
                   <span
-                    className={`absolute inset-0 rounded-full bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 transition-all duration-300 ease-out
+                    className={`absolute inset-0 rounded-full bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 transition-all duration-300 ease-out
                       ${activeCategory === category.id
                         ? "opacity-100 scale-100"
                         : "opacity-0 scale-95"
                       }
                     `}
                   ></span>
-
-                  {/* Category Label */}
                   <span className="relative z-10">{category.label}</span>
-
-                  {/* Animated Underline for Active State */}
                   <span
-                    className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-0.5 bg-gradient-to-r from-violet-400 to-purple-400 rounded-full transition-all duration-300 ease-out
+                    className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-0.5 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full transition-all duration-300 ease-out
                       ${activeCategory === category.id
                         ? "opacity-100 scale-x-100"
                         : "opacity-0 scale-x-0"
@@ -274,7 +288,6 @@ function Home() {
           ============================================ */}
       <section id="products-section" className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          {/* Section Header */}
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
               {activeCategory === "all"
@@ -284,10 +297,9 @@ function Home() {
             <p className="text-gray-500 text-lg">
               Showing {filteredProducts.length} product{filteredProducts.length !== 1 ? "s" : ""}
             </p>
-            <div className="w-20 h-1 bg-gradient-to-r from-violet-500 to-purple-500 mx-auto mt-4 rounded-full"></div>
+            <div className="w-20 h-1 bg-gradient-to-r from-green-500 to-emerald-500 mx-auto mt-4 rounded-full"></div>
           </div>
 
-          {/* Products Grid with Smooth Transitions */}
           <div
             className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 transition-all duration-300 ease-out ${isAnimating ? "opacity-0 scale-95" : "opacity-100 scale-100"
               }`}
@@ -296,23 +308,16 @@ function Home() {
               filteredProducts.map((item, index) => (
                 <div
                   key={`${item.name}-${index}`}
+                  onClick={() => navigate(`/product/${encodeURIComponent(item.name)}`)}
                   className="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 cursor-pointer border border-gray-100"
-                  style={{
-                    animationDelay: `${index * 50}ms`,
-                  }}
                 >
-                  {/* Image Container */}
-                  <div className="relative overflow-hidden bg-gradient-to-br from-violet-100 to-purple-100 h-48 flex items-center justify-center">
+                  <div className="relative overflow-hidden bg-gradient-to-br from-green-100 to-yellow-100 h-48 flex items-center justify-center">
                     <img
                       src={item.image}
                       alt={item.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
                     />
-
-                    {/* Quick Add Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-
-                    {/* Wishlist Button - Moved AFTER overlay and added z-10 */}
                     <div className="absolute top-4 right-4 z-10">
                       <button
                         onClick={(e) => {
@@ -326,25 +331,23 @@ function Home() {
                       >
                         <FaHeart
                           size={20}
-                          className={`transition-colors duration-300 ${isInWishlist(item.name) ? "text-red-500" : "text-gray-300 group-hover:text-gray-400" // Fixed group-hover text color logic
+                          className={`transition-colors duration-300 ${isInWishlist(item.name) ? "text-red-500" : "text-gray-300 group-hover:text-gray-400"
                             }`}
                         />
                       </button>
                     </div>
                   </div>
 
-                  {/* Content Container */}
                   <div className="p-5 sm:p-6">
-                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 group-hover:text-violet-600 transition-colors duration-300">
+                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 group-hover:text-green-600 transition-colors duration-300">
                       {item.name}
                     </h3>
                     <p className="text-gray-500 mb-4 line-clamp-2 text-sm leading-relaxed">
                       {item.description}
                     </p>
 
-                    {/* Price and Add to Cart */}
                     <div className="flex items-center justify-between">
-                      <span className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
+                      <span className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
                         ₹{item.price}
                       </span>
                       <button
@@ -352,7 +355,7 @@ function Home() {
                           e.stopPropagation();
                           dispatch(AddToCart(item));
                         }}
-                        className="group/btn relative bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white font-semibold py-2.5 px-5 rounded-xl shadow-md shadow-violet-500/20 hover:shadow-lg hover:shadow-violet-500/30 transform hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 overflow-hidden"
+                        className="group/btn relative bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold py-2.5 px-5 rounded-xl shadow-md shadow-green-500/20 hover:shadow-lg hover:shadow-green-500/30 transform hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 overflow-hidden"
                       >
                         <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-500"></span>
                         <span className="relative">Add to Cart</span>
@@ -362,7 +365,6 @@ function Home() {
                 </div>
               ))
             ) : (
-              /* Empty State */
               <div className="col-span-full text-center py-20">
                 <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
                   <FaShoppingBag className="text-4xl text-gray-300" />
@@ -374,7 +376,7 @@ function Home() {
                     setActiveCategory("all");
                     window.history.pushState({}, "", "/");
                   }}
-                  className="inline-flex items-center gap-2 text-violet-600 hover:text-violet-700 font-medium transition-colors duration-300"
+                  className="inline-flex items-center gap-2 text-green-600 hover:text-green-700 font-medium transition-colors duration-300"
                 >
                   <span>View all products</span>
                   <FaArrowRight className="text-sm" />
