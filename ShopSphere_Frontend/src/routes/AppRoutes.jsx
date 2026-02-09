@@ -15,8 +15,9 @@ import Profile, {
     SellTab
 } from "../Pages/customer/Profile";
 import SellerPage from "../Pages/customer/SellerPage";
-
-
+import DeliveryDashboard from "../Pages/delivery/dashboard";
+import AssignedOrders from "../Pages/delivery/assignedorder";
+import EarningsPage from "../Pages/delivery/earnings";
 import LandingPage from "../Components/common/LandingPage";
 import VerifyGST from "../Pages/customer/VerifyGST";
 import VerifyPAN from "../Pages/customer/VerifyPAN";
@@ -27,7 +28,6 @@ import ShippingFeePreferences from "../Pages/customer/ShippingFeePreferences";
 import BankDetails from "../Pages/customer/BankDetails";
 import Success from "../Pages/customer/Success";
 import ProductDetails from "../Pages/customer/ProductDetails";
-
 
 function AppRoutes() {
     const hasSeenLanding = sessionStorage.getItem("hasSeenLanding");
@@ -80,10 +80,10 @@ function AppRoutes() {
             <Route path="/product/:id" element={<ProductDetails />} />
 
             {/* Delivery Routes */}
-            <Route
-                path="/delivery"
-                element={<DeliveryAgentLogin onLoginSuccess={() => console.log("Delivery Login Successful")} />}
-            />
+            <Route path="/delivery" element={<DeliveryAgentLogin onLoginSuccess={() => console.log("Delivery Login Successful")} />} />
+            <Route path="/delivery/dashboard" element={<DeliveryDashboard />} />
+            <Route path="/delivery/assigned" element={<AssignedOrders />} />
+            <Route path="/delivery/earnings" element={<EarningsPage />} />
 
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
