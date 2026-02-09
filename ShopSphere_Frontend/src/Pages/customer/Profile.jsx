@@ -103,6 +103,36 @@ export const WishlistTab = () => (
         <WhishList />
     </div>
 );
+
+// 4. My Wishlist Tab
+export const WishlistTab = () => (
+    <div className="animate-in fade-in slide-in-from-right duration-500 bg-white rounded-[32px] shadow-sm border border-gray-100">
+        <WhishList />
+    </div>
+);
+
+// 5. Sell Tab
+export const SellTab = () => {
+    const navigate = useNavigate();
+    return (
+        <div className="animate-in fade-in slide-in-from-right duration-500 h-[600px] flex flex-col items-center justify-center text-center px-6 bg-white rounded-[32px] shadow-sm border border-gray-100">
+            <div className="w-32 h-32 bg-purple-50 rounded-full flex items-center justify-center text-purple-600 mb-8">
+                <FaStore size={64} />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">Become a Seller</h3>
+            <p className="text-gray-500 max-w-sm mb-8 font-medium">
+                Start your business journey with ShopSphere. Reach millions of customers with our easy onboarding.
+            </p>
+            <button
+                onClick={() => navigate("/verifyGST")}
+                className="px-8 py-4 bg-purple-600 text-white font-bold rounded-2xl shadow-xl shadow-purple-500/20 hover:bg-purple-700 hover:-translate-y-1 transition-all"
+            >
+                Start Selling Now
+            </button>
+        </div>
+    );
+};
+
 function Profile() {
     const navigate = useNavigate();
     const [user, setUser] = useState(() => {

@@ -11,6 +11,14 @@ import Profile, {
     ProfileInfoTab,
     OrdersTab,
     AddressTab,
+
+    WishlistTab,
+    SellTab
+} from "../Pages/customer/Profile";
+import Profile, {
+    ProfileInfoTab,
+    OrdersTab,
+    AddressTab,
     WishlistTab
 } from "../Pages/customer/Profile";
 import SellerPage from "../Pages/customer/SellerPage";
@@ -28,16 +36,33 @@ import Success from "../Pages/customer/Success";
 
 
 function AppRoutes() {
+    const hasSeenLanding = sessionStorage.getItem("hasSeenLanding");
+
     return (
         <Routes>
+            {/* ✅ Landing Page – show ONLY once */}
+            <Route
+                path="/"
+                element={
+                    hasSeenLanding ? (
+                        <Navigate to="/home" replace />
+                    ) : (
+                        <LandingPage />
+                    )
+                }
+            />
+
             {/* Customer Routes */}
-            <Route path="/" element={<LandingPage />} />
             <Route path="/home" element={<Home />} />
             <Route path="/verifyGST" element={<VerifyGST />} />
             <Route path="/verifyPAN" element={<VerifyPAN />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/wishlist" element={<WhishList />} />
+
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/contact" element={<ContactUs />} />
+
             {/* Nested Profile Routes */}
             <Route path="/profile" element={<Profile />}>
                 <Route index element={<ProfileInfoTab />} />
@@ -52,17 +77,20 @@ function AppRoutes() {
             <Route path="/shipping-method" element={<ShippingMethod />} />
             <Route path="/shipping-fee-preferences" element={<ShippingFeePreferences />} />
             <Route path="/bank-details" element={<BankDetails />} />
+
             {/* Auth Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/vendor" element={<VendorLogin />} />
             <Route path="/success" element={<Success />} />
 
-
             {/* Delivery Routes */}
-            <Route path="/delivery" element={<DeliveryAgentLogin onLoginSuccess={() => console.log("Delivery Login Successful")} />} />
+            <Route
+                path="/delivery"
+                element={<DeliveryAgentLogin onLoginSuccess={() => console.log("Delivery Login Successful")} />}
+            />
 
-            {/* Fallback Route */}
+            {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
     );
