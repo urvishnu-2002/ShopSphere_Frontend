@@ -16,56 +16,56 @@ function Login() {
         setError(''); // Clear error when user types
     };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError("");
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError("");
 
-  try {
-    const data = await loginUser({
-      email: credentials.email,
-      password: credentials.password,
-    });
+        try {
+            const data = await loginUser({
+                email: credentials.email,
+                password: credentials.password,
+            });
 
-    console.log("Login success:", data);
+            console.log("Login success:", data);
 
-    // optional: save token / user
-    localStorage.setItem("user", JSON.stringify(data));
+            // optional: save token / user
+            localStorage.setItem("user", JSON.stringify(data));
 
-    navigate("/");
-  } catch (err) {
-    setError(
-      err.response?.data?.message ||
-      "Login failed. Please check your credentials."
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+            navigate("/");
+        } catch (err) {
+            setError(
+                err.response?.data?.message ||
+                "Login failed. Please check your credentials."
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 px-4 py-12 relative overflow-hidden">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-100 px-4 py-12 relative overflow-hidden">
             {/* Background decorative elements */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-                <div className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-full blur-3xl"></div>
+                <div className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-violet-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
                 <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-purple-400/20 to-pink-400/20 rounded-full blur-3xl"></div>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-blue-200/30 to-indigo-200/30 rounded-full blur-3xl"></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-violet-200/30 to-purple-200/30 rounded-full blur-3xl"></div>
             </div>
 
             {/* Top gradient bar */}
-            <div className="fixed top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 z-50"></div>
+            <div className="fixed top-0 left-0 w-full h-1.5 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 z-50"></div>
 
             {/* Login Card */}
             <div className="relative w-full max-w-md">
                 <div className="bg-white/70 backdrop-blur-2xl border border-white/60 rounded-3xl shadow-2xl shadow-gray-300/40 p-10 sm:p-12">
                     {/* Logo / Brand */}
                     <div className="text-center mb-10">
-                        <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-2xl shadow-lg shadow-blue-500/20 mb-6 transform hover:scale-105 transition-transform duration-300 p-2">
+                        <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-2xl shadow-lg shadow-violet-500/20 mb-6 transform hover:scale-105 transition-transform duration-300 p-2">
                             {/* Placeholder or Logo */}
-                            <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">S</div>
+                            <div className="text-3xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">S</div>
                         </div>
                         <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight mb-2">
-                            Shop<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Sphere</span>
+                            Shop<span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-purple-600">Sphere</span>
                         </h1>
                         <p className="text-gray-500 text-sm font-medium">
                             Welcome back! Please enter your details.
@@ -77,7 +77,7 @@ const handleSubmit = async (e) => {
                         <h2 className="text-xl font-bold text-gray-800 text-center">
                             User Login
                         </h2>
-                        <div className="w-12 h-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full mx-auto mt-3"></div>
+                        <div className="w-12 h-1 bg-gradient-to-r from-violet-600 to-purple-600 rounded-full mx-auto mt-3"></div>
                     </div>
 
                     {/* Form */}
@@ -88,7 +88,7 @@ const handleSubmit = async (e) => {
                                 Username / Email
                             </label>
                             <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-500 transition-colors">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-violet-500 transition-colors">
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                     </svg>
@@ -99,7 +99,7 @@ const handleSubmit = async (e) => {
                                     name="email"
                                     value={credentials.email}
                                     onChange={handleChange}
-                                    className="w-full pl-12 pr-4 py-4 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-gray-300 hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white"
+                                    className="w-full pl-12 pr-4 py-4 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-gray-300 hover:bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 focus:bg-white"
                                     placeholder="Enter username"
                                     required
                                 />
@@ -112,7 +112,7 @@ const handleSubmit = async (e) => {
                                 Password
                             </label>
                             <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-500 transition-colors">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-violet-500 transition-colors">
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                     </svg>
@@ -123,7 +123,7 @@ const handleSubmit = async (e) => {
                                     name="password"
                                     value={credentials.password}
                                     onChange={handleChange}
-                                    className="w-full pl-12 pr-4 py-4 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-gray-300 hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white"
+                                    className="w-full pl-12 pr-4 py-4 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-gray-300 hover:bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 focus:bg-white"
                                     placeholder="••••••••"
                                     required
                                 />
@@ -132,7 +132,7 @@ const handleSubmit = async (e) => {
 
                         {/* Remember Me & Forgot Password */}
                         <div className="flex items-center justify-between pt-1">
-                            <a href="#" className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                            <a href="#" className="text-sm font-semibold text-violet-600 hover:text-violet-700 transition-colors">
                                 Forgot password?
                             </a>
                         </div>
@@ -149,7 +149,7 @@ const handleSubmit = async (e) => {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className={`w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 transition-all duration-300 hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl hover:shadow-blue-500/40 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                className={`w-full py-4 px-6 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-bold rounded-xl shadow-lg shadow-violet-500/30 transition-all duration-300 hover:from-violet-700 hover:to-purple-700 hover:shadow-xl hover:shadow-violet-500/40 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                             >
                                 <span className="flex items-center justify-center gap-2">
                                     {loading ? (
@@ -206,7 +206,7 @@ const handleSubmit = async (e) => {
                     <div className="mt-8 text-center">
                         <p className="text-gray-600 text-sm">
                             Don't have an account?{' '}
-                            <Link to="/signup" className="font-bold text-blue-600 hover:text-blue-700 transition-colors underline-offset-2 hover:underline">
+                            <Link to="/signup" className="font-bold text-violet-600 hover:text-violet-700 transition-colors underline-offset-2 hover:underline">
                                 Sign up for free
                             </Link>
                         </p>
