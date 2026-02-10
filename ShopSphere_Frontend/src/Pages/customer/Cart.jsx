@@ -34,7 +34,7 @@ function Cart() {
           <div className="flex-grow lg:w-2/3">
             <div className="flex items-center justify-between mb-10">
               <h1 className="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-4">
-                <span className="bg-blue-600 text-white p-3 rounded-2xl shadow-lg shadow-blue-500/20">
+                <span className="bg-violet-600 text-white p-3 rounded-2xl shadow-lg shadow-violet-500/20">
                   🛒
                 </span>{" "}
                 Shopping Cart
@@ -68,7 +68,7 @@ function Cart() {
                       <p className="text-gray-400 text-sm font-medium mb-4 line-clamp-1">
                         {item.description}
                       </p>
-                      <div className="text-2xl font-black text-blue-600 flex items-center justify-center md:justify-start gap-2">
+                      <div className="text-2xl font-black text-violet-600 flex items-center justify-center md:justify-start gap-2">
                         <span className="text-sm text-gray-400 font-bold">Price:</span> ₹{item.price}
                       </div>
                     </div>
@@ -87,7 +87,7 @@ function Cart() {
                       </span>
                       <button
                         onClick={() => dispatch(IncrCart(item))}
-                        className="bg-white hover:bg-emerald-50 text-emerald-500 w-10 h-10 rounded-xl transition-all shadow-sm border border-gray-100 flex items-center justify-center font-black text-lg"
+                        className="bg-white hover:bg-purple-50 text-purple-500 w-10 h-10 rounded-xl transition-all shadow-sm border border-gray-100 flex items-center justify-center font-black text-lg"
                       >
                         <FaPlus size={12} />
                       </button>
@@ -121,7 +121,7 @@ function Cart() {
                 </p>
                 <button
                   onClick={() => navigate("/home")}
-                  className="bg-gradient-to-br from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-black py-4 px-10 rounded-2xl shadow-xl shadow-blue-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center gap-3 mx-auto"
+                  className="bg-gradient-to-br from-violet-600 to-purple-800 hover:from-violet-700 hover:to-purple-900 text-white font-black py-4 px-10 rounded-2xl shadow-xl shadow-violet-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center gap-3 mx-auto"
                 >
                   Start Exploring Products <FaArrowRight size={16} />
                 </button>
@@ -147,7 +147,7 @@ function Cart() {
                     </span>
                   </div>
 
-                  <div className="flex justify-between items-center text-emerald-500">
+                  <div className="flex justify-between items-center text-purple-500">
                     <span className="font-bold uppercase text-[11px] tracking-[1.5px]">
                       Shipping Fee
                     </span>
@@ -168,7 +168,7 @@ function Cart() {
                   <div className="pt-5 border-t border-gray-50 flex justify-between items-center">
                     <span className="text-gray-900 font-black text-lg">Total</span>
                     <div className="text-right">
-                      <div className="text-3xl font-black text-blue-600 leading-tight">
+                      <div className="text-3xl font-black text-violet-600 leading-tight">
                         ₹{totalAmount.toFixed(2)}
                       </div>
                       <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-1">
@@ -183,7 +183,7 @@ function Cart() {
                   onClick={() => navigate("/checkout")}
                   className={`w-full py-5 rounded-2xl font-black text-lg shadow-xl transition-all flex items-center justify-center gap-3 ${cartObjects.length === 0
                     ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : "bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-blue-500/20 hover:shadow-blue-500/30 hover:-translate-y-1 active:scale-[0.98]"
+                    : "bg-gradient-to-br from-violet-600 to-purple-800 text-white shadow-violet-500/20 hover:shadow-violet-500/30 hover:-translate-y-1 active:scale-[0.98]"
                     }`}
                 >
                   Checkout Now <FaArrowRight size={18} />
@@ -193,7 +193,7 @@ function Cart() {
               {/* Trust Badge Card */}
               <div className="bg-gray-900 rounded-[32px] p-6 text-white shadow-xl shadow-gray-200">
                 <div className="flex items-center gap-5">
-                  <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center text-blue-400">
+                  <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center text-violet-400">
                     <FaShieldAlt size={24} />
                   </div>
                   <div>
@@ -205,14 +205,14 @@ function Cart() {
                 </div>
               </div>
 
-              <div className="bg-[#f2fcf5] rounded-[32px] p-6 border border-emerald-50">
+              <div className="bg-purple-50 rounded-[32px] p-6 border border-purple-50">
                 <div className="flex items-center gap-5">
-                  <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-emerald-500 shadow-sm">
+                  <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-purple-500 shadow-sm">
                     <FaTruck size={24} />
                   </div>
                   <div>
-                    <h4 className="font-black text-emerald-900 text-base mb-0.5">Free Delivery</h4>
-                    <p className="text-emerald-700/60 text-xs font-bold leading-relaxed">
+                    <h4 className="font-black text-purple-900 text-base mb-0.5">Free Delivery</h4>
+                    <p className="text-purple-700/60 text-xs font-bold leading-relaxed">
                       Orders above ₹1,000 qualify for free express delivery.
                     </p>
                   </div>

@@ -57,6 +57,7 @@ function Orders() {
       <div className="min-h-[60vh] flex flex-col items-center justify-center px-4">
         <div className="w-16 h-16 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-red-100">
           <AlertCircle size={32} />
+        
         </div>
         <h2 className="text-xl font-black text-gray-900">Oops! Something went wrong</h2>
         <p className="text-gray-400 font-bold text-center mt-2 max-w-xs">{errorMessage}</p>

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import StepProgress from "../../Components/StepProgress";
 import { useNavigate } from "react-router-dom";
+import { vendorRegister } from "../../api/vendor_axios";
 
 export default function BankDetails() {
     const navigate = useNavigate();
@@ -14,7 +15,50 @@ export default function BankDetails() {
 
     const [errors, setErrors] = useState({});
     const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [apiError, setApiError] = useState("");
 
+    // Load previously saved vendor data from localStorage
+    const [vendorData, setVendorData] = useState({});
+
+    useEffect(() => {
+        // Retrieve all vendor form data from localStorage
+        const gstData = JSON.parse(localStorage.getItem("vendorGSTData") || "{}");
+        const storeData = JSON.parse(localStorage.getItem("vendorStoreData") || "{}");
+        const shippingData = JSON.parse(localStorage.getItem("vendorShippingData") || "{}");
+        const feeData = JSON.parse(localStorage.getItem("vendorFeeData") || "{}");
+        const authData = JSON.parse(localStorage.getItem("user") || "{}"); // If user info is stored here
+
+        const combinedData = {
+            ...gstData,
+            ...storeData,
+            ...shippingData,
+            ...feeData,
+            // Fallbacks for individual keys
+            shopName: storeData.shopName || localStorage.getItem("shop_name"),
+            shopDescription: storeData.shopDescription || localStorage.getItem("shop_description"),
+            businessType: storeData.businessType || localStorage.getItem("business_type"),
+            shippingAddress: shippingData.shippingAddress || localStorage.getItem("shipping_address") || localStorage.getItem("address"),
+            gstNumber: gstData.gstNumber || localStorage.getItem("gst_number") || localStorage.getItem("gst"),
+            panNumber: gstData.panNumber || localStorage.getItem("pan_number"),
+            panName: gstData.panName || localStorage.getItem("pan_name"),
+            idType: gstData.idType || localStorage.getItem("id_type"),
+            username: localStorage.getItem("username") || authData.username || "",
+            email: localStorage.getItem("email") || authData.email || "",
+            password: localStorage.getItem("password") || ""
+        };
+
+        // If shippingAddress is still missing, try formatting from pickupAddress
+        if (!combinedData.shippingAddress) {
+            const pickup = JSON.parse(localStorage.getItem("pickupAddress") || "null");
+            if (pickup) {
+                combinedData.shippingAddress = `${pickup.area}, ${pickup.city}, ${pickup.state} - ${pickup.pincode}`;
+            }
+        }
+
+        console.log("Loaded Vendor Data from Storage:", combinedData);
+        setVendorData(combinedData);
+    }, []);
 
     /* ---------------- FIELD VALIDATION ---------------- */
 
@@ -85,7 +129,7 @@ export default function BankDetails() {
 
     /* ---------------- FINAL SUBMIT ---------------- */
 
-    const handleContinue = () => {
+    const handleContinue = async () => {
         const newErrors = {};
 
         Object.keys(form).forEach((key) => {
@@ -97,10 +141,78 @@ export default function BankDetails() {
 
         if (Object.keys(newErrors).length > 0) return;
 
-        localStorage.setItem("bankDetails", JSON.stringify(form));
+        setIsSubmitting(true);
+        setApiError("");
 
-        setShowSuccessModal(true);
+        try {
+            // Combine all vendor data with bank details
+            const completeVendorData = {
+                // User credentials
+                username: vendorData.username || "",
+                email: vendorData.email || "",
+                password: vendorData.password || "",
 
+                // GST/PAN details
+                gst_number: vendorData.gstNumber || vendorData.gst || "",
+                pan_number: vendorData.panNumber || "",
+                pan_name: vendorData.panName || "",
+                id_type: vendorData.idType || (vendorData.gstNumber ? "gst" : "pan"),
+                id_number: vendorData.gstNumber || vendorData.panNumber || "",
+
+                // Store details
+                shop_name: vendorData.shopName || vendorData.storeName || "",
+                shop_description: vendorData.shopDescription || vendorData.storeDescription || "",
+                business_type: vendorData.businessType || "retail",
+
+                // Shipping address
+                address: vendorData.shippingAddress || "",
+
+                // Shipping fee preferences
+                shipping_fee: vendorData.shippingFee || "0",
+
+                // Bank details
+                bank_holder_name: form.holderName,
+                bank_account_number: form.accountNumber,
+                bank_ifsc_code: form.ifsc,
+            };
+
+            console.log("Submitting Vendor payload:", completeVendorData);
+
+            // Call the API
+            const response = await vendorRegister(completeVendorData);
+
+            console.log("Success! Details have been successfully sent to the Admin for approval.");
+            console.log("Response:", response);
+
+            // Clear all vendor data from localStorage after successful submission
+            localStorage.removeItem("vendorGSTData");
+            localStorage.removeItem("vendorStoreData");
+            localStorage.removeItem("vendorShippingData");
+            localStorage.removeItem("vendorFeeData");
+
+            // Show success modal
+            setShowSuccessModal(true);
+
+        } catch (error) {
+            console.error("Error registering vendor:", error);
+
+            // Handle different error types
+            if (error.response) {
+                // Server responded with error
+                const errorMessage = error.response.data?.error ||
+                    error.response.data?.message ||
+                    "Registration failed. Please try again.";
+                setApiError(errorMessage);
+            } else if (error.request) {
+                // Request made but no response
+                setApiError("Unable to connect to server. Please check your connection.");
+            } else {
+                // Other errors
+                setApiError("An unexpected error occurred. Please try again.");
+            }
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const isFormValid =
@@ -125,6 +237,13 @@ export default function BankDetails() {
                         Add your bank account
                     </h2>
 
+                    {/* API Error Message */}
+                    {apiError && (
+                        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                            <p className="text-sm text-red-600">{apiError}</p>
+                        </div>
+                    )}
+
                     {/* ACCOUNT HOLDER NAME */}
                     <div className="mb-6">
                         <label className="block text-sm font-medium mb-2">
@@ -136,6 +255,7 @@ export default function BankDetails() {
                                 handleChange("holderName", e.target.value)
                             }
                             className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-600"
+                            disabled={isSubmitting}
                         />
                         {errors.holderName && (
                             <p className="text-xs text-red-500 mt-1">
@@ -155,6 +275,7 @@ export default function BankDetails() {
                                 handleChange("accountNumber", e.target.value)
                             }
                             className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-600"
+                            disabled={isSubmitting}
                         />
                         {errors.accountNumber && (
                             <p className="text-xs text-red-500 mt-1">
@@ -174,6 +295,7 @@ export default function BankDetails() {
                                 handleChange("confirmAccountNumber", e.target.value)
                             }
                             className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-600"
+                            disabled={isSubmitting}
                         />
                         {errors.confirmAccountNumber && (
                             <p className="text-xs text-red-500 mt-1">
@@ -193,6 +315,7 @@ export default function BankDetails() {
                                 handleChange("ifsc", e.target.value)
                             }
                             className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-600"
+                            disabled={isSubmitting}
                         />
                         {errors.ifsc && (
                             <p className="text-xs text-red-500 mt-1">
@@ -203,18 +326,20 @@ export default function BankDetails() {
 
                     <button
                         onClick={handleContinue}
-                        disabled={!isFormValid}
+                        disabled={!isFormValid || isSubmitting}
                         className={`w-full py-3 rounded-lg font-medium transition
-                        ${isFormValid
+                        ${isFormValid && !isSubmitting
                                 ? "bg-gradient-to-r from-purple-700 to-purple-500 text-white hover:from-purple-800 hover:to-purple-600"
                                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
                             }`}
                     >
-                        Save and continue
+                        {isSubmitting ? "Submitting..." : "Save and continue"}
                     </button>
 
                 </div>
             </main>
+
+            {/* SUCCESS MODAL */}
             {showSuccessModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
 

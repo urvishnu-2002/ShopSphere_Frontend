@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 export default function ShippingAddress() {
     const navigate = useNavigate();
 
-    const [addresses, setAddresses] = useState([
+    const [address, setAddresses] = useState([
         // {
         //     id: 1,
         //     pincode: "500001",
@@ -77,8 +77,19 @@ export default function ShippingAddress() {
 
     /* ---------------- CONTINUE ---------------- */
     const handleContinue = () => {
-        const selected = addresses.find(a => a.id === selectedAddressId);
+        const selected = address.find(a => a.id === selectedAddressId);
+        if (!selected) {
+            alert("Please select or add an address first.");
+            return;
+        }
+
+        const formattedAddress = `${selected.area}, ${selected.city}, ${selected.state} - ${selected.pincode}`;
+
+        // ✅ Save to multiple keys for maximum compatibility
         localStorage.setItem("pickupAddress", JSON.stringify(selected));
+        localStorage.setItem("shipping_address", formattedAddress);
+        localStorage.setItem("vendorShippingData", JSON.stringify({ shippingAddress: formattedAddress }));
+
         navigate("/shipping-method");
     };
 
@@ -106,7 +117,7 @@ export default function ShippingAddress() {
                     {!showAddForm && (
                         <>
                             <div className="space-y-5">
-                                {addresses.map(addr => (
+                                {address.map(addr => (
                                     <label
                                         key={addr.id}
                                         className={`flex gap-4 p-5 border rounded-xl cursor-pointer
