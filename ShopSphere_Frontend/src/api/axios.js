@@ -10,6 +10,7 @@ export const loginUser = async (loginData) => {
     `${API_BASE_URL}/login`,
     loginData
   );
+  console.log(response.data);
 
   // Save tokens immediately after login
   if (response.data?.access) {
