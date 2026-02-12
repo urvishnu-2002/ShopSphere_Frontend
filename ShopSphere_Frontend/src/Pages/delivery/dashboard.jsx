@@ -3,6 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/ca
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { FaBox, FaDollarSign, FaMapMarkerAlt, FaCheck, FaSignOutAlt, FaBars, FaTruck, FaClipboardList, FaMoneyBillWave, FaTachometerAlt } from 'react-icons/fa';
+<<<<<<< HEAD
+=======
+
+>>>>>>> be16c3bdcf2b82e059e05ec0367f991a70f12d61
 
 
 const toast = {

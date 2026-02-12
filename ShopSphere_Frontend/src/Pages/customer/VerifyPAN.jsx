@@ -16,7 +16,11 @@ export default function VerifyPAN() {
     const [showVerificationModal, setShowVerificationModal] = useState(false);
     const [termsChecked, setTermsChecked] = useState(false);
 
-
+    const [credentials, setCredentials] = useState({
+        username: "",
+        email: "",
+        password: ""
+    });
 
     const validatePAN = (pan) => {
         const panRegex = /^[A-Z]{5}(?!0000)[0-9]{4}[A-Z]{1}$/;
@@ -40,6 +44,8 @@ export default function VerifyPAN() {
 
 
     const handleContinue = () => {
+        const isUserLoggedIn = !!localStorage.getItem("user");
+
         if (!pan) {
             setError("Please enter a PAN number");
             return;
@@ -54,7 +60,6 @@ export default function VerifyPAN() {
             return;
         }
 
-
         if (!panFile) {
             setError("Please upload PAN document");
             return;
@@ -65,6 +70,12 @@ export default function VerifyPAN() {
             return;
         }
 
+        if (!isUserLoggedIn) {
+            if (!credentials.username || !credentials.email || !credentials.password) {
+                setError("Please fill in your account details to continue");
+                return;
+            }
+        }
 
         setError("");
         setShowVerificationModal(true);
@@ -140,6 +151,45 @@ export default function VerifyPAN() {
                     />
 
                     {error && <p className="text-red-500 text-xs mt-1 ml-1">{error}</p>}
+
+                    {/* Account Details (if not logged in) */}
+                    {!localStorage.getItem("user") && (
+                        <div className="mt-8 pt-6 border-t border-gray-100 space-y-4">
+                            <h3 className="font-semibold text-gray-700">Account Creation</h3>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-500 mb-1">Username</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Username"
+                                        value={credentials.username}
+                                        onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
+                                        className="w-full px-4 py-2 rounded-lg border border-purple-100 focus:ring-2 focus:ring-purple-600 outline-none transition-all"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-500 mb-1">Email</label>
+                                    <input
+                                        type="email"
+                                        placeholder="Email"
+                                        value={credentials.email}
+                                        onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
+                                        className="w-full px-4 py-2 rounded-lg border border-purple-100 focus:ring-2 focus:ring-purple-600 outline-none transition-all"
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-gray-500 mb-1">Password</label>
+                                <input
+                                    type="password"
+                                    placeholder="Password"
+                                    value={credentials.password}
+                                    onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+                                    className="w-full px-4 py-2 rounded-lg border border-purple-100 focus:ring-2 focus:ring-purple-600 outline-none transition-all"
+                                />
+                            </div>
+                        </div>
+                    )}
 
                     {/* SWITCH TO GST */}
                     <div className="flex items-center gap-3 mt-6">
@@ -265,6 +315,24 @@ export default function VerifyPAN() {
                             <div className="mt-8 flex justify-center">
                                 <button
                                     onClick={() => {
+                                        // ✅ Save PAN data to localStorage for final submission
+                                        const panData = {
+                                            panNumber: pan.toUpperCase(),
+                                            panName: panName,
+                                            idType: 'pan'
+                                        };
+                                        localStorage.setItem("vendorGSTData", JSON.stringify(panData));
+                                        localStorage.setItem("pan_number", pan.toUpperCase());
+                                        localStorage.setItem("pan_name", panName);
+                                        localStorage.setItem("id_type", "pan");
+
+                                        // ✅ Save credentials if needed
+                                        if (!localStorage.getItem("user")) {
+                                            localStorage.setItem("username", credentials.username);
+                                            localStorage.setItem("email", credentials.email);
+                                            localStorage.setItem("password", credentials.password);
+                                        }
+
                                         setShowVerificationModal(false);
                                         navigate("/store-name");
                                     }}

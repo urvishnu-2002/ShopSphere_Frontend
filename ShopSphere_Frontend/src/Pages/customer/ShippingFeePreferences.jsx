@@ -30,8 +30,10 @@ export default function ShippingFeePreferences() {
         const data = {
             paymentType,
             fees: paymentType === "customer_pays" ? fees : null,
+            shippingFee: paymentType === "customer_pays" ? fees.national : "0" // Simple fallback
         };
 
+        localStorage.setItem("vendorFeeData", JSON.stringify(data));
         localStorage.setItem("shippingFeePreferences", JSON.stringify(data));
         navigate("/bank-details");
     };

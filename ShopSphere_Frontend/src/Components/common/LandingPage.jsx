@@ -13,28 +13,39 @@ const LandingPage = () => {
     const [exit, setExit] = useState(false); // ✅ NEW
     const navigate = useNavigate();
 
+    // // 
+    // useEffect(() => {
+    //     // 🔒 Only run landing logic when user is ACTUALLY on "/"
+    //     if (window.location.pathname !== "/") return;
+
+    //     const fadeTimer = setTimeout(() => setFadeOut(true), 4200);
+    //     const zoomTimer = setTimeout(() => setZoomOut(true), 4600);
+
+    //     const navigateTimer = setTimeout(() => {
+    //         sessionStorage.setItem("hasSeenLanding", "true");
+    //         navigate("/home", { replace: true });
+
+    //         setTimeout(() => setExit(true), 300);
+    //     }, 5400);
+
+    //     return () => {
+    //         clearTimeout(fadeTimer);
+    //         clearTimeout(zoomTimer);
+    //         clearTimeout(navigateTimer);
+    //     };
+    // }, [navigate]);
     useEffect(() => {
-        const fadeTimer = setTimeout(() => setFadeOut(true), 4200);
-        const zoomTimer = setTimeout(() => setZoomOut(true), 4600);
-
-        const navigateTimer = setTimeout(() => {
+        const timer = setTimeout(() => {
             sessionStorage.setItem("hasSeenLanding", "true");
-
-            // Navigate FIRST
             navigate("/home", { replace: true });
+        }, 5200);
 
-            // Keep landing mounted slightly longer
-            setTimeout(() => setExit(true), 300);
-        }, 5400);
-
-        return () => {
-            clearTimeout(fadeTimer);
-            clearTimeout(zoomTimer);
-            clearTimeout(navigateTimer);
-        };
+        return () => clearTimeout(timer);
     }, [navigate]);
 
-    if (exit) return null; // ✅ prevents white flash
+
+
+    if (exit) return null;
 
     const products = [
         ShoppingBag, Smartphone, Watch, Headphones, Laptop,
