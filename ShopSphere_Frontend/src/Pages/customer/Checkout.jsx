@@ -31,7 +31,7 @@ function Checkout() {
       id: "upi",
       title: "UPI (Google Pay, PhonePe, Paytm)",
       description: "Pay instantly using your preferred UPI app",
-      icon: <FaMobileAlt className="text-blue-500" />,
+      icon: <FaMobileAlt className="text-violet-500" />,
       tag: "Popular",
     },
     {
@@ -50,7 +50,7 @@ function Checkout() {
       id: "emi",
       title: "EMI (Easy Installments)",
       description: "Pay in monthly installments at low interest",
-      icon: <MdOutlineTimer className="text-orange-500" />,
+      icon: <MdOutlineTimer className="text-fuchsia-500" />,
       tag: "Offers Available",
     },
     {
@@ -140,7 +140,7 @@ function Checkout() {
       },
 
       theme: {
-        color: "#2563eb",
+        color: "#7c3aed",
       },
     };
 
@@ -172,11 +172,11 @@ function Checkout() {
                   key={method.id}
                   onClick={() => setSelectedMethod(method.id)}
                   className={`group cursor-pointer bg-white rounded-[32px] p-6 border-2 transition-all duration-300 flex items-center gap-6 ${selectedMethod === method.id
-                    ? "border-blue-600 shadow-xl shadow-blue-500/10 translate-x-2"
-                    : "border-gray-100 hover:border-blue-200"
+                    ? "border-violet-600 shadow-xl shadow-violet-500/10 translate-x-2"
+                    : "border-gray-100 hover:border-violet-200"
                     }`}
                 >
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl transition-all ${selectedMethod === method.id ? "bg-blue-600 text-white shadow-lg" : "bg-gray-50 group-hover:bg-blue-50"
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl transition-all ${selectedMethod === method.id ? "bg-violet-600 text-white shadow-lg" : "bg-gray-50 group-hover:bg-violet-50"
                     }`}>
                     {method.icon}
                   </div>
@@ -185,7 +185,7 @@ function Checkout() {
                     <div className="flex items-center gap-3 mb-1">
                       <h3 className="text-lg font-black text-gray-900">{method.title}</h3>
                       {method.tag && (
-                        <span className="bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border border-blue-100">
+                        <span className="bg-violet-50 text-violet-600 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border border-violet-100">
                           {method.tag}
                         </span>
                       )}
@@ -193,7 +193,7 @@ function Checkout() {
                     <p className="text-sm text-gray-400 font-bold">{method.description}</p>
                   </div>
 
-                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${selectedMethod === method.id ? "border-blue-600 bg-blue-600 text-white" : "border-gray-200"
+                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${selectedMethod === method.id ? "border-violet-600 bg-violet-600 text-white" : "border-gray-200"
                     }`}>
                     {selectedMethod === method.id && <FaCheckCircle size={12} />}
                   </div>
@@ -208,15 +208,15 @@ function Checkout() {
                 <div className="grid grid-cols-2 gap-6">
                   <div className="col-span-2">
                     <label className="text-[11px] font-black text-gray-400 uppercase tracking-[2px] block mb-2">Card Number</label>
-                    <input type="text" placeholder="XXXX XXXX XXXX XXXX" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
+                    <input type="text" placeholder="XXXX XXXX XXXX XXXX" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all" />
                   </div>
                   <div>
                     <label className="text-[11px] font-black text-gray-400 uppercase tracking-[2px] block mb-2">Expiry Date</label>
-                    <input type="text" placeholder="MM / YY" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
+                    <input type="text" placeholder="MM / YY" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all" />
                   </div>
                   <div>
                     <label className="text-[11px] font-black text-gray-400 uppercase tracking-[2px] block mb-2">CVV</label>
-                    <input type="password" placeholder="XXX" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
+                    <input type="password" placeholder="XXX" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all" />
                   </div>
                 </div>
               </div>
@@ -256,7 +256,7 @@ function Checkout() {
                   </div>
                   <div className="pt-4 border-t border-gray-50 flex justify-between items-center">
                     <span className="text-xl font-black text-gray-900">Amount to Pay</span>
-                    <span className="text-3xl font-black text-blue-600 font-mono tracking-tighter">₹{totalAmount.toFixed(2)}</span>
+                    <span className="text-3xl font-black text-violet-600 font-mono tracking-tighter">₹{totalAmount.toFixed(2)}</span>
                   </div>
                 </div>
 
@@ -264,7 +264,7 @@ function Checkout() {
                   <button
                     onClick={handlePayment}
                     disabled={isProcessing}
-                    className={`w-full py-5 bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-[24px] font-black text-lg shadow-xl shadow-blue-500/20 hover:shadow-blue-500/30 hover:-translate-y-1 transition-all active:scale-[0.98] flex items-center justify-center gap-3 mb-6 ${isProcessing ? 'opacity-70 cursor-not-allowed' : ''}`}
+                    className={`w-full py-5 bg-gradient-to-br from-violet-600 to-purple-700 text-white rounded-[24px] font-black text-lg shadow-xl shadow-violet-500/20 hover:shadow-violet-500/30 hover:-translate-y-1 transition-all active:scale-[0.98] flex items-center justify-center gap-3 mb-6 ${isProcessing ? 'opacity-70 cursor-not-allowed' : ''}`}
                   >
                     {isProcessing ? (
                       <>Processing Order... <FaLock size={16} className="animate-pulse" /></>

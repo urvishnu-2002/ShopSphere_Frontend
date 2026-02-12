@@ -38,8 +38,8 @@ function Orders() {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center">
         <div className="relative w-16 h-16">
-          <div className="absolute inset-0 border-4 border-blue-100 rounded-full"></div>
-          <div className="absolute inset-0 border-4 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
+          <div className="absolute inset-0 border-4 border-violet-100 rounded-full"></div>
+          <div className="absolute inset-0 border-4 border-violet-600 rounded-full border-t-transparent animate-spin"></div>
         </div>
         <p className="mt-4 text-gray-500 font-black uppercase tracking-widest text-[10px] animate-pulse">
           Retrieving Orders...
@@ -57,13 +57,13 @@ function Orders() {
       <div className="min-h-[60vh] flex flex-col items-center justify-center px-4">
         <div className="w-16 h-16 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-red-100">
           <AlertCircle size={32} />
-        
+
         </div>
         <h2 className="text-xl font-black text-gray-900">Oops! Something went wrong</h2>
         <p className="text-gray-400 font-bold text-center mt-2 max-w-xs">{errorMessage}</p>
         <button
           onClick={() => navigate("/login")}
-          className="mt-8 px-8 py-3 bg-blue-600 text-white font-black rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 transition-all active:scale-95"
+          className="mt-8 px-8 py-3 bg-violet-600 text-white font-black rounded-xl shadow-lg shadow-violet-500/20 hover:shadow-violet-500/30 transition-all active:scale-95"
         >
           Return to Login
         </button>
@@ -96,7 +96,7 @@ function Orders() {
       <div className="flex items-center justify-between mb-12">
         <div>
           <h1 className="text-4xl font-black text-gray-900 tracking-tighter flex items-center gap-4">
-            <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-2xl flex items-center justify-center shadow-xl shadow-blue-500/20">
+            <div className="w-14 h-14 bg-gradient-to-br from-violet-600 to-purple-700 text-white rounded-2xl flex items-center justify-center shadow-xl shadow-violet-500/20">
               <Receipt size={28} />
             </div>
             Order History
@@ -112,7 +112,7 @@ function Orders() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
             key={order.id || index}
-            className="group bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden transition-all hover:shadow-2xl hover:shadow-gray-200/40 hover:border-blue-100"
+            className="group bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden transition-all hover:shadow-2xl hover:shadow-gray-200/40 hover:border-violet-100"
           >
             {/* Order Header */}
             <div
@@ -120,7 +120,7 @@ function Orders() {
               className="p-6 cursor-pointer hover:bg-gray-50/50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4"
             >
               <div className="flex items-center gap-5">
-                <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center text-blue-600 shadow-inner group-hover:bg-blue-50 transition-colors">
+                <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center text-violet-600 shadow-inner group-hover:bg-violet-50 transition-colors">
                   <Package size={28} />
                 </div>
 
@@ -151,7 +151,7 @@ function Orders() {
               <div className="flex items-center justify-between sm:justify-end gap-10 border-t sm:border-t-0 pt-4 sm:pt-0">
                 <div className="text-left sm:text-right">
                   <p className="text-[10px] font-black text-gray-300 uppercase tracking-[2px] mb-0.5">Grand Total</p>
-                  <p className="text-2xl font-black text-blue-600 tracking-tighter">
+                  <p className="text-2xl font-black text-violet-600 tracking-tighter">
                     ₹{order.totalAmount?.toFixed(2)}
                   </p>
                 </div>
@@ -173,7 +173,7 @@ function Orders() {
                 >
                   <div className="border-t border-gray-50 px-8 py-10 bg-gray-50/20">
                     <div className="flex items-center gap-3 mb-6">
-                      <Truck size={16} className="text-blue-500" />
+                      <Truck size={16} className="text-violet-500" />
                       <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-[3px]">
                         Package Contents
                       </h3>
@@ -186,7 +186,7 @@ function Orders() {
                           className="flex justify-between items-center bg-white rounded-3xl p-5 border border-gray-100 shadow-sm transition-all hover:border-blue-100 group/item"
                         >
                           <div className="flex items-center gap-5">
-                            <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-xs font-black text-gray-500 border border-gray-100 group-hover/item:bg-blue-600 group-hover/item:text-white group-hover/item:border-blue-600 transition-all">
+                            <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-xs font-black text-gray-500 border border-gray-100 group-hover/item:bg-violet-600 group-hover/item:text-white group-hover/item:border-violet-600 transition-all">
                               {item.quantity}×
                             </div>
                             <div>
@@ -208,8 +208,8 @@ function Orders() {
 
                     <div className="mt-10 pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                       <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center shrink-0">
-                          <AlertCircle size={18} className="text-blue-600" />
+                        <div className="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center shrink-0">
+                          <AlertCircle size={18} className="text-violet-600" />
                         </div>
                         <div>
                           <p className="text-[11px] font-black text-gray-900 uppercase tracking-widest mb-1">Payment Info</p>

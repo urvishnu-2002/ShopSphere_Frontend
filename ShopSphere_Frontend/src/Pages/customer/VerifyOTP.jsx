@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import StepProgress from "../../Components/StepProgress";
 
@@ -10,9 +10,23 @@ export default function VerifyOTP() {
   const storedOtp = localStorage.getItem("email_otp");
   const email = localStorage.getItem("verify_email");
 
+  // ✅ HOOK MUST BE INSIDE COMPONENT
+  useEffect(() => {
+    if (!email || !storedOtp) {
+      navigate("/verify-account");
+    }
+  }, [email, storedOtp, navigate]);
+
   const verifyOtp = () => {
     if (!otp.trim()) {
       setError("Please enter the OTP");
+      return;
+    }
+
+    const expiry = localStorage.getItem("email_otp_expiry");
+
+    if (!expiry || Date.now() > Number(expiry)) {
+      setError("OTP expired. Please request a new one.");
       return;
     }
 
@@ -21,17 +35,16 @@ export default function VerifyOTP() {
       return;
     }
 
-    // ✅ OTP verified successfully
+    // ✅ success
     localStorage.setItem("email_verified", "true");
+    localStorage.removeItem("email_otp");
+    localStorage.removeItem("email_otp_expiry");
 
-    // Next step → Tax verification
     navigate("/verifyGST");
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-100">
-
-      {/* HEADER */}
       <header className="px-8 py-5 bg-purple-700 shadow-sm">
         <h1 className="text-sm font-bold text-white">
           ShopSphere Seller Central
@@ -39,19 +52,16 @@ export default function VerifyOTP() {
       </header>
 
       <main className="px-6 py-12">
-        {/* ✅ STEP PROGRESS (STEP 1 ACTIVE) */}
-        <StepProgress />
+        <StepProgress currentStep={2} />
 
-        {/* CONTENT */}
         <div className="max-w-sm mx-auto bg-white rounded-xl shadow-lg p-6 mt-10">
           <h1 className="text-xl font-bold mb-2">Verify OTP</h1>
 
           <p className="text-sm text-gray-600 mb-4">
             Enter the one-time password sent to{" "}
-            <strong className="text-gray-800">{email}</strong>
+            <strong>{email}</strong>
           </p>
 
-          <label className="text-sm font-medium">6-digit OTP</label>
           <input
             type="text"
             maxLength={6}
@@ -60,11 +70,7 @@ export default function VerifyOTP() {
               setOtp(e.target.value.replace(/\D/g, ""));
               setError("");
             }}
-            className={`w-full px-3 py-2 mt-1 text-center tracking-widest border rounded-md
-              focus:ring-2 ${error
-                ? "border-red-500 focus:ring-red-300"
-                : "border-gray-300 focus:ring-purple-400"
-              }`}
+            className="w-full px-3 py-2 mt-1 text-center tracking-widest border rounded-md"
           />
 
           {error && (
@@ -73,7 +79,7 @@ export default function VerifyOTP() {
 
           <button
             onClick={verifyOtp}
-            className="w-full mt-5 py-2 rounded-md bg-purple-600 text-white font-medium hover:bg-purple-700 transition"
+            className="w-full mt-5 py-2 rounded-md bg-purple-600 text-white"
           >
             Verify OTP
           </button>

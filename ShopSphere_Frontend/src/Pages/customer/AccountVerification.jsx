@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import emailjs from "emailjs-com";
+import emailjs from "@emailjs/browser";
+
 import StepProgress from "../../Components/StepProgress";
 
 export default function VerifyAccount() {
@@ -20,17 +21,21 @@ export default function VerifyAccount() {
 
     try {
       await emailjs.send(
-        "service_pnn3tru",
-        "template_by7q0ma",
+        "service_0a1vbhw",
+        "template_30pivyj",
         {
           to_email: email,
           otp: otp,
+          name: "ShopSphere",
+          time: new Date().toLocaleString(),
         },
-        "JWjKVEari_L-AoiHX"
+        "Ch-Wgw8L8R5zWGNme"
       );
 
       localStorage.setItem("verify_email", email);
       localStorage.setItem("email_otp", otp);
+      localStorage.setItem("email_otp_expiry", Date.now() + 5 * 60 * 1000); // 5 mins
+
 
       navigate("/verify-otp");
     } catch (err) {
