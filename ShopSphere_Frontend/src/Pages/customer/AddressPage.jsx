@@ -20,7 +20,7 @@ export default function AddressPage() {
 
   const [formData, setFormData] = useState(emptyForm);
 
-  /* ================= GPS ================= */
+  // GPS
 
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {

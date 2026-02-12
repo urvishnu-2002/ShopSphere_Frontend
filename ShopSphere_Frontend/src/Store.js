@@ -1,550 +1,718 @@
 import { configureStore, createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { getMyOrders } from "./api/axios";
 
+//  PRODUCTS SLICE
+
 const productsSlice = createSlice({
-  name: 'products',
+  name: "products",
   initialState: {
-    fruit: [
+    electronics: [
       {
-        name: 'Watch',
-        price: 120.0,
-        image: '/Images/watch.png',
-        description: 'Your Everyday sweet, crisp and juicy with a balanced flavor. '
+        name: "Watch",
+        price: 2499,
+        image: "/public/watch.jpg",
+        description: "Elegant wrist watch with accurate timekeeping for daily and formal use."
       },
       {
-        name: 'Laptop',
-        price: 100.0,
-        image: '/Images/laptop.png',
-        description: 'Sweet & buttery texture but the flesh inside and soft'
+        name: "Laptop",
+        price: 55999,
+        image: "/public/laptop.jpg",
+        description: "High-performance laptop suitable for work, study, and entertainment."
       },
       {
-        name: 'phone',
-        price: 40.0,
-        image: '/Images/phone.png',
-        description: 'Tiny, sweet bananas; kid friendly snack, easy to digest.'
+        name: "phone",
+        price: 18999,
+        image: "/public/phone.jpg",
+        description: "Smartphone with modern features, clear display, and long battery life."
       },
       {
-        name: 'charger',
-        price: 60.0,
-        image: '/Images/charger.png',
-        description: 'Bright, rich in flavor, round and juicy, It is high in vitamin C.'
+        name: "charger",
+        price: 799,
+        image: "/public/charger.jpg",
+        description: "Fast charging adapter compatible with multiple devices."
       },
       {
-        name: 'computer',
-        price: 90.0,
-        image: '/Images/computer.png',
-        description: 'Enjoy the sweet, tangy flavor, free from harmful chemicals.'
+        name: "computer",
+        price: 42999,
+        image: "/public/computer.jpg",
+        description: "Desktop computer for office work and everyday computing."
       },
       {
-        name: 'mouse',
-        price: 150.0,
-        image: '/Images/mouse.png',
-        description: 'Semi red with tangy kick and each of them surrounds a tiny seed.'
+        name: "mouse",
+        price: 699,
+        image: "/public/mouse.jpg",
+        description: "Ergonomic mouse with smooth tracking and comfortable grip."
       },
       {
-        name: 'keyboard',
-        price: 70.0,
-        image: '/Images/keyboard.png',
-        description: 'Early season, juicy, sweet and sour taste, best snacks for you.'
+        name: "keyboard",
+        price: 999,
+        image: "/public/keyboard.jpg",
+        description: "Durable keyboard with soft keys for efficient typing."
       },
       {
-        name: 'tv',
-        price: 80.0,
-        image: '/Images/tv.png',
-        description: 'Fresh, Sweet, soft fruit; boosts digestion, ready to eat.'
+        name: "tv",
+        price: 32999,
+        image: "/public/tv.jpg",
+        description: "Full HD television with vibrant colors and immersive sound."
       },
       {
-        name: 'remote',
-        price: 55.0,
-        image: '/Images/remote.png',
-        description: ' "Queen of fruits", A highly prolific fruit crop, it is globally renowned.'
+        name: "remote",
+        price: 499,
+        image: "/public/remote.jpg",
+        description: "Easy-to-use remote control with responsive buttons."
       },
       {
-        name: 'Kiwi',
-        price: 130.0,
-        image: '/Images/kiwi.png',
-        description: 'Tangy, juicy fruit loaded with vitamins and nutrients. Take daily'
-      },
-      {
-        name: 'Watermelon',
-        price: 40.0,
-        image: '/Images/melon.jpg',
-        description: "Ripe & sweet with juicy, refreshing dessert alternative you'll crave."
-      },
-      {
-        name: 'Black Grapes',
-        price: 70.0,
-        image: '/Images/grape.jpg',
-        description: 'Crisp, juicy, sweet duo, plump, firm like popcorn and healthy too'
-      },
-      {
-        name: 'Peach',
-        price: 80.0,
-        image: '/Images/peach.jpg',
-        description: 'Juicy, sweet, and aromatic fruit that is perfect for desserts.'
-      },
-      {
-        name: 'Plum',
-        price: 75.0,
-        image: '/Images/plum.jpg',
-        description: 'Sweet, tart fruit with juicy flesh, perfect for snacking.'
+        name: "Buds",
+        price: 1999,
+        image: "/public/buds.jpg",
+        description: "Wireless earbuds with clear sound and noise isolation."
       }
     ],
-    veg: [
+
+    fruits: [
       {
-        name: 'Tomato',
-        price: 40.0,
-        image: '/Images/tomato.jpg',
-        description: 'Juicy and tangy, great for salads, curries or sauces.',
+        name: "Kiwi",
+        price: 180,
+        image: "/public/kiwi.jpg",
+        description: "Fresh kiwi rich in vitamin C and antioxidants."
       },
       {
-        name: 'Cauliflower',
-        price: 60.0,
-        image: '/Images/cauli.jpg',
-        description: 'Mild and versatile, great for roasting or curries.',
+        name: "Watermelon",
+        price: 60,
+        image: "/public/watermelon.jpg",
+        description: "Sweet and juicy watermelon perfect for hydration."
       },
       {
-        name: 'Onion',
-        price: 35.0,
-        image: '/Images/onion.jpg',
-        description: 'Crisp, authentic, and pungent—adds depth to dishes.',
+        name: "Grapes",
+        price: 120,
+        image: "/public/grapes.jpg",
+        description: "Fresh grapes with natural sweetness and nutrients."
       },
       {
-        name: 'Capsicum',
-        price: 55.0,
-        image: '/Images/caps.jpg',
-        description: 'Sweet and crunchy, adds flavor and crunch to salads.',
+        name: "Banana",
+        price: 55,
+        image: "/public/banana.jpg",
+        description: "Naturally sweet bananas rich in potassium."
       },
       {
-        name: 'Carrot',
-        price: 45.0,
-        image: '/Images/carrot.jpg',
-        description: 'Sweet and crunchy, excellent for salads or cooking.',
+        name: "Plum",
+        price: 160,
+        image: "/public/plum.jpg",
+        description: "Juicy plums with a sweet and tangy taste."
       },
       {
-        name: 'Spinach',
-        price: 25.0,
-        image: '/Images/spinach.jpg',
-        description: 'Fresh and nutritious, perfect for curries and healthy meals.',
+        name: "Apples",
+        price: 140,
+        image: "/public/apples.jpg",
+        description: "Crisp apples ideal for healthy snacking."
       },
       {
-        name: 'Potato',
-        price: 30.0,
-        image: '/Images/potato.jpg',
-        description: 'Free from chemicals, ideal for health-conscious eating.',
+        name: "Dragon Fruit",
+        price: 220,
+        image: "/public/Dragon Fruit.jpg",
+        description: "Exotic dragon fruit rich in fiber and antioxidants."
       },
       {
-        name: 'Broccoli',
-        price: 75.0,
-        image: '/Images/broc.jpg',
-        description: 'Crisp and nutritious, perfect for stir-fries.',
-      },
-      {
-        name: 'Cucumber',
-        price: 35.0,
-        image: '/Images/cucumber.jpg',
-        description: 'Cool and refreshing, perfect for salads or snacking.',
-      },
-      {
-        name: 'Brinjal',
-        price: 40.0,
-        image: '/Images/eggplant.jpg',
-        description: 'Soft and smoky, perfect for making bharta and sambar.',
-      },
-      {
-        name: 'Cabbage',
-        price: 50.0,
-        image: '/Images/cab.jpg',
-        description: 'Crisp and mild, perfect for salads or stir-fries.',
-      },
-      {
-        name: 'Coriender',
-        price: 40.0,
-        image: '/Images/coriender.jpg',
-        description: 'Fresh, fragrant, and aromatic—perfect game changer.',
-      },
-      {
-        name: 'Okra',
-        price: 40.0,
-        image: '/Images/lady.jpg',
-        description: 'Tender and mild, ideal for stir-fries or curries.',
-      },
-      {
-        name: 'Zucchini',
-        price: 60.0,
-        image: '/Images/zucchini.jpg',
-        description: 'Mild flavor, perfect for sautéing or adding to pasta.'
-      },
-      {
-        name: 'Pumpkin',
-        price: 45.0,
-        image: '/Images/pumpkin.jpg',
-        description: 'Sweet and nutritious, great for soups, curries, or roasting.'
-      },
+        name: "Mango",
+        price: 180,
+        image: "/public/mango.jpg",
+        description: "Sweet and flavorful mangoes loved by all ages."
+      }
     ],
-    milk: [
+
+    vegetables: [
       {
-        name: 'Full Cream Milk',
-        price: 45.0,
-        image: '/Images/fullcream.jpg',
-        description: 'Rich and creamy, perfect for coffee, tea, or desserts.',
+        name: "Tomato",
+        price: 40,
+        image: "/public/tomato.jpg",
+        description: "Fresh tomatoes ideal for curries and salads."
       },
       {
-        name: 'Low Fat Milk',
-        price: 40.0,
-        image: '/Images/lowfat.jpg',
-        description: 'Healthy and nutritious, great for smoothies and cereals.',
+        name: "Coriander",
+        price: 30,
+        image: "/public/coriander.jpg",
+        description: "Fresh coriander leaves for garnishing and flavor."
       },
       {
-        name: 'Chocolate Milk',
-        price: 55.0,
-        image: '/Images/chocolate.jpg',
-        description: 'Sweet and indulgent, a favorite treat for kids and adults alike.',
+        name: "Onion",
+        price: 35,
+        image: "/public/onions.jpg",
+        description: "Essential kitchen onion with strong aroma."
       },
       {
-        name: 'Skim Milk',
-        price: 35.0,
-        image: '/Images/skim.jpg',
-        description: 'Light and refreshing, perfect for those who prefer low-fat options.',
+        name: "Capsicum-Green",
+        price: 60,
+        image: "/public/Capsicum - Green.jpg",
+        description: "Crunchy green capsicum for stir-fries and salads."
       },
       {
-        name: 'Buttermilk',
-        price: 30.0,
-        image: '/Images/buttermilk.jpg',
-        description: 'Tangy and refreshing, ideal for making traditional Indian drinks and dishes.',
+        name: "Carrot",
+        price: 45,
+        image: "/public/carrot.jpg",
+        description: "Sweet carrots rich in vitamin A."
       },
       {
-        name: 'Flavored Milk (Strawberry)',
-        price: 50.0,
-        image: '/Images/strawberrymilk.jpg',
-        description: 'Deliciously sweet and fruity, perfect for a refreshing drink.',
+        name: "Spinach",
+        price: 30,
+        image: "/public/spinach.jpg",
+        description: "Leafy spinach packed with iron and nutrients."
       },
       {
-        name: 'Almond Milk',
-        price: 70.0,
-        image: '/Images/almondmilk.jpg',
-        description: 'Nutty and lactose-free, a great dairy alternative for vegans.',
+        name: "Potato",
+        price: 30,
+        image: "/public/potato.jpg",
+        description: "Versatile potatoes suitable for daily cooking."
       },
       {
-        name: 'Soy Milk',
-        price: 60.0,
-        image: '/Images/soymilk.jpg',
-        description: 'Rich in protein, a perfect alternative for those avoiding dairy.',
+        name: "Broccoli",
+        price: 90,
+        image: "/public/broccoli.jpg",
+        description: "Healthy broccoli rich in vitamins."
       },
       {
-        name: 'A2 Milk',
-        price: 75.0,
-        image: '/Images/a2milk.jpg',
-        description: 'Made from A2 cows, known for being easier on digestion.',
+        name: "Garlic",
+        price: 70,
+        image: "/public/garlic.jpg",
+        description: "Aromatic garlic used in everyday cooking."
       },
       {
-        name: 'Toned Milk',
-        price: 40.0,
-        image: '/Images/tonedmilk.jpg',
-        description: 'Light and healthy, ideal for making tea or adding to smoothies.',
+        name: "Ginger",
+        price: 60,
+        image: "/public/ginger.jpg",
+        description: "Fresh ginger with strong flavor and health benefits."
       },
       {
-        name: 'Cow Milk',
-        price: 50.0,
-        image: '/Images/cowmilk.jpg',
-        description: 'Fresh, pure, and rich in nutrients, perfect for all your dairy needs.',
+        name: "Cabbage",
+        price: 50,
+        image: "/public/cabbage.jpg",
+        description: "Crisp cabbage ideal for salads and curries."
       },
       {
-        name: 'Goat Milk',
-        price: 80.0,
-        image: '/Images/goatmilk.jpg',
-        description: 'A healthier alternative, rich in vitamins and minerals.',
+        name: "Coconut",
+        price: 45,
+        image: "/public/coconut.jpg",
+        description: "Fresh coconut with natural sweetness."
       },
       {
-        name: 'Organic Milk',
-        price: 90.0,
-        image: '/Images/organicmilk.jpg',
-        description: 'Sourced from organic farms, free from pesticides and hormones.',
+        name: "Mushroom",
+        price: 110,
+        image: "/public/mushroom.jpg",
+        description: "Fresh mushrooms rich in protein."
       },
       {
-        name: 'Coconut Milk',
-        price: 80.0,
-        image: '/Images/coconutmilk.jpg',
-        description: 'Natural, creamy, and great for making smoothies or curries.'
-      },
-      {
-        name: 'Oat Milk',
-        price: 65.0,
-        image: '/Images/oatmilk.jpg',
-        description: 'Smooth and creamy, a dairy-free alternative with a mild flavor.'
-      },
+        name: "Beans",
+        price: 60,
+        image: "/public/beans.jpg",
+        description: "Fresh green beans packed with fiber."
+      }
     ],
+
+    milkproducts: [
+      {
+        name: "Full Cream Milk",
+        price: 68,
+        image: "/public/Amul Milk.jpg",
+        description: "Rich full-cream milk with high fat content."
+      },
+      {
+        name: "Amul Butter",
+        price: 55,
+        image: "/public/Amul Butter.jpg",
+        description: "Creamy Amul butter perfect for cooking and spreading."
+      },
+      {
+        name: "Amul Butter Milk",
+        price: 25,
+        image: "/public/Amul Buttermilk.jpg",
+        description: "Refreshing buttermilk aiding digestion."
+      },
+      {
+        name: "amul Cheese",
+        price: 120,
+        image: "/public/Amul Cheese.jpg",
+        description: "Soft and rich Amul cheese slices."
+      },
+      {
+        name: "Amul Cool Kesar",
+        price: 35,
+        image: "/public/Amul Cool Kesar.jpg",
+        description: "Sweet kesar-flavored milk drink."
+      },
+      {
+        name: "Amul Lassi",
+        price: 30,
+        image: "/public/Amul Lassi.jpg",
+        description: "Thick and refreshing yogurt-based lassi."
+      },
+      {
+        name: "Amul Panner",
+        price: 95,
+        image: "/public/Amul Panner.jpg",
+        description: "Fresh paneer ideal for curries."
+      },
+      {
+        name: "Chocolate Milk",
+        price: 40,
+        image: "/public/Chocolate Milk.jpg",
+        description: "Sweet chocolate-flavored milk drink."
+      }
+    ],
+
     snacks: [
       {
-        name: 'Potato Chips',
-        price: 20.0,
-        image: '/Images/chips.jpg',
-        description: 'Crispy and salty, perfect for a quick snack or to pair with your favorite dip.',
+        name: "Bingo Original",
+        price: 20,
+        image: "/public/Bingo Original.jpg",
+        description: "Crispy salted potato chips."
       },
       {
-        name: 'Chocolate Biscuit',
-        price: 25.0,
-        image: '/Images/chocolatebiscuit.jpg',
-        description: 'Delicious chocolate-filled biscuits, perfect for tea time or as a sweet treat.',
+        name: "Jim Jam",
+        price: 35,
+        image: "/public/Jim Jam.jpg",
+        description: "Crunchy biscuits with jam filling."
       },
       {
-        name: 'Savoury Popcorn',
-        price: 15.0,
-        image: '/Images/popcorn.jpg',
-        description: 'Light and airy, seasoned with savory spices for a perfect snack while watching movies.',
+        name: "Kur Kure Green Chutney",
+        price: 15,
+        image: "/public/Kur Kure Green Chutney Style.jpg",
+        description: "Tangy Indian snacks."
       },
       {
-        name: 'Namkeen',
-        price: 30.0,
-        image: '/Images/namkeen.jpg',
-        description: 'A crunchy, spicy Indian snack, perfect to munch on during tea time.',
+        name: "Lays",
+        price: 20,
+        image: "/public/Lays.jpg",
+        description: "Classic potato chips."
       },
       {
-        name: 'Masala Peanuts',
-        price: 35.0,
-        image: '/Images/masalapeanuts.jpg',
-        description: 'Roasted peanuts with a flavorful masala coating, a perfect blend of spicy and crunchy.',
+        name: "Little Hearts",
+        price: 10,
+        image: "/public/Little Hearts.jpg",
+        description: "Sweet heart-shaped biscuits."
       },
       {
-        name: 'Cheese Crackers',
-        price: 40.0,
-        image: '/Images/cheesecrackers.jpg',
-        description: 'Crunchy crackers with a cheesy flavor, perfect for pairing with a cup of tea.',
+        name: "Lotte Choco Pie",
+        price: 30,
+        image: "/public/Lotte Choco Pie.jpg",
+        description: "Marshmallow-filled chocolate snack."
       },
       {
-        name: 'Fruit Candy',
-        price: 20.0,
-        image: '/Images/fruitcandy.jpg',
-        description: 'Sweet and tangy fruit-flavored candies, a fun treat for kids and adults alike.',
+        name: "Maggie",
+        price: 14,
+        image: "/public/Maggie.jpg",
+        description: "Quick and easy instant noodles."
       },
       {
-        name: 'Salted Pretzels',
-        price: 45.0,
-        image: '/Images/pretzels.jpg',
-        description: 'Crunchy, salty pretzels, ideal for a quick snack on the go.',
+        name: "Moms Magic",
+        price: 30,
+        image: "/public/Moms Magic.jpg",
+        description: "Buttery nut biscuits."
       },
       {
-        name: 'Granola Bars',
-        price: 60.0,
-        image: '/Images/granolabars.jpg',
-        description: 'Healthy and filling, these granola bars are packed with nuts, seeds, and dried fruits.',
+        name: "Monaco",
+        price: 10,
+        image: "/public/Monaco.jpg",
+        description: "Salty and crispy biscuits."
       },
       {
-        name: 'Ice Cream Cone',
-        price: 50.0,
-        image: '/Images/icecreamcone.jpg',
-        description: 'Crispy cone filled with creamy ice cream, a perfect treat to cool you down.',
+        name: "Choco Cakes",
+        price: 25,
+        image: "/public/choco cakes.jpg",
+        description: "Soft chocolate cakes."
       },
       {
-        name: 'Fruit Jelly',
-        price: 30.0,
-        image: '/Images/fruitjelly.jpg',
-        description: 'Sweet and refreshing fruit jelly, a colorful treat for all ages.',
+        name: "ChocoChip Cookies",
+        price: 40,
+        image: "/public/Chocochip Cookies.jpg",
+        description: "Loaded with chocolate chips."
       },
       {
-        name: 'Samosa',
-        price: 15.0,
-        image: '/Images/samosa.jpg',
-        description: 'Crispy, fried pastry filled with spiced potatoes and peas, a popular Indian snack.',
-      },
-      {
-        name: 'Oatmeal Cookies',
-        price: 35.0,
-        image: '/Images/oatmealcookies.jpg',
-        description: 'Chewy and hearty, made with wholesome oats and sweet raisins.'
-      },
-      {
-        name: 'Rice Cakes',
-        price: 20.0,
-        image: '/Images/ricecakes.jpg',
-        description: 'Light and crispy rice cakes, perfect for a low-calorie snack.'
+        name: "Kur Kure Chilli",
+        price: 15,
+        image: "/public/kur kure.jpg",
+        description: "Hot and spicy Indian snack."
       }
     ],
+
     chocolates: [
       {
-        name: 'Dark Chocolate',
-        price: 80.0,
-        image: '/Images/darkchocolate.jpg',
-        description: 'Rich, intense cocoa flavor with 70% cocoa content, perfect for dark chocolate lovers.',
+        name: "Dairy Milk Special Silk",
+        price: 180,
+        image: "/public/Dairy Milk Special Silk.jpg",
+        description: "Smooth and creamy silk chocolate."
       },
       {
-        name: 'Milk Chocolate',
-        price: 60.0,
-        image: '/Images/milkchocolate.jpg',
-        description: 'Smooth and creamy milk chocolate, a classic treat loved by all ages.',
+        name: "Dark Chocolate",
+        price: 120,
+        image: "/public/Dark Chocolate.jpg",
+        description: "Rich dark chocolate with intense cocoa."
       },
       {
-        name: 'White Chocolate',
-        price: 70.0,
-        image: '/Images/whitechocolate.jpg',
-        description: 'Sweet and creamy white chocolate, with a rich and velvety texture.',
+        name: "Dairy Milk Bubbly",
+        price: 90,
+        image: "/public/Dairy Milk Bubbly.jpg",
+        description: "Light and airy bubbly chocolate."
       },
       {
-        name: 'Chocolate Truffles',
-        price: 120.0,
-        image: '/Images/truffles.jpg',
-        description: 'Luxurious and indulgent truffles with a rich chocolate filling.',
+        name: "Chocolush",
+        price: 150,
+        image: "/public/chocolush.jpg",
+        description: "Premium filled chocolate treat."
       },
       {
-        name: 'Hazelnut Chocolate',
-        price: 85.0,
-        image: '/Images/hazelnutchocolate.jpg',
-        description: 'Smooth milk chocolate with roasted hazelnuts, a perfect combination of creamy and crunchy.',
+        name: "Dairy Milk Classics",
+        price: 45,
+        image: "/public/Dairy Milk Classics.jpg",
+        description: "Original milk chocolate flavor."
       },
       {
-        name: 'Chocolate Almond Bar',
-        price: 95.0,
-        image: '/Images/chocolatealmond.jpg',
-        description: 'Rich milk chocolate combined with crunchy almonds for a satisfying snack.',
+        name: "Dairy Milk Hearts&Roses",
+        price: 250,
+        image: "/public/Dairy Milk Hearts&Roses.jpg",
+        description: "Perfect gift for special occasions."
       },
       {
-        name: 'Mint Chocolate',
-        price: 75.0,
-        image: '/Images/mintchocolate.jpg',
-        description: 'Refreshing mint combined with rich chocolate, perfect for those who love a minty twist.',
+        name: "Dairy Milk Hazelnut",
+        price: 110,
+        image: "/public/Dairy Milk Hezelnut.jpg",
+        description: "Milk chocolate with nutty hazelnuts."
       },
       {
-        name: 'Caramel Chocolate',
-        price: 90.0,
-        image: '/Images/caramelchocolate.jpg',
-        description: 'Smooth chocolate with a creamy caramel filling, a deliciously sweet combination.',
+        name: "Dairy Milk Roasted Almond",
+        price: 110,
+        image: "/public/Dairy Milk Roasted Almond.jpg",
+        description: "Crunchy roasted almonds in chocolate."
       },
       {
-        name: 'Chocolate Fudge',
-        price: 110.0,
-        image: '/Images/chocolatefudge.jpg',
-        description: 'Dense, rich chocolate fudge with a melt-in-your-mouth texture, ideal for chocolate lovers.',
+        name: "Dairy Milk Silk Fruit&Nut",
+        price: 185,
+        image: "/public/Dairy milk Silk Fruit&Nut.jpg",
+        description: "Fruity and nutty milk chocolate."
       },
       {
-        name: 'Chocolate Strawberry',
-        price: 95.0,
-        image: '/Images/chocolatecoveredstrawberry.jpg',
-        description: 'Fresh strawberries dipped in rich chocolate,perfect blend of fruity ',
+        name: "Dairy Milk Silk",
+        price: 110,
+        image: "/public/Dairy milk silk.jpg",
+        description: "Pure velvety milk chocolate."
+      }
+    ],
+
+    sports: [
+      {
+        name: "Cricket Bat",
+        price: 1500,
+        image: "/public/Sports/1.jpg",
+        description: "High-quality willow cricket bat."
       },
       {
-        name: 'Milk Chocolate with Nuts',
-        price: 80.0,
-        image: '/Images/chocolatenuts.jpg',
-        description: 'Creamy milk chocolate with a delightful crunch of assorted nuts, perfect for snacking.',
+        name: "Football",
+        price: 999,
+        image: "/public/Sports/2.jpg",
+        description: "Professional size 5 football."
       },
       {
-        name: 'Chocolate Mousse Cake',
-        price: 150.0,
-        image: '/Images/chocolatemousse.jpg',
-        description: 'A rich and creamy chocolate mousse cake, perfect for special occasions or a sweet treat.',
+        name: "Badminton Racket",
+        price: 1200,
+        image: "/public/Sports/3.jpg",
+        description: "Lightweight carbon fiber racket."
       },
       {
-        name: 'Chocolate Covered Pretzels',
-        price: 65.0,
-        image: '/Images/chocolatepretzels.jpg',
-        description: 'Salty pretzels dipped in rich chocolate, an irresistible sweet and salty combination.',
+        name: "Basketball",
+        price: 850,
+        image: "/public/Sports/4.jpg",
+        description: "All-surface grip basketball."
       },
       {
-        name: 'Chocolate Ganache',
-        price: 140.0,
-        image: '/Images/ganache.jpg',
-        description: 'Rich chocolate ganache, perfect for desserts and cakes.'
+        name: "Tennis Ball",
+        price: 150,
+        image: "/public/Sports/5.jpg",
+        description: "Durable wool felt tennis ball."
       },
+      {
+        name: "Yoga Mat",
+        price: 600,
+        image: "/public/Sports/6.jpg",
+        description: "Non-slip cushioned yoga mat."
+      },
+      {
+        name: "Dumbbells",
+        price: 2500,
+        image: "/public/Sports/7.jpg",
+        description: "Adjustable weight dumbbell set."
+      },
+      {
+        name: "Skip Rope",
+        price: 300,
+        image: "/public/Sports/8.jpg",
+        description: "High-speed jumping rope."
+      },
+      {
+        name: "Helmet",
+        price: 1800,
+        image: "/public/Sports/9.jpg",
+        description: "Protective sports safety helmet."
+      }
+    ],
+
+    fashion: [
+      {
+        name: "Casual T-Shirt",
+        price: 599,
+        image: "/public/Fashion/1.jpg",
+        description: "Comfortable cotton t-shirt."
+      },
+      {
+        name: "Slim Fit Jeans",
+        price: 1499,
+        image: "/public/Fashion/2.jpg",
+        description: "Classic blue denim jeans."
+      },
+      {
+        name: "Formal Shirt",
+        price: 899,
+        image: "/public/Fashion/3.jpg",
+        description: "Elegant white formal shirt."
+      },
+      {
+        name: "Leather Jacket",
+        price: 3500,
+        image: "/public/Fashion/4.jpg",
+        description: "Stylish black leather jacket."
+      },
+      {
+        name: "Hoodie",
+        price: 1200,
+        image: "/public/Fashion/5.jpg",
+        description: "Warm fleece-lined hoodie."
+      },
+      {
+        name: "Cotton Trousers",
+        price: 1100,
+        image: "/public/Fashion/6.jpg",
+        description: "Breathable summer trousers."
+      },
+      {
+        name: "Canvas Shoes",
+        price: 1800,
+        image: "/public/Fashion/7.jpg",
+        description: "Trendy casual canvas shoes."
+      },
+      {
+        name: "Summer Dress",
+        price: 1600,
+        image: "/public/Fashion/8.jpg",
+        description: "Light floral print dress."
+      },
+      {
+        name: "Denim Shorts",
+        price: 799,
+        image: "/public/Fashion/9.jpg",
+        description: "Cool casual denim shorts."
+      },
+      {
+        name: "Silk Scarf",
+        price: 450,
+        image: "/public/Fashion/10.jpg",
+        description: "Soft elegant silk scarf."
+      },
+      {
+        name: "Winter Coat",
+        price: 4500,
+        image: "/public/Fashion/11.jpg",
+        description: "Heavy insulation winter coat."
+      }
+    ],
+
+    books: [
+      {
+        name: "Mindset",
+        price: 350,
+        image: "/public/Books/1.jpg",
+        description: "A classic novel by F. Scott Fitzgerald."
+      },
+      {
+        name: "Deep Work",
+        price: 400,
+        image: "/public/Books/2.jpg",
+        description: "A powerful story by Harper Lee."
+      },
+      {
+        name: "Surrounded By Idiots",
+        price: 300,
+        image: "/public/Books/3.jpg",
+        description: "George Orwell's dystopian masterpiece."
+      },
+      {
+        name: "Ego is the enemy",
+        price: 550,
+        image: "/public/Books/4.jpg",
+        description: "Tiny changes, remarkable results."
+      },
+      {
+        name: "The Subtle Art of Not Giving a F*ck",
+        price: 320,
+        image: "/public/Books/5.jpg",
+        description: "A journey of following your dreams."
+      },
+      {
+        name: "The Laws of Human Nature",
+        price: 600,
+        image: "/public/Books/6.jpg",
+        description: "Insights into how we think."
+      },
+      {
+        name: "Women Who Think To much",
+        price: 450,
+        image: "/public/Books/7.jpg",
+        description: "A memoir by Tara Westover."
+      },
+      {
+        name: "The Art Of Happiness",
+        price: 380,
+        image: "/public/Books/8.jpg",
+        description: "A gripping psychological thriller."
+      },
+      {
+        name: "Better than The Movies",
+        price: 420,
+        image: "/public/Books/9.jpg",
+        description: "Financial lessons for life."
+      },
+      {
+        name: "You Become What you Think",
+        price: 500,
+        image: "/public/Books/10.jpg",
+        description: "The magic begins."
+      },
+      {
+        name: "Good vibes Good Life",
+        price: 299,
+        image: "/public/Books/e379c28be0aa06727d81a80b7f6d48b5.jpg",
+        description: "Timeless wisdom on competition."
+      }
+    ],
+
+    accessories: [
+      {
+        name: "Leather Wallet",
+        price: 800,
+        image: "/public/Accessories/1.jpg",
+        description: "Genuine leather slim wallet."
+      },
+      {
+        name: "Sunglasses",
+        price: 1200,
+        image: "/public/Accessories/2.jpg",
+        description: "UV protection stylish sunglasses."
+      },
+      {
+        name: "Handbag",
+        price: 2500,
+        image: "/public/Accessories/3.jpg",
+        description: "Spacious designer handbag."
+      },
+      {
+        name: "Backpack",
+        price: 1800,
+        image: "/public/Accessories/4.jpg",
+        description: "Waterproof laptop backpack."
+      },
+      {
+        name: "Belt",
+        price: 600,
+        image: "/public/Accessories/5.jpg",
+        description: "Classic brown leather belt."
+      },
+      {
+        name: "Watch Box",
+        price: 1500,
+        image: "/public/Accessories/6.jpg",
+        description: "Premium watch organizer."
+      },
+      {
+        name: "Jewelry Set",
+        price: 3000,
+        image: "/public/Accessories/7.jpg",
+        description: "Elegant gold-plated set."
+      },
+      {
+        name: "Premium Tie",
+        price: 750,
+        image: "/public/Accessories/e5402bafe5ba36e5bbfa2502ec0b1398.jpg",
+        description: "Formal silk necktie."
+      }
     ]
   },
-  reducers: {
-    // Future reducers can be added here
-  }
+  reducers: {}
 });
 
+//  CART SLICE
 
 const cartSlice = createSlice({
-  name: 'cart',
+  name: "cart",
   initialState: [],
   reducers: {
-    AddToCart: (state, inputItem) => {
-      const item = state.find(item => item.name === inputItem.payload.name);
-      if (item) {
-        item.quantity += 1;
-      } else {
-        state.push({ ...inputItem.payload, quantity: 1 });
-      }
+    AddToCart: (state, action) => {
+      const item = state.find(i => i.name === action.payload.name);
+      if (item) item.quantity += 1;
+      else state.push({ ...action.payload, quantity: 1 });
     },
-    IncrCart: (state, inputItem) => {
-      const item = state.find(item => item.name === inputItem.payload.name);
-      if (item) {
-        item.quantity += 1;
-      }
+    IncrCart: (state, action) => {
+      const item = state.find(i => i.name === action.payload.name);
+      if (item) item.quantity += 1;
     },
     DecrCart: (state, action) => {
       const item = state.find(i => i.name === action.payload.name);
-      if (item && item.quantity > 1) {
-        item.quantity -= 1;
-      } else {
-        return state.filter(i => i.name !== action.payload.name);
-      }
+      if (item && item.quantity > 1) item.quantity -= 1;
+      else return state.filter(i => i.name !== action.payload.name);
     },
-    RemoveFromCart: (state, action) => {
-      return state.filter(i => i.name !== action.payload.name);
-    },
+    RemoveFromCart: (state, action) =>
+      state.filter(i => i.name !== action.payload.name),
     clearCart: () => [],
   }
 });
 
-export let { AddToCart, IncrCart, DecrCart, RemoveFromCart, clearCart } = cartSlice.actions;
+export const {
+  AddToCart,
+  IncrCart,
+  DecrCart,
+  RemoveFromCart,
+  clearCart
+} = cartSlice.actions;
+
+// WISHLIST SLICE
 
 const wishlistSlice = createSlice({
-  name: 'wishlist',
+  name: "wishlist",
   initialState: [],
   reducers: {
     AddToWishlist: (state, action) => {
       const item = state.find(i => i.name === action.payload.name);
-      if (!item) {
-        state.push(action.payload);
-      }
+      if (!item) state.push(action.payload);
     },
-    RemoveFromWishlist: (state, action) => {
-      return state.filter(i => i.name !== action.payload.name);
-    },
+    RemoveFromWishlist: (state, action) =>
+      state.filter(i => i.name !== action.payload.name),
     clearWishlist: () => [],
   }
 });
 
-export let { AddToWishlist, RemoveFromWishlist, clearWishlist } = wishlistSlice.actions;
+export const {
+  AddToWishlist,
+  RemoveFromWishlist,
+  clearWishlist
+} = wishlistSlice.actions;
 
-
+// ORDERS SLICE
 
 export const fetchOrders = createAsyncThunk(
   "order/fetchOrders",
   async (_, { rejectWithValue }) => {
     try {
-      const data = await getMyOrders();
-
-      return data.map((order) => ({
-        id: order.id,
-        transactionId: order.transaction_id || `ORD-${order.id}`,
-        payment_mode: order.payment_mode,
-        date: order.order_date,
-        totalAmount:
-          order.items?.reduce(
-            (sum, item) =>
-              sum + Number(item.price) * item.quantity,
-            0
-          ) || 0,
-        status: "Completed",
-        items:
-          order.items?.map((item) => ({
-            name: item.product_name,
-            price: Number(item.price),
-            quantity: item.quantity,
-          })) || [],
-      }));
+      return await getMyOrders();
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data || error.message
-      );
+      return rejectWithValue(error.message);
     }
   }
 );
-
-/* ================================
-   SLICE
-================================ */
 
 const orderSlice = createSlice({
   name: "order",
@@ -554,9 +722,9 @@ const orderSlice = createSlice({
     error: null,
   },
   reducers: {},
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(fetchOrders.pending, (state) => {
+      .addCase(fetchOrders.pending, state => {
         state.isLoading = true;
       })
       .addCase(fetchOrders.fulfilled, (state, action) => {
@@ -567,8 +735,11 @@ const orderSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       });
-  },
+  }
 });
+
+// STORE
+
 const store = configureStore({
   reducer: {
     products: productsSlice.reducer,

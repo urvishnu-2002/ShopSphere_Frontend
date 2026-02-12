@@ -60,7 +60,7 @@ export default function BankDetails() {
         setVendorData(combinedData);
     }, []);
 
-    /* ---------------- FIELD VALIDATION ---------------- */
+    // FIELD VALIDATION
 
     const validateField = (name, value, currentForm) => {
         switch (name) {
@@ -97,7 +97,7 @@ export default function BankDetails() {
         }
     };
 
-    /* ---------------- HANDLE CHANGE ---------------- */
+    // HANDLE CHANGE
 
     const handleChange = (field, rawValue) => {
         let value = rawValue;
@@ -127,7 +127,7 @@ export default function BankDetails() {
         });
     };
 
-    /* ---------------- FINAL SUBMIT ---------------- */
+    // FINAL SUBMIT
 
     const handleContinue = async () => {
         const newErrors = {};
