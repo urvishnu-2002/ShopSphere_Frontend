@@ -5,7 +5,6 @@ import { Badge } from '../../components/ui/badge';
 import { FaBox, FaDollarSign, FaMapMarkerAlt, FaCheck, FaSignOutAlt, FaBars, FaTruck, FaClipboardList, FaMoneyBillWave, FaTachometerAlt } from 'react-icons/fa';
 
 
-// Simple toast notification helper
 const toast = {
     success: (message) => {
         const toastEl = document.createElement('div');
@@ -18,23 +17,35 @@ const toast = {
 
 import { useNavigate } from 'react-router-dom';
 
-// ... imports ...
 
-export default function DeliveryDashboard({ onLogout }) {
+const mockOrders = [
+    { id: 'ORD001', userName: 'John Doe', deliveryAddress: '123 Main St, New York, NY', status: 'confirmed', deliveryPersonId: null },
+    { id: 'ORD002', userName: 'Jane Smith', deliveryAddress: '456 Park Ave, Los Angeles, CA', status: 'shipped', deliveryPersonId: 'd1' },
+    { id: 'ORD003', userName: 'Mike Johnson', deliveryAddress: '789 Elm St, Chicago, IL', status: 'delivered', deliveryPersonId: 'd1' },
+    { id: 'ORD004', userName: 'Sarah Wilson', deliveryAddress: '101 Pine St, Seattle, WA', status: 'confirmed', deliveryPersonId: null },
+];
+
+export default function DeliveryDashboard({ onLogout: propOnLogout }) {
     const navigate = useNavigate();
+
+
+    const onLogout = propOnLogout || (() => {
+        localStorage.removeItem("accessToken");
+        navigate('/login');
+    });
+
     const deliveryPersonId = 'd1';
     const [orders, setOrders] = useState(mockOrders);
     const [sidebarOpen, setSidebarOpen] = useState(true);
 
-    // ... filters ...
+
     const assignedOrders = orders.filter(o => o.deliveryPersonId === deliveryPersonId);
     const availableOrders = orders.filter(o => !o.deliveryPersonId && o.status === 'confirmed');
     const completedOrders = assignedOrders.filter(o => o.status === 'delivered');
-    // Active deliveries are now handled in the Assigned Orders page
 
     const totalEarnings = completedOrders.length * 10;
 
-    // ... handlers ...
+
     const handleAcceptOrder = (orderId) => {
         setOrders(orders.map(o =>
             o.id === orderId
@@ -44,7 +55,6 @@ export default function DeliveryDashboard({ onLogout }) {
         toast.success('Order accepted! Go to Assigned Orders to track it.');
     };
 
-    // ... (rest of handlers) ...
 
     const navItems = [
         { id: 'dashboard', label: 'Dashboard', icon: FaTachometerAlt, path: '/delivery/dashboard' },
@@ -72,7 +82,7 @@ export default function DeliveryDashboard({ onLogout }) {
                 <nav className="flex-1 p-4 space-y-2">
                     {navItems.map((item) => {
                         const Icon = item.icon;
-                        const isActive = item.id === 'dashboard'; // Highlighting only dashboard on this page
+                        const isActive = item.id === 'dashboard';
                         return (
                             <button
                                 key={item.id}

@@ -7,7 +7,7 @@ const API_BASE_URL =
 
 export const loginUser = async (loginData) => {
   const response = await axios.post(
-    `${API_BASE_URL}/login/`,
+    `${API_BASE_URL}/login`,      
     loginData
   );
 
@@ -23,7 +23,7 @@ export const loginUser = async (loginData) => {
 // SIGNUP
 export const signupUser = async (signupData) => {
   const response = await axios.post(
-    `${API_BASE_URL}/register/`,
+    `${API_BASE_URL}/register`,
     signupData
   );
   return response.data;
