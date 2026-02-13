@@ -112,17 +112,17 @@ function Navbar() {
 
         // Navigate to home page and update URL parameter
         if (value.trim()) {
-            navigate(`/?search=${encodeURIComponent(value.trim())}`, { replace: true });
+            navigate(`/home?search=${encodeURIComponent(value.trim())}`, { replace: true });
         } else {
             // If query is empty, show all products
-            navigate('/', { replace: true });
+            navigate('/home', { replace: true });
         }
     };
 
     // Clear search
     const handleClearSearch = () => {
         setSearchQuery("");
-        navigate('/', { replace: true });
+        navigate('/home', { replace: true });
     };
 
 
@@ -155,7 +155,7 @@ function Navbar() {
                         LOGO
                         ============================================ */}
                     <Link
-                        to="/"
+                        to="/home"
                         className="flex items-center gap-3 group flex-shrink-0"
                         aria-label="ShopSphere Home"
                     >
@@ -168,8 +168,8 @@ function Navbar() {
                     <div className="hidden md:flex items-center flex-grow justify-end ml-8 gap-4">
                         <div className="flex items-center gap-4 w-full max-w-4xl">
                             <Link
-                                to="/"
-                                className={`p-2.5 rounded-xl transition-all duration-300 ease-out group hover:bg-white/10 ${isActive("/")
+                                to="/home"
+                                className={`p-2.5 rounded-xl transition-all duration-300 ease-out group hover:bg-white/10 ${isActive("/home")
                                     ? "bg-white/10 text-violet-400"
                                     : "text-violet-200 hover:text-white"
                                     }`}
@@ -177,7 +177,7 @@ function Navbar() {
                             >
                                 <FaHome
                                     size={22}
-                                    className={`transition-transform duration-300 group-hover:scale-110 drop-shadow-lg ${isActive("/") ? "drop-shadow-[0_0_8px_rgba(167,139,250,0.5)]" : ""}`}
+                                    className={`transition-transform duration-300 group-hover:scale-110 drop-shadow-lg ${isActive("/home") ? "drop-shadow-[0_0_8px_rgba(167,139,250,0.5)]" : ""}`}
                                 />
                             </Link>
 
@@ -392,9 +392,9 @@ function Navbar() {
                     <div className="absolute top-[72px] left-0 right-0 bg-[#1e1b4b]/95 backdrop-blur-xl border-t border-white/10 shadow-2xl animate-in slide-in-from-top-2 duration-300 p-4">
                         <div className="flex flex-col gap-2">
                             <Link
-                                to="/"
+                                to="/home"
                                 onClick={() => setIsOpen(false)}
-                                className={`px-4 py-3 rounded-xl font-medium transition-all flex items-center gap-3 ${isActive("/")
+                                className={`px-4 py-3 rounded-xl font-medium transition-all flex items-center gap-3 ${isActive("/home")
                                     ? "bg-violet-600/30 text-white border border-violet-500/50"
                                     : "text-violet-200 hover:bg-white/5 hover:text-white"
                                     }`}

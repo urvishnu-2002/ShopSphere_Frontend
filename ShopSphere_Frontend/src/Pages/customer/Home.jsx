@@ -104,21 +104,23 @@ function Home() {
 
     let result = [];
 
-    if (activeCategory === "all") {
-      result = allProducts;
-    } else {
-      const categoryConfig = CATEGORIES.find((c) => c.id === activeCategory);
-      if (categoryConfig && categoryConfig.key) {
-        result = products[categoryConfig.key] || [];
-      }
-    }
-
+    // If there is a search query, search across ALL products
     if (searchQuery) {
-      result = result.filter(
+      result = allProducts.filter(
         (item) =>
           item.name.toLowerCase().includes(searchQuery) ||
           item.description.toLowerCase().includes(searchQuery)
       );
+    } else {
+      // Otherwise, filter by active category
+      if (activeCategory === "all") {
+        result = allProducts;
+      } else {
+        const categoryConfig = CATEGORIES.find((c) => c.id === activeCategory);
+        if (categoryConfig && categoryConfig.key) {
+          result = products[categoryConfig.key] || [];
+        }
+      }
     }
 
     setIsAnimating(true);
@@ -141,11 +143,26 @@ function Home() {
   };
 
   const handleWishlistClick = (item) => {
+    const user = localStorage.getItem("user");
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
     if (isInWishlist(item.name)) {
       dispatch(RemoveFromWishlist(item));
     } else {
       dispatch(AddToWishlist(item));
     }
+  };
+
+  const handleAddToCartClick = (item) => {
+    const user = localStorage.getItem("user");
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    dispatch(AddToCart(item));
   };
 
   return (
@@ -357,7 +374,7 @@ function Home() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          dispatch(AddToCart(item));
+                          handleAddToCartClick(item);
                         }}
                         className="group/btn relative bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white font-semibold py-2 px-4 rounded-xl shadow-md shadow-violet-500/20 hover:shadow-lg hover:shadow-violet-500/30 transform hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 overflow-hidden text-sm"
                       >
