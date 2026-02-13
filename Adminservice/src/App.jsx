@@ -16,8 +16,7 @@ import { NotificationProvider } from './context/NotificationContext';
 import { VendorProvider } from './context/VendorContext';
 import { UserProvider } from './context/UserContext';
 import { ProductProvider } from './context/ProductContext';
-import DeliveryAgentLogin from './Pages/DeliveryAgentLogin';
-import './App.css';
+
 
 function App() {
   return (
@@ -32,7 +31,6 @@ function App() {
 
                 {/* Login Routes */}
                 <Route path="/login" element={<AdminLogin />} />
-                <Route path="/delivery-login" element={<DeliveryAgentLogin />} />
 
                 {/* Protected Admin Routes */}
                 <Route
