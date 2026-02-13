@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Sidebar from "./Sidebar";
 
 export default function AddProduct() {
   const navigate = useNavigate();
@@ -16,8 +17,15 @@ export default function AddProduct() {
 
   const [previews, setPreviews] = useState([]);
 
+  const [customCategory, setCustomCategory] = useState("");
+
   const handleChange = (e) => {
-    setProduct({ ...product, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setProduct({ ...product, [name]: value });
+
+    if (name === 'category' && value !== 'Other') {
+      setCustomCategory("");
+    }
   };
 
   // ✅ Pick many images + add more later
@@ -58,21 +66,28 @@ export default function AddProduct() {
       return;
     }
 
+    if (product.category === 'Other' && !customCategory.trim()) {
+      alert('Please specify a category');
+      return;
+    }
+
     const existing = JSON.parse(localStorage.getItem("products")) || [];
 
     existing.push({
       ...product,
+      category: product.category === 'Other' ? customCategory.trim() : product.category,
       id: Date.now()
     });
 
     localStorage.setItem("products", JSON.stringify(existing));
 
     alert("Submitted for approval!");
-    navigate("/products");
+    navigate("/vendorallproducts");
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen p-6 lg:p-10">
+    
+    <div>
       <h1 className="text-2xl font-bold mb-6">Product Information</h1>
 
       <div>
@@ -138,7 +153,21 @@ export default function AddProduct() {
           <option>Fashion</option>
           <option>Groceries</option>
           <option>Home</option>
+          <option>Other</option>
         </select>
+
+        {product.category === 'Other' && (
+          <div className="mb-4">
+            <label className="text-sm font-semibold">Specify Category *</label>
+            <input
+              name="customCategory"
+              value={customCategory}
+              onChange={(e) => setCustomCategory(e.target.value)}
+              placeholder="Enter category"
+              className="w-full bg-gray-50 border rounded-md px-4 py-3 mt-2"
+            />
+          </div>
+        )}
 
         {/* MULTIPLE IMAGE PICKER */}
         <label className="text-sm font-semibold">Product Images *</label>
