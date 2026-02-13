@@ -13,6 +13,7 @@ import {
     FaBox,
     FaHome,
 } from "react-icons/fa";
+import toast from "react-hot-toast";
 
 // ============================================
 // NAVBAR COMPONENT
@@ -57,6 +58,7 @@ function Navbar() {
         localStorage.removeItem("user");
         setUser(null);
         setProfileDropdownOpen(false);
+        toast.success("Logged out successfully");
         navigate('/login');
     };
 

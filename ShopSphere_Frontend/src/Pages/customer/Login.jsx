@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { loginUser } from "../../api/axios";
 import { useNavigate, Link } from "react-router-dom";
+import toast from 'react-hot-toast';
 
 function Login() {
     const navigate = useNavigate();
@@ -31,13 +32,13 @@ function Login() {
 
             // optional: save token / user
             localStorage.setItem("user", JSON.stringify(data));
+            toast.success("Login successful! Welcome back.");
 
             navigate("/");
         } catch (err) {
-            setError(
-                err.response?.data?.message ||
-                "Login failed. Please check your credentials."
-            );
+            const errorMessage = err.response?.data?.message || "Login failed. Please check your credentials.";
+            setError(errorMessage);
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }

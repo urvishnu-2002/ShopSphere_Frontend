@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { RemoveFromWishlist, AddToCart } from '../../Store';
 import { FaHeart, FaShoppingCart, FaTrash, FaArrowLeft } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 
 // ============================================
 // WISHLIST PAGE COMPONENT
@@ -18,10 +19,12 @@ function Wishlist() {
   // ============================================
   const handleAddToCart = (item) => {
     dispatch(AddToCart(item));
+    toast.success("Moved to cart!");
   };
 
   const handleRemoveFromWishlist = (item) => {
     dispatch(RemoveFromWishlist(item));
+    toast.success("Removed from wishlist");
   };
 
   // ============================================
