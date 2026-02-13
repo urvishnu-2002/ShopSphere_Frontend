@@ -30,6 +30,7 @@ import Orders from "../Pages/vendor/Orders";
 import AddProduct from "../Pages/vendor/AddProduct";
 import Products from "../Pages/vendor/Products";
 import Earnings from "../Pages/vendor/Earnings";
+import VendorLayout from "../Pages/vendor/VendorLayout";
 
 
 function AppRoutes() {
@@ -80,12 +81,14 @@ function AppRoutes() {
 
             {/*vendor routes*/}
             <Route path="/vendor" element={<VendorLogin />} />
-            <Route path="/vendordashboard" element={<Sidebar/>} />
-            <Route path="/welcome" element={<Dashboard/>} />
-            <Route path="/vendorallproducts" element={<Products/>} />
-            <Route path="/vendoraddproduct" element={<AddProduct/>} />
-            <Route path="/vendororders" element={<Orders/>} />
-            <Route path="/vendorearning" element={<Earnings/>} />
+            <Route element={<VendorLayout />}>
+                <Route path="/vendordashboard" element={<Dashboard/>} />
+                <Route path="/welcome" element={<Dashboard/>} />
+                <Route path="/vendorallproducts" element={<Products/>} />
+                <Route path="/vendoraddproduct" element={<AddProduct/>} />
+                <Route path="/vendororders" element={<Orders/>} />
+                <Route path="/vendorearning" element={<Earnings/>} />
+            </Route>
 
 
 
