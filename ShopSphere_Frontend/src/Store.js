@@ -69,332 +69,332 @@ const productsSlice = createSlice({
       }
     ],
 
-    fruits: [
-      {
-        name: "Kiwi",
-        price: 180,
-        image: "/public/kiwi.jpg",
-        description: "Fresh kiwi rich in vitamin C and antioxidants."
-      },
-      {
-        name: "Watermelon",
-        price: 60,
-        image: "/public/watermelon.jpg",
-        description: "Sweet and juicy watermelon perfect for hydration."
-      },
-      {
-        name: "Grapes",
-        price: 120,
-        image: "/public/grapes.jpg",
-        description: "Fresh grapes with natural sweetness and nutrients."
-      },
-      {
-        name: "Banana",
-        price: 55,
-        image: "/public/banana.jpg",
-        description: "Naturally sweet bananas rich in potassium."
-      },
-      {
-        name: "Plum",
-        price: 160,
-        image: "/public/plum.jpg",
-        description: "Juicy plums with a sweet and tangy taste."
-      },
-      {
-        name: "Apples",
-        price: 140,
-        image: "/public/apples.jpg",
-        description: "Crisp apples ideal for healthy snacking."
-      },
-      {
-        name: "Dragon Fruit",
-        price: 220,
-        image: "/public/Dragon Fruit.jpg",
-        description: "Exotic dragon fruit rich in fiber and antioxidants."
-      },
-      {
-        name: "Mango",
-        price: 180,
-        image: "/public/mango.jpg",
-        description: "Sweet and flavorful mangoes loved by all ages."
-      }
-    ],
+    // fruits: [
+    //   {
+    //     name: "Kiwi",
+    //     price: 180,
+    //     image: "/public/kiwi.jpg",
+    //     description: "Fresh kiwi rich in vitamin C and antioxidants."
+    //   },
+    //   {
+    //     name: "Watermelon",
+    //     price: 60,
+    //     image: "/public/watermelon.jpg",
+    //     description: "Sweet and juicy watermelon perfect for hydration."
+    //   },
+    //   {
+    //     name: "Grapes",
+    //     price: 120,
+    //     image: "/public/grapes.jpg",
+    //     description: "Fresh grapes with natural sweetness and nutrients."
+    //   },
+    //   {
+    //     name: "Banana",
+    //     price: 55,
+    //     image: "/public/banana.jpg",
+    //     description: "Naturally sweet bananas rich in potassium."
+    //   },
+    //   {
+    //     name: "Plum",
+    //     price: 160,
+    //     image: "/public/plum.jpg",
+    //     description: "Juicy plums with a sweet and tangy taste."
+    //   },
+    //   {
+    //     name: "Apples",
+    //     price: 140,
+    //     image: "/public/apples.jpg",
+    //     description: "Crisp apples ideal for healthy snacking."
+    //   },
+    //   {
+    //     name: "Dragon Fruit",
+    //     price: 220,
+    //     image: "/public/Dragon Fruit.jpg",
+    //     description: "Exotic dragon fruit rich in fiber and antioxidants."
+    //   },
+    //   {
+    //     name: "Mango",
+    //     price: 180,
+    //     image: "/public/mango.jpg",
+    //     description: "Sweet and flavorful mangoes loved by all ages."
+    //   }
+    // ],
 
-    vegetables: [
-      {
-        name: "Tomato",
-        price: 40,
-        image: "/public/tomato.jpg",
-        description: "Fresh tomatoes ideal for curries and salads."
-      },
-      {
-        name: "Coriander",
-        price: 30,
-        image: "/public/coriander.jpg",
-        description: "Fresh coriander leaves for garnishing and flavor."
-      },
-      {
-        name: "Onion",
-        price: 35,
-        image: "/public/onions.jpg",
-        description: "Essential kitchen onion with strong aroma."
-      },
-      {
-        name: "Capsicum-Green",
-        price: 60,
-        image: "/public/Capsicum - Green.jpg",
-        description: "Crunchy green capsicum for stir-fries and salads."
-      },
-      {
-        name: "Carrot",
-        price: 45,
-        image: "/public/carrot.jpg",
-        description: "Sweet carrots rich in vitamin A."
-      },
-      {
-        name: "Spinach",
-        price: 30,
-        image: "/public/spinach.jpg",
-        description: "Leafy spinach packed with iron and nutrients."
-      },
-      {
-        name: "Potato",
-        price: 30,
-        image: "/public/potato.jpg",
-        description: "Versatile potatoes suitable for daily cooking."
-      },
-      {
-        name: "Broccoli",
-        price: 90,
-        image: "/public/broccoli.jpg",
-        description: "Healthy broccoli rich in vitamins."
-      },
-      {
-        name: "Garlic",
-        price: 70,
-        image: "/public/garlic.jpg",
-        description: "Aromatic garlic used in everyday cooking."
-      },
-      {
-        name: "Ginger",
-        price: 60,
-        image: "/public/ginger.jpg",
-        description: "Fresh ginger with strong flavor and health benefits."
-      },
-      {
-        name: "Cabbage",
-        price: 50,
-        image: "/public/cabbage.jpg",
-        description: "Crisp cabbage ideal for salads and curries."
-      },
-      {
-        name: "Coconut",
-        price: 45,
-        image: "/public/coconut.jpg",
-        description: "Fresh coconut with natural sweetness."
-      },
-      {
-        name: "Mushroom",
-        price: 110,
-        image: "/public/mushroom.jpg",
-        description: "Fresh mushrooms rich in protein."
-      },
-      {
-        name: "Beans",
-        price: 60,
-        image: "/public/beans.jpg",
-        description: "Fresh green beans packed with fiber."
-      }
-    ],
+    // vegetables: [
+    //   {
+    //     name: "Tomato",
+    //     price: 40,
+    //     image: "/public/tomato.jpg",
+    //     description: "Fresh tomatoes ideal for curries and salads."
+    //   },
+    //   {
+    //     name: "Coriander",
+    //     price: 30,
+    //     image: "/public/coriander.jpg",
+    //     description: "Fresh coriander leaves for garnishing and flavor."
+    //   },
+    //   {
+    //     name: "Onion",
+    //     price: 35,
+    //     image: "/public/onions.jpg",
+    //     description: "Essential kitchen onion with strong aroma."
+    //   },
+    //   {
+    //     name: "Capsicum-Green",
+    //     price: 60,
+    //     image: "/public/Capsicum - Green.jpg",
+    //     description: "Crunchy green capsicum for stir-fries and salads."
+    //   },
+    //   {
+    //     name: "Carrot",
+    //     price: 45,
+    //     image: "/public/carrot.jpg",
+    //     description: "Sweet carrots rich in vitamin A."
+    //   },
+    //   {
+    //     name: "Spinach",
+    //     price: 30,
+    //     image: "/public/spinach.jpg",
+    //     description: "Leafy spinach packed with iron and nutrients."
+    //   },
+    //   {
+    //     name: "Potato",
+    //     price: 30,
+    //     image: "/public/potato.jpg",
+    //     description: "Versatile potatoes suitable for daily cooking."
+    //   },
+    //   {
+    //     name: "Broccoli",
+    //     price: 90,
+    //     image: "/public/broccoli.jpg",
+    //     description: "Healthy broccoli rich in vitamins."
+    //   },
+    //   {
+    //     name: "Garlic",
+    //     price: 70,
+    //     image: "/public/garlic.jpg",
+    //     description: "Aromatic garlic used in everyday cooking."
+    //   },
+    //   {
+    //     name: "Ginger",
+    //     price: 60,
+    //     image: "/public/ginger.jpg",
+    //     description: "Fresh ginger with strong flavor and health benefits."
+    //   },
+    //   {
+    //     name: "Cabbage",
+    //     price: 50,
+    //     image: "/public/cabbage.jpg",
+    //     description: "Crisp cabbage ideal for salads and curries."
+    //   },
+    //   {
+    //     name: "Coconut",
+    //     price: 45,
+    //     image: "/public/coconut.jpg",
+    //     description: "Fresh coconut with natural sweetness."
+    //   },
+    //   {
+    //     name: "Mushroom",
+    //     price: 110,
+    //     image: "/public/mushroom.jpg",
+    //     description: "Fresh mushrooms rich in protein."
+    //   },
+    //   {
+    //     name: "Beans",
+    //     price: 60,
+    //     image: "/public/beans.jpg",
+    //     description: "Fresh green beans packed with fiber."
+    //   }
+    // ],
 
-    milkproducts: [
-      {
-        name: "Full Cream Milk",
-        price: 68,
-        image: "/public/Amul Milk.jpg",
-        description: "Rich full-cream milk with high fat content."
-      },
-      {
-        name: "Amul Butter",
-        price: 55,
-        image: "/public/Amul Butter.jpg",
-        description: "Creamy Amul butter perfect for cooking and spreading."
-      },
-      {
-        name: "Amul Butter Milk",
-        price: 25,
-        image: "/public/Amul Buttermilk.jpg",
-        description: "Refreshing buttermilk aiding digestion."
-      },
-      {
-        name: "amul Cheese",
-        price: 120,
-        image: "/public/Amul Cheese.jpg",
-        description: "Soft and rich Amul cheese slices."
-      },
-      {
-        name: "Amul Cool Kesar",
-        price: 35,
-        image: "/public/Amul Cool Kesar.jpg",
-        description: "Sweet kesar-flavored milk drink."
-      },
-      {
-        name: "Amul Lassi",
-        price: 30,
-        image: "/public/Amul Lassi.jpg",
-        description: "Thick and refreshing yogurt-based lassi."
-      },
-      {
-        name: "Amul Panner",
-        price: 95,
-        image: "/public/Amul Panner.jpg",
-        description: "Fresh paneer ideal for curries."
-      },
-      {
-        name: "Chocolate Milk",
-        price: 40,
-        image: "/public/Chocolate Milk.jpg",
-        description: "Sweet chocolate-flavored milk drink."
-      }
-    ],
+    // milkproducts: [
+    //   {
+    //     name: "Full Cream Milk",
+    //     price: 68,
+    //     image: "/public/Amul Milk.jpg",
+    //     description: "Rich full-cream milk with high fat content."
+    //   },
+    //   {
+    //     name: "Amul Butter",
+    //     price: 55,
+    //     image: "/public/Amul Butter.jpg",
+    //     description: "Creamy Amul butter perfect for cooking and spreading."
+    //   },
+    //   {
+    //     name: "Amul Butter Milk",
+    //     price: 25,
+    //     image: "/public/Amul Buttermilk.jpg",
+    //     description: "Refreshing buttermilk aiding digestion."
+    //   },
+    //   {
+    //     name: "amul Cheese",
+    //     price: 120,
+    //     image: "/public/Amul Cheese.jpg",
+    //     description: "Soft and rich Amul cheese slices."
+    //   },
+    //   {
+    //     name: "Amul Cool Kesar",
+    //     price: 35,
+    //     image: "/public/Amul Cool Kesar.jpg",
+    //     description: "Sweet kesar-flavored milk drink."
+    //   },
+    //   {
+    //     name: "Amul Lassi",
+    //     price: 30,
+    //     image: "/public/Amul Lassi.jpg",
+    //     description: "Thick and refreshing yogurt-based lassi."
+    //   },
+    //   {
+    //     name: "Amul Panner",
+    //     price: 95,
+    //     image: "/public/Amul Panner.jpg",
+    //     description: "Fresh paneer ideal for curries."
+    //   },
+    //   {
+    //     name: "Chocolate Milk",
+    //     price: 40,
+    //     image: "/public/Chocolate Milk.jpg",
+    //     description: "Sweet chocolate-flavored milk drink."
+    //   }
+    // ],
 
-    snacks: [
-      {
-        name: "Bingo Original",
-        price: 20,
-        image: "/public/Bingo Original.jpg",
-        description: "Crispy salted potato chips."
-      },
-      {
-        name: "Jim Jam",
-        price: 35,
-        image: "/public/Jim Jam.jpg",
-        description: "Crunchy biscuits with jam filling."
-      },
-      {
-        name: "Kur Kure Green Chutney",
-        price: 15,
-        image: "/public/Kur Kure Green Chutney Style.jpg",
-        description: "Tangy Indian snacks."
-      },
-      {
-        name: "Lays",
-        price: 20,
-        image: "/public/Lays.jpg",
-        description: "Classic potato chips."
-      },
-      {
-        name: "Little Hearts",
-        price: 10,
-        image: "/public/Little Hearts.jpg",
-        description: "Sweet heart-shaped biscuits."
-      },
-      {
-        name: "Lotte Choco Pie",
-        price: 30,
-        image: "/public/Lotte Choco Pie.jpg",
-        description: "Marshmallow-filled chocolate snack."
-      },
-      {
-        name: "Maggie",
-        price: 14,
-        image: "/public/Maggie.jpg",
-        description: "Quick and easy instant noodles."
-      },
-      {
-        name: "Moms Magic",
-        price: 30,
-        image: "/public/Moms Magic.jpg",
-        description: "Buttery nut biscuits."
-      },
-      {
-        name: "Monaco",
-        price: 10,
-        image: "/public/Monaco.jpg",
-        description: "Salty and crispy biscuits."
-      },
-      {
-        name: "Choco Cakes",
-        price: 25,
-        image: "/public/choco cakes.jpg",
-        description: "Soft chocolate cakes."
-      },
-      {
-        name: "ChocoChip Cookies",
-        price: 40,
-        image: "/public/Chocochip Cookies.jpg",
-        description: "Loaded with chocolate chips."
-      },
-      {
-        name: "Kur Kure Chilli",
-        price: 15,
-        image: "/public/kur kure.jpg",
-        description: "Hot and spicy Indian snack."
-      }
-    ],
+    // snacks: [
+    //   {
+    //     name: "Bingo Original",
+    //     price: 20,
+    //     image: "/public/Bingo Original.jpg",
+    //     description: "Crispy salted potato chips."
+    //   },
+    //   {
+    //     name: "Jim Jam",
+    //     price: 35,
+    //     image: "/public/Jim Jam.jpg",
+    //     description: "Crunchy biscuits with jam filling."
+    //   },
+    //   {
+    //     name: "Kur Kure Green Chutney",
+    //     price: 15,
+    //     image: "/public/Kur Kure Green Chutney Style.jpg",
+    //     description: "Tangy Indian snacks."
+    //   },
+    //   {
+    //     name: "Lays",
+    //     price: 20,
+    //     image: "/public/Lays.jpg",
+    //     description: "Classic potato chips."
+    //   },
+    //   {
+    //     name: "Little Hearts",
+    //     price: 10,
+    //     image: "/public/Little Hearts.jpg",
+    //     description: "Sweet heart-shaped biscuits."
+    //   },
+    //   {
+    //     name: "Lotte Choco Pie",
+    //     price: 30,
+    //     image: "/public/Lotte Choco Pie.jpg",
+    //     description: "Marshmallow-filled chocolate snack."
+    //   },
+    //   {
+    //     name: "Maggie",
+    //     price: 14,
+    //     image: "/public/Maggie.jpg",
+    //     description: "Quick and easy instant noodles."
+    //   },
+    //   {
+    //     name: "Moms Magic",
+    //     price: 30,
+    //     image: "/public/Moms Magic.jpg",
+    //     description: "Buttery nut biscuits."
+    //   },
+    //   {
+    //     name: "Monaco",
+    //     price: 10,
+    //     image: "/public/Monaco.jpg",
+    //     description: "Salty and crispy biscuits."
+    //   },
+    //   {
+    //     name: "Choco Cakes",
+    //     price: 25,
+    //     image: "/public/choco cakes.jpg",
+    //     description: "Soft chocolate cakes."
+    //   },
+    //   {
+    //     name: "ChocoChip Cookies",
+    //     price: 40,
+    //     image: "/public/Chocochip Cookies.jpg",
+    //     description: "Loaded with chocolate chips."
+    //   },
+    //   {
+    //     name: "Kur Kure Chilli",
+    //     price: 15,
+    //     image: "/public/kur kure.jpg",
+    //     description: "Hot and spicy Indian snack."
+    //   }
+    // ],
 
-    chocolates: [
-      {
-        name: "Dairy Milk Special Silk",
-        price: 180,
-        image: "/public/Dairy Milk Special Silk.jpg",
-        description: "Smooth and creamy silk chocolate."
-      },
-      {
-        name: "Dark Chocolate",
-        price: 120,
-        image: "/public/Dark Chocolate.jpg",
-        description: "Rich dark chocolate with intense cocoa."
-      },
-      {
-        name: "Dairy Milk Bubbly",
-        price: 90,
-        image: "/public/Dairy Milk Bubbly.jpg",
-        description: "Light and airy bubbly chocolate."
-      },
-      {
-        name: "Chocolush",
-        price: 150,
-        image: "/public/chocolush.jpg",
-        description: "Premium filled chocolate treat."
-      },
-      {
-        name: "Dairy Milk Classics",
-        price: 45,
-        image: "/public/Dairy Milk Classics.jpg",
-        description: "Original milk chocolate flavor."
-      },
-      {
-        name: "Dairy Milk Hearts&Roses",
-        price: 250,
-        image: "/public/Dairy Milk Hearts&Roses.jpg",
-        description: "Perfect gift for special occasions."
-      },
-      {
-        name: "Dairy Milk Hazelnut",
-        price: 110,
-        image: "/public/Dairy Milk Hezelnut.jpg",
-        description: "Milk chocolate with nutty hazelnuts."
-      },
-      {
-        name: "Dairy Milk Roasted Almond",
-        price: 110,
-        image: "/public/Dairy Milk Roasted Almond.jpg",
-        description: "Crunchy roasted almonds in chocolate."
-      },
-      {
-        name: "Dairy Milk Silk Fruit&Nut",
-        price: 185,
-        image: "/public/Dairy milk Silk Fruit&Nut.jpg",
-        description: "Fruity and nutty milk chocolate."
-      },
-      {
-        name: "Dairy Milk Silk",
-        price: 110,
-        image: "/public/Dairy milk silk.jpg",
-        description: "Pure velvety milk chocolate."
-      }
-    ],
+    // chocolates: [
+    //   {
+    //     name: "Dairy Milk Special Silk",
+    //     price: 180,
+    //     image: "/public/Dairy Milk Special Silk.jpg",
+    //     description: "Smooth and creamy silk chocolate."
+    //   },
+    //   {
+    //     name: "Dark Chocolate",
+    //     price: 120,
+    //     image: "/public/Dark Chocolate.jpg",
+    //     description: "Rich dark chocolate with intense cocoa."
+    //   },
+    //   {
+    //     name: "Dairy Milk Bubbly",
+    //     price: 90,
+    //     image: "/public/Dairy Milk Bubbly.jpg",
+    //     description: "Light and airy bubbly chocolate."
+    //   },
+    //   {
+    //     name: "Chocolush",
+    //     price: 150,
+    //     image: "/public/chocolush.jpg",
+    //     description: "Premium filled chocolate treat."
+    //   },
+    //   {
+    //     name: "Dairy Milk Classics",
+    //     price: 45,
+    //     image: "/public/Dairy Milk Classics.jpg",
+    //     description: "Original milk chocolate flavor."
+    //   },
+    //   {
+    //     name: "Dairy Milk Hearts&Roses",
+    //     price: 250,
+    //     image: "/public/Dairy Milk Hearts&Roses.jpg",
+    //     description: "Perfect gift for special occasions."
+    //   },
+    //   {
+    //     name: "Dairy Milk Hazelnut",
+    //     price: 110,
+    //     image: "/public/Dairy Milk Hezelnut.jpg",
+    //     description: "Milk chocolate with nutty hazelnuts."
+    //   },
+    //   {
+    //     name: "Dairy Milk Roasted Almond",
+    //     price: 110,
+    //     image: "/public/Dairy Milk Roasted Almond.jpg",
+    //     description: "Crunchy roasted almonds in chocolate."
+    //   },
+    //   {
+    //     name: "Dairy Milk Silk Fruit&Nut",
+    //     price: 185,
+    //     image: "/public/Dairy milk Silk Fruit&Nut.jpg",
+    //     description: "Fruity and nutty milk chocolate."
+    //   },
+    //   {
+    //     name: "Dairy Milk Silk",
+    //     price: 110,
+    //     image: "/public/Dairy milk silk.jpg",
+    //     description: "Pure velvety milk chocolate."
+    //   }
+    // ],
 
     sports: [
       {
