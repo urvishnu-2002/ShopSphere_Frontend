@@ -18,7 +18,7 @@ function VendorLogin() {
     // You can replace this with real auth
     if (email === "vendor@example.com" && password === "123456") {
       // Navigate to dashboard
-      navigate("/dashboard");
+      navigate("/vendordashboard");
     } else {
       alert("Invalid email or password");
     }

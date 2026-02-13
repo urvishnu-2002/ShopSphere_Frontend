@@ -18,11 +18,11 @@ export default function Sidebar() {
   const location = useLocation();
 
   const menu = [
-    { path: "/", label: "Dashboard", icon: HomeIcon },
-    { path: "/products", label: "Products", icon: CubeIcon },
-    { path: "/addproduct", label: "Add Product", icon: PlusCircleIcon },
-    { path: "/orders", label: "Orders", icon: ShoppingCartIcon },
-    { path: "/earnings", label: "Earnings", icon: BanknotesIcon }
+                { path: "/welcome", label: "Dashboard", icon: HomeIcon },
+    { path: "/vendorallproducts", label: "Products", icon: CubeIcon },
+    { path: "/vendoraddproduct", label: "Add Product", icon: PlusCircleIcon },
+    { path: "/vendororders", label: "Orders", icon: ShoppingCartIcon },
+    { path: "/vendorearning", label: "Earnings", icon: BanknotesIcon }
   ];
 
   return (
