@@ -47,8 +47,7 @@ export const NotificationProvider = ({ children }) => {
         }
     ]);
 
-    // Timer is removed to prevent ID mismatch on refresh
-    // Functions follow...
+   
 
     const addNotification = React.useCallback((notif) => {
         setNotifications(prev => [{

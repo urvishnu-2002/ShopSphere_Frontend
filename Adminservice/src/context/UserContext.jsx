@@ -13,12 +13,12 @@ export const useUsers = () => {
 // --- Initial Master Data ---
 // Using uppercase ACTIVE / BLOCKED as per requirement
 const INITIAL_USERS = [
-    { id: 'USR-2024-001', name: 'John Doe', email: 'john@example.com', status: 'ACTIVE', joinDate: '2024-01-15' },
-    { id: 'USR-2024-002', name: 'Jane Smith', email: 'jane@example.com', status: 'ACTIVE', joinDate: '2024-02-01' },
-    { id: 'USR-2024-003', name: 'Mike Johnson', email: 'mike@example.com', status: 'BLOCKED', joinDate: '2024-02-10' },
-    { id: 'USR-2024-004', name: 'David Brown', email: 'david@example.com', status: 'ACTIVE', joinDate: '2024-03-20' },
-    { id: 'USR-2024-005', name: 'Evelyn Garcia', email: 'evelyn@example.com', status: 'ACTIVE', joinDate: '2024-04-05' },
-    { id: 'USR-2024-006', name: 'Sarah Miller', email: 'sarah.m@world.com', status: 'BLOCKED', joinDate: '2024-04-12' },
+    { id: 'USR-2024-001', name: 'John Doe', email: 'john@example.com', status: 'ACTIVE', joinDate: '2024-01-15', riskScore: 12 },
+    { id: 'USR-2024-002', name: 'Jane Smith', email: 'jane@example.com', status: 'ACTIVE', joinDate: '2024-02-01', riskScore: 45 },
+    { id: 'USR-2024-003', name: 'Mike Johnson', email: 'mike@example.com', status: 'BLOCKED', joinDate: '2024-02-10', riskScore: 88 },
+    { id: 'USR-2024-004', name: 'David Brown', email: 'david@example.com', status: 'ACTIVE', joinDate: '2024-03-20', riskScore: 5 },
+    { id: 'USR-2024-005', name: 'Evelyn Garcia', email: 'evelyn@example.com', status: 'ACTIVE', joinDate: '2024-04-05', riskScore: 18 },
+    { id: 'USR-2024-006', name: 'Sarah Miller', email: 'sarah.m@world.com', status: 'BLOCKED', joinDate: '2024-04-12', riskScore: 92 },
 ];
 
 export const UserProvider = ({ children }) => {

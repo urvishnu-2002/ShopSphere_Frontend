@@ -36,13 +36,11 @@ function AdminLogin() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Prevent multiple submissions
         if (isLoading) return;
 
         setIsLoading(true);
         setError('');
 
-        // API Timeout handled by AbortController
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
@@ -68,9 +66,9 @@ function AdminLogin() {
                 setError(data.message || 'Invalid email or password.');
             }
         } catch (err) {
-            //   when backend is connected remove this code this is dummy data for frontend testing
+            
             if (email === 'admin@shopsphere.com' && password === 'admin123') {
-                // Generate a fake but correctly structured token for ProtectedAdminRoute (SUPER_ADMIN role)
+               
                 const fakeToken = 'eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiU1VQRVJfQURNSU4ifQ.fake_sig';
                 sessionStorage.setItem('authToken', fakeToken);
                 navigate('/dashboard');
@@ -81,7 +79,7 @@ function AdminLogin() {
                     setError('Invalid credentials or backend unavailable.');
                 }
             }
-            // console.warn('Backend unavailable, using demo fallback logic');
+           
         } finally {
             setIsLoading(false);
             clearTimeout(timeoutId);
@@ -94,7 +92,7 @@ function AdminLogin() {
 
     return (
         <div className="relative min-h-screen w-full flex items-center justify-center p-4">
-            {/* Background Image with Overlay */}
+          
             <div
                 className="fixed inset-0 z-0"
                 style={{
@@ -107,20 +105,18 @@ function AdminLogin() {
                 <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]"></div>
             </div>
 
-            {/* Login Card Container */}
+          
             <div className="w-full max-w-md relative z-10 animate-in fade-in zoom-in duration-500">
                 <div className="bg-white/70 backdrop-blur-xl border border-white/60 rounded-2xl shadow-2xl shadow-gray-200/60 p-5 sm:p-6 transition-all duration-500 hover:shadow-[0_35px_60px_-12px_rgba(0,0,0,0.15)]">
 
-                    {/* Logo Icon */}
-                    <div className="flex justify-center mb-3">
-                        <div className="w-12 h-12 bg-gradient-to-br from-violet-900 to-indigo-900 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 transform transition-transform duration-300 hover:scale-105">
-                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                            </svg>
+              
+                    <div className="flex justify-center mb-5">
+                        <div className="w-24 h-24 flex items-center justify-center transform transition-transform duration-300 hover:scale-105">
+                            <img src="/s_logo.png" alt="ShopSphere Logo" className="w-full h-full object-contain" />
                         </div>
                     </div>
 
-                    {/* Brand Title */}
+                   
                     <div className="text-center mb-3">
                         <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight mb-0.5">
                             <span className="text-gray-800">Shop</span>
@@ -217,7 +213,7 @@ function AdminLogin() {
                     </form>
                 </div>
 
-                <p className="text-center mt-4 text-[15px] text-gray-900">
+                <p className="text-center mt-4 text-[15px] text-gray-300">
                     &copy; {new Date().getFullYear()} ShopSphere Admin. All rights reserved.
                 </p>
             </div>
@@ -226,178 +222,3 @@ function AdminLogin() {
 }
 
 export default AdminLogin;
-// -----------------------------------------------------
-// import React, { useState, useEffect } from 'react';
-// import { useNavigate } from 'react-router-dom';
-
-// function AdminLogin() {
-//     const [email, setEmail] = useState('');
-//     const [password, setPassword] = useState('');
-//     const [error, setError] = useState('');
-//     const [isLoading, setIsLoading] = useState(false);
-//     const navigate = useNavigate();
-
-//     // Redirect if already logged in
-//     useEffect(() => {
-//         const token =
-//             localStorage.getItem('authToken') ||
-//             sessionStorage.getItem('authToken');
-
-//         if (!token) return;
-
-//         try {
-//             const base64Url = token.split('.')[1];
-//             if (!base64Url) return;
-
-//             const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-//             const payload = JSON.parse(atob(base64));
-
-//             if (payload.role === 'ADMIN' || payload.role === 'SUPER_ADMIN') {
-//                 navigate('/dashboard');
-//             }
-//         } catch {
-//             // Invalid token → stay on login page
-//         }
-//     }, [navigate]);
-
-//     const handleSubmit = async (e) => {
-//         e.preventDefault();
-//         if (isLoading) return;
-
-//         setIsLoading(true);
-//         setError('');
-
-//         try {
-//             const apiUrl = `${import.meta.env.VITE_API_URL}/api/admin/login`;
-
-//             const response = await fetch(apiUrl, {
-//                 method: 'POST',
-//                 headers: { 'Content-Type': 'application/json' },
-//                 body: JSON.stringify({ email, password })
-//             });
-
-//             if (!response.ok) {
-//                 throw new Error('Invalid credentials');
-//             }
-
-//             const data = await response.json();
-//             sessionStorage.setItem('authToken', data.token);
-//             navigate('/dashboard');
-//         } catch (err) {
-//             setError('Invalid email or password.');
-//         } finally {
-//             setIsLoading(false);
-//         }
-//     };
-
-//     return (
-//         <div className="relative min-h-screen w-full flex items-center justify-center p-4">
-//             {/* Background Image with Overlay */}
-//             <div
-//                 className="fixed inset-0 z-0"
-//                 style={{
-//                     backgroundImage: 'url("/adminloginbg.png")',
-//                     backgroundSize: 'cover',
-//                     backgroundPosition: 'center',
-//                     backgroundRepeat: 'no-repeat'
-//                 }}
-//             >
-//                 <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]" />
-//             </div>
-
-//             {/* Login Card Container */}
-//             <div className="w-full max-w-md relative z-10 animate-in fade-in zoom-in duration-500">
-//                 <div className="bg-white/70 backdrop-blur-xl border border-white/60 rounded-2xl shadow-2xl shadow-gray-200/60 p-5 sm:p-6 transition-all duration-500 hover:shadow-[0_35px_60px_-12px_rgba(0,0,0,0.15)]">
-
-//                     {/* Logo Icon */}
-//                     <div className="flex justify-center mb-3">
-//                         <div className="w-12 h-12 bg-gradient-to-br from-violet-900 to-indigo-900 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 transition-transform duration-300 hover:scale-105">
-//                             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-//                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-//                             </svg>
-//                         </div>
-//                     </div>
-
-//                     {/* Brand Title */}
-//                     <div className="text-center mb-3">
-//                         <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight mb-0.5">
-//                             <span className="text-gray-800">Shop</span>
-//                             <span className="bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">Sphere</span>
-//                         </h1>
-//                         <p className="text-gray-500 text-xs sm:text-sm font-medium">
-//                             Administrative Control Panel
-//                         </p>
-//                     </div>
-
-//                     {/* Section Title */}
-//                     <div className="mb-3 text-center">
-//                         <h2 className="text-lg font-bold text-gray-800">
-//                             Admin Login
-//                         </h2>
-
-//                         {error && (
-//                             <div className="mt-2 p-2.5 bg-red-50 border border-red-100 rounded-xl flex items-center gap-2 text-red-600 text-xs font-medium animate-in fade-in slide-in-from-top-1 duration-300">
-//                                 <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-//                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-//                                 </svg>
-//                                 {error}
-//                             </div>
-//                         )}
-//                     </div>
-
-//                     <form onSubmit={handleSubmit} className="space-y-4">
-//                         <div className="space-y-1">
-//                             <label className="block text-xs font-semibold text-gray-700">
-//                                 Email Address
-//                             </label>
-//                             <input
-//                                 type="email"
-//                                 value={email}
-//                                 onChange={(e) => setEmail(e.target.value)}
-//                                 required
-//                                 pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
-//                                 title="Please enter a valid email address"
-//                                 className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20"
-//                             />
-
-//                         </div>
-
-//                         <div className="space-y-1">
-//                             <label className="block text-xs font-semibold text-gray-700">
-//                                 Password
-//                             </label>
-//                             <input
-//                             type="password"
-//                             value={password}
-//                             onChange={(e) => setPassword(e.target.value)}
-//                             required
-//                             pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
-//                             title="Password must be at least 8 characters and include uppercase, lowercase, number, and special character"
-//                             className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20"
-//                         />
-//                         <p className="text-[11px] text-gray-500 mt-1">
-//     Must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.
-// </p>
-
-
-//                         </div>
-
-//                         <button
-//                             type="submit"
-//                             disabled={isLoading}
-//                             className="w-full py-3 bg-gradient-to-r from-violet-700 to-indigo-800 text-white font-semibold rounded-xl shadow-lg hover:scale-[1.02] transition-all disabled:opacity-70"
-//                         >
-//                             {isLoading ? 'Authenticating...' : 'Sign In'}
-//                         </button>
-//                     </form>
-//                 </div>
-
-//                 <p className="text-center mt-4 text-sm text-gray-900">
-//                     © {new Date().getFullYear()} ShopSphere Admin. All rights reserved.
-//                 </p>
-//             </div>
-//         </div>
-//     );
-// }
-
-// export default AdminLogin;

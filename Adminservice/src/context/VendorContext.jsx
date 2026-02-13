@@ -25,7 +25,6 @@ const INITIAL_VENDORS = [
         address: 'Sector 62, Noida, Uttar Pradesh',
         category: 'Electronics',
         description: 'Leading distributor of consumer electronics and home appliances across Northern India.',
-        riskScore: 'Low',
         documents: [
             { name: 'GST Certificate', type: 'PDF', size: '2.4 MB' },
             { name: 'Trade License', type: 'PDF', size: '1.2 MB' }
@@ -44,7 +43,6 @@ const INITIAL_VENDORS = [
         address: 'Andheri West, Mumbai, Maharashtra',
         category: 'Gadgets',
         description: 'Curating the latest lifestyle tech and mobile accessories for the modern consumer.',
-        riskScore: 'Medium',
         documents: [
             { name: 'Shop Establishment License', type: 'PDF', size: '3.1 MB' }
         ]
@@ -62,27 +60,38 @@ const INITIAL_VENDORS = [
         address: 'Malviya Nagar, Jaipur, Rajasthan',
         category: 'Organic Foods',
         description: 'Quality organic produce sourced directly from farmers across Rajasthan.',
-        riskScore: 'Low',
         documents: [
             { name: 'FSSAI License', type: 'PDF', size: '1.8 MB' }
         ]
     },
     {
-        id: 'VND-2024-SWIFT',
-        notifId: 'notif-swift',
-        storeName: 'IndoFlash Logistics',
-        legalName: 'IndoFlash Logistics Services Ltd',
-        email: 'shipping@indoflash.co.in',
+        id: 'VND-2026-IQO',
+        storeName: 'IQO',
+        legalName: 'IQO Technologies Ltd',
+        email: 'contact@iqo.com',
+        status: 'Blocked',
+        registrationDate: '2026-02-11',
+        owner: 'Luna Star',
+        phone: '+91 88888 77777',
+        address: '12 Galaxy Way, Neo City',
+        category: 'Mobile Devices',
+        description: 'Innovative mobile technology and smartphones for the high-performance market.',
+        documents: [{ name: 'Tech License', type: 'PDF', size: '1.5 MB' }]
+    },
+    {
+        id: 'VND-2026-RAZER',
+        storeName: 'Razer',
+        legalName: 'Razer Gaming Gear Co.',
+        email: 'support@razer.com',
         status: 'Pending',
         registrationDate: '2024-02-10',
         owner: 'Arjun Singh',
         phone: '+91 90000 11111',
         address: 'Whitefield, Bengaluru, Karnataka',
-        category: 'Logistics Services',
-        description: 'Nationwide logistics partner specializing in last-mile delivery and warehousing.',
-        riskScore: 'Low',
+        category: 'Gaming Hardware',
+        description: 'The world leader in high-performance gaming hardware, software, and systems.',
         documents: [
-            { name: 'PAN Card', type: 'PDF', size: '4.5 MB' }
+            { name: 'Brand Authorization', type: 'PDF', size: '4.5 MB' }
         ]
     }
 ];
@@ -117,14 +126,13 @@ export const VendorProvider = ({ children }) => {
                     const isValid = (
                         (currentStatus === 'Pending' && (newStatus === 'Approved' || newStatus === 'Blocked')) ||
                         (currentStatus === 'Approved' && (newStatus === 'Suspended' || newStatus === 'Blocked')) ||
-                        (currentStatus === 'Suspended' && (newStatus === 'Approved' || newStatus === 'Blocked'))
+                        (currentStatus === 'Suspended' && (newStatus === 'Approved' || newStatus === 'Blocked')) ||
+                        (currentStatus === 'Blocked' && newStatus === 'Approved')
                     );
 
                     if (isValid) {
                         success = true;
                         return { ...v, status: newStatus };
-                    } else if (currentStatus === 'Blocked') {
-                        errorMessage = 'Blocked vendors cannot be changed.';
                     } else {
                         errorMessage = `Invalid transition from ${currentStatus} to ${newStatus}.`;
                     }
@@ -166,7 +174,6 @@ export const VendorProvider = ({ children }) => {
                 address: '12 Galaxy Way, Neo City',
                 category: 'Handmade Crafts',
                 description: 'Unique boutique for handcrafted jewelry and artisanal home decor.',
-                riskScore: 'Low',
                 documents: [{ name: 'Artisan License', type: 'PDF', size: '1.5 MB' }]
             };
 
