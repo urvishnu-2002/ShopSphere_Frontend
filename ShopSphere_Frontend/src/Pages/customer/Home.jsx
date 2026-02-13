@@ -5,17 +5,22 @@ import { FaHeart, FaShoppingBag, FaArrowRight } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import toast from "react-hot-toast";
 
-// ============================================
 // CONFIGURATION
-// ============================================
+
 const CATEGORIES = [
   { id: "all", label: "All", key: null },
-  { id: "electronics", label: "Electronics", key: "fruit" },
-  { id: "sports", label: "Sports", key: "veg" },
-  { id: "books", label: "Books", key: "milk" },
-  { id: "fashion", label: "Fashion", key: "snacks" },
-  { id: "accessories", label: "Accessories", key: "chocolates" },
+  { id: "electronics", label: "Electronics", key: "electronics" },
+  // { id: "fruits", label: "Fruits", key: "fruits" },
+  // { id: "vegetables", label: "Vegetables", key: "vegetables" },
+  // { id: "milk", label: "Milk Products", key: "milkproducts" },
+  // { id: "snacks", label: "Snacks", key: "snacks" },
+  // { id: "chocolates", label: "Chocolates", key: "chocolates" },
+  { id: "sports", label: "Sports", key: "sports" },
+  { id: "fashion", label: "Fashion", key: "fashion" },
+  { id: "books", label: "Books", key: "books" },
+  { id: "accessories", label: "Accessories", key: "accessories" },
 ];
 
 const BANNERS = [
@@ -24,7 +29,7 @@ const BANNERS = [
     title: "Next-Gen Electronics",
     subtitle: "Premium Gadgets 2024",
     description: "Upgrade your lifestyle with the latest tech innovations and high-performance devices.",
-    image: "banner1.png",
+    image: "banner2.png",
     cta: "Shop Technology",
     color: "from-blue-600 to-indigo-700"
   },
@@ -49,18 +54,16 @@ const BANNERS = [
 ];
 
 function Home() {
-  // ============================================
+
   // REDUX STATE & HOOKS
-  // ============================================
+
   const products = useSelector((state) => state.products);
   const wishlist = useSelector((state) => state.wishlist);
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
 
-  // ============================================
   // LOCAL STATE
-  // ============================================
   const [activeCategory, setActiveCategory] = useState("all");
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -71,9 +74,7 @@ function Home() {
   const bannerIndex = currentBanner % BANNERS.length;
   const banner = BANNERS[bannerIndex] || BANNERS[0];
 
-  // ============================================
   // BANNER CAROUSEL LOGIC
-  // ============================================
   useEffect(() => {
     const timer = setTimeout(() => {
       setCurrentBanner((prev) => (prev + 1) % BANNERS.length);
@@ -84,38 +85,43 @@ function Home() {
   const nextBanner = () => setCurrentBanner((prev) => (prev + 1) % BANNERS.length);
   const prevBanner = () => setCurrentBanner((prev) => (prev - 1 + BANNERS.length) % BANNERS.length);
 
-  // ============================================
   // PRODUCT FILTERING LOGIC
-  // ============================================
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const searchQuery = searchParams.get("search")?.toLowerCase() || "";
 
     const allProducts = [
-      ...products.fruit,
-      ...products.veg,
-      ...products.milk,
-      ...products.snacks,
-      ...products.chocolates,
+      ...(products.electronics || []),
+      ...(products.fruits || []),
+      ...(products.vegetables || []),
+      ...(products.milkproducts || []),
+      ...(products.snacks || []),
+      ...(products.chocolates || []),
+      ...(products.sports || []),
+      ...(products.fashion || []),
+      ...(products.books || []),
+      ...(products.accessories || []),
     ];
 
     let result = [];
 
-    if (activeCategory === "all") {
-      result = allProducts;
-    } else {
-      const categoryConfig = CATEGORIES.find((c) => c.id === activeCategory);
-      if (categoryConfig && categoryConfig.key) {
-        result = products[categoryConfig.key] || [];
-      }
-    }
-
+    // If there is a search query, search across ALL products
     if (searchQuery) {
-      result = result.filter(
+      result = allProducts.filter(
         (item) =>
           item.name.toLowerCase().includes(searchQuery) ||
           item.description.toLowerCase().includes(searchQuery)
       );
+    } else {
+      // Otherwise, filter by active category
+      if (activeCategory === "all") {
+        result = allProducts;
+      } else {
+        const categoryConfig = CATEGORIES.find((c) => c.id === activeCategory);
+        if (categoryConfig && categoryConfig.key) {
+          result = products[categoryConfig.key] || [];
+        }
+      }
     }
 
     setIsAnimating(true);
@@ -138,23 +144,39 @@ function Home() {
   };
 
   const handleWishlistClick = (item) => {
+    const user = localStorage.getItem("user");
+    if (!user) {
+      toast.error("Please login to add items to your wishlist");
+      navigate("/login");
+      return;
+    }
+
     if (isInWishlist(item.name)) {
       dispatch(RemoveFromWishlist(item));
+      toast.success("Removed from wishlist");
     } else {
       dispatch(AddToWishlist(item));
+      toast.success("Added to wishlist");
     }
+  };
+
+  const handleAddToCartClick = (item) => {
+    const user = localStorage.getItem("user");
+    if (!user) {
+      toast.error("Please login to add items to your cart");
+      navigate("/login");
+      return;
+    }
+    dispatch(AddToCart(item));
+    toast.success("Added to cart");
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-purple-500">
 
-      {/* ============================================
-          CATEGORY FILTER SECTION
-          ============================================ */}
-
-
+      {/* CATEGORY FILTER SECTION */}
       <section className="bg-white/60 backdrop-blur-xl border-b border-gray-100 shadow-sm -mt-2">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center py-4 overflow-x-auto scrollbar-hide">
             <div className="flex gap-2 sm:gap-3 p-1 bg-gray-100/80 rounded-full">
               {CATEGORIES.map((category) => (
@@ -194,9 +216,7 @@ function Home() {
       </section>
 
 
-      {/* ============================================
-          HERO BANNER SECTION (CAROUSEL)
-          ============================================ */}
+      {/* HERO BANNER SECTION (CAROUSEL) */}
       <section className="w-full">
         <div className="relative w-full h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden shadow-2xl">
           <AnimatePresence mode="wait">
@@ -209,6 +229,7 @@ function Home() {
               className="absolute inset-0"
             >
               {/* Background Image with Overlay */}
+
               <div className="absolute inset-0 bg-black/40 z-10" />
               <img
                 src={banner.image}
@@ -291,9 +312,7 @@ function Home() {
         </div>
       </section>
 
-      {/* ============================================
-          PRODUCTS SECTION
-          ============================================ */}
+      {/* PRODUCTS SECTION */}
       <section id="products-section" className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -319,26 +338,26 @@ function Home() {
                   onClick={() => navigate(`/product/${encodeURIComponent(item.name)}`)}
                   className="group bg-purple-200 rounded-3xl shadow-lg overflow-hidden hover:shadow-3xl hover:-translate-y-2 transition-all duration-500 cursor-pointer border border-gray-100"
                 >
-                  <div className="relative overflow-hidden bg-gradient-to-br from-violet-50 to-purple-50 h-48 flex items-center justify-center">
+                  <div className="relative overflow-hidden bg-gradient-to-br from-violet-50 to-purple-50 h-56 sm:h-64 flex items-center justify-center">
                     <img
                       src={item.image}
                       alt={item.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                    <div className="absolute top-4 right-4 z-10">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                    <div className="absolute top-3 right-3 z-10">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleWishlistClick(item);
                         }}
-                        className={`p-2.5 rounded-full shadow-lg transition-all duration-300 transform hover:scale-110 active:scale-95 ${isInWishlist(item.name)
+                        className={`p-2 rounded-full shadow-lg transition-all duration-300 transform hover:scale-110 active:scale-95 ${isInWishlist(item.name)
                           ? "bg-red-50 shadow-red-200/50"
                           : "bg-white hover:bg-gray-50 shadow-gray-200/50"
                           }`}
                       >
                         <FaHeart
-                          size={20}
+                          size={18}
                           className={`transition-colors duration-300 ${isInWishlist(item.name) ? "text-red-500" : "text-gray-300 group-hover:text-gray-400"
                             }`}
                         />
@@ -346,24 +365,24 @@ function Home() {
                     </div>
                   </div>
 
-                  <div className="p-5 sm:p-6">
-                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 group-hover:text-violet-600 transition-colors duration-300">
+                  <div className="p-4 sm:p-5">
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1 group-hover:text-violet-600 transition-colors duration-300">
                       {item.name}
                     </h3>
-                    <p className="text-gray-500 mb-4 line-clamp-2 text-sm leading-relaxed">
+                    <p className="text-gray-500 mb-3 line-clamp-2 text-xs sm:text-sm leading-relaxed">
                       {item.description}
                     </p>
 
                     <div className="flex items-center justify-between">
-                      <span className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
+                      <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
                         ₹{item.price}
                       </span>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          dispatch(AddToCart(item));
+                          handleAddToCartClick(item);
                         }}
-                        className="group/btn relative bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white font-semibold py-2.5 px-5 rounded-xl shadow-md shadow-violet-500/20 hover:shadow-lg hover:shadow-violet-500/30 transform hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 overflow-hidden"
+                        className="group/btn relative bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white font-semibold py-2 px-4 rounded-xl shadow-md shadow-violet-500/20 hover:shadow-lg hover:shadow-violet-500/30 transform hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 overflow-hidden text-sm"
                       >
                         <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-500"></span>
                         <span className="relative">Add to Cart</span>

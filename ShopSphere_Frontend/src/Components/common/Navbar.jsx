@@ -11,7 +11,9 @@ import {
     FaChevronDown,
     FaSignOutAlt,
     FaBox,
+    FaHome,
 } from "react-icons/fa";
+import toast from "react-hot-toast";
 
 // ============================================
 // NAVBAR COMPONENT
@@ -56,6 +58,7 @@ function Navbar() {
         localStorage.removeItem("user");
         setUser(null);
         setProfileDropdownOpen(false);
+        toast.success("Logged out successfully");
         navigate('/login');
     };
 
@@ -63,10 +66,7 @@ function Navbar() {
     // NAVIGATION LINKS
     // ============================================
     const navLinks = [
-        { name: "Home", path: "/" },
-        // { name: "Orders", path: "/orders" },
-        // { name: "AboutUs", path: "/about" },
-        // { name: "ContactUs", path: "/contact" },
+        // { name: "Home", path: "/" },
     ];
 
     // ============================================
@@ -114,17 +114,17 @@ function Navbar() {
 
         // Navigate to home page and update URL parameter
         if (value.trim()) {
-            navigate(`/?search=${encodeURIComponent(value.trim())}`, { replace: true });
+            navigate(`/home?search=${encodeURIComponent(value.trim())}`, { replace: true });
         } else {
             // If query is empty, show all products
-            navigate('/', { replace: true });
+            navigate('/home', { replace: true });
         }
     };
 
     // Clear search
     const handleClearSearch = () => {
         setSearchQuery("");
-        navigate('/', { replace: true });
+        navigate('/home', { replace: true });
     };
 
 
@@ -136,20 +136,28 @@ function Navbar() {
     // ============================================
     return (
         <nav
-            className={`fixed top-0 left-0 right-0 z-50 py-3 transition-all duration-500 ease-out ${scrolled
-                ? "bg-[#1e1b4b]/95 backdrop-blur-xl shadow-lg shadow-violet-900/20 border-b border-white/5"
-                : "bg-gradient-to-r from-[#2e1065] via-[#4c1d95] to-[#5b21b6] backdrop-blur-md border-b border-white/5"
-                }`}
+            className="fixed top-0 left-0 right-0 z-50 py-3 transition-all duration-500 ease-out"
             role="navigation"
             aria-label="Main navigation"
         >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Background Layers - Using separate divs to prevent flickering/blinking */}
+            <div
+                className={`absolute inset-0 transition-opacity duration-500 ease-out bg-gradient-to-r from-[#2e1065] via-[#4c1d95] to-[#5b21b6] ${scrolled ? "opacity-0" : "opacity-100"
+                    }`}
+            />
+            <div
+                className={`absolute inset-0 transition-opacity duration-500 ease-out bg-[#1e1b4b]/95 backdrop-blur-xl shadow-lg shadow-violet-900/20 ${scrolled ? "opacity-100" : "opacity-0"
+                    }`}
+            />
+            <div className="absolute inset-0 border-b border-white/5 pointer-events-none" />
+
+            <div className="relative w-full px-4 sm:px-6 lg:px-12">
                 <div className="flex items-center justify-between gap-4">
                     {/* ============================================
                         LOGO
                         ============================================ */}
                     <Link
-                        to="/"
+                        to="/home"
                         className="flex items-center gap-3 group flex-shrink-0"
                         aria-label="ShopSphere Home"
                     >
@@ -159,45 +167,60 @@ function Navbar() {
                         </span>
                     </Link>
 
-                    {/* ============================================
-                        DESKTOP SEARCH BAR
-                        ============================================ */}
-                    <form
-                        onSubmit={handleSearch}
-                        className="hidden md:flex items-center w-80 lg:w-96"
-                    >
-                        <div className="relative w-full group">
-                            <div className={`absolute inset-0 bg-gradient-to-r from-violet-600 to-purple-600 rounded-xl blur opacity-25 group-hover:opacity-40 transition-opacity duration-300 ${searchFocused ? 'opacity-60' : ''}`} />
-                            <input
-                                type="text"
-                                placeholder="Search products..."
-                                value={searchQuery}
-                                onChange={handleSearchChange}
-                                onFocus={() => setSearchFocused(true)}
-                                onBlur={() => setSearchFocused(false)}
-                                className={`relative w-full pl-11 pr-10 py-2.5 rounded-xl text-sm transition-all duration-300 ease-out outline-none ${searchFocused
-                                    ? "bg-white/10 border-violet-400 text-white placeholder-violet-200 ring-2 ring-violet-500/30"
-                                    : "bg-white/5 border-white/10 text-violet-100 placeholder-violet-300/60 hover:bg-white/10 hover:border-violet-500/30"
-                                    } border backdrop-blur-sm`}
-                                aria-label="Search products"
-                            />
-                            <FaSearch
-                                className={`absolute left-4 top-1/2 -translate-y-1/2 transition-all duration-300 ${searchFocused ? "text-violet-300" : "text-violet-400/70"
-                                    } z-10`}
-                                size={14}
-                            />
-                            {searchQuery && (
-                                <button
-                                    type="button"
-                                    onClick={handleClearSearch}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-violet-300 hover:text-white transition-colors duration-200 z-10"
-                                    aria-label="Clear search"
-                                >
-                                    <FaTimes size={12} />
-                                </button>
-                            )}
+                    <div className="hidden md:flex items-center flex-grow justify-end ml-8 gap-4">
+                        <div className="flex items-center gap-4 w-full max-w-4xl">
+                            <Link
+                                to="/home"
+                                className={`p-2.5 rounded-xl transition-all duration-300 ease-out group hover:bg-white/10 ${isActive("/home")
+                                    ? "bg-white/10 text-violet-400"
+                                    : "text-violet-200 hover:text-white"
+                                    }`}
+                                aria-label="Home"
+                            >
+                                <FaHome
+                                    size={22}
+                                    className={`transition-transform duration-300 group-hover:scale-110 drop-shadow-lg ${isActive("/home") ? "drop-shadow-[0_0_8px_rgba(167,139,250,0.5)]" : ""}`}
+                                />
+                            </Link>
+
+                            <form
+                                onSubmit={handleSearch}
+                                className="flex-grow items-center"
+                            >
+                                <div className="relative w-full group">
+                                    <div className={`absolute inset-0 bg-gradient-to-r from-violet-600 to-purple-600 rounded-xl blur opacity-25 group-hover:opacity-40 transition-opacity duration-300 ${searchFocused ? 'opacity-60' : ''}`} />
+                                    <input
+                                        type="text"
+                                        placeholder="Search products..."
+                                        value={searchQuery}
+                                        onChange={handleSearchChange}
+                                        onFocus={() => setSearchFocused(true)}
+                                        onBlur={() => setSearchFocused(false)}
+                                        className={`relative w-full pl-11 pr-10 py-2.5 rounded-xl text-sm transition-all duration-300 ease-out outline-none ${searchFocused
+                                            ? "bg-white/10 border-violet-400 text-white placeholder-violet-200 ring-2 ring-violet-500/30"
+                                            : "bg-white/5 border-white/10 text-violet-100 placeholder-violet-300/60 hover:bg-white/10 hover:border-violet-500/30"
+                                            } border backdrop-blur-sm`}
+                                        aria-label="Search products"
+                                    />
+                                    <FaSearch
+                                        className={`absolute left-4 top-1/2 -translate-y-1/2 transition-all duration-300 ${searchFocused ? "text-violet-300" : "text-violet-400/70"
+                                            } z-10`}
+                                        size={14}
+                                    />
+                                    {searchQuery && (
+                                        <button
+                                            type="button"
+                                            onClick={handleClearSearch}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-violet-300 hover:text-white transition-colors duration-200 z-10"
+                                            aria-label="Clear search"
+                                        >
+                                            <FaTimes size={12} />
+                                        </button>
+                                    )}
+                                </div>
+                            </form>
                         </div>
-                    </form>
+                    </div>
 
                     {/* ============================================
                         DESKTOP NAVIGATION
@@ -370,6 +393,17 @@ function Navbar() {
                     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
                     <div className="absolute top-[72px] left-0 right-0 bg-[#1e1b4b]/95 backdrop-blur-xl border-t border-white/10 shadow-2xl animate-in slide-in-from-top-2 duration-300 p-4">
                         <div className="flex flex-col gap-2">
+                            <Link
+                                to="/home"
+                                onClick={() => setIsOpen(false)}
+                                className={`px-4 py-3 rounded-xl font-medium transition-all flex items-center gap-3 ${isActive("/home")
+                                    ? "bg-violet-600/30 text-white border border-violet-500/50"
+                                    : "text-violet-200 hover:bg-white/5 hover:text-white"
+                                    }`}
+                            >
+                                <FaHome size={18} />
+                                Home
+                            </Link>
                             {navLinks.map((link) => (
                                 <Link
                                     key={link.name}

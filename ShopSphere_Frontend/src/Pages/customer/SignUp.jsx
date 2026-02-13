@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { signupUser } from "../../api/axios";
 import { useNavigate, Link } from "react-router-dom";
+import toast from 'react-hot-toast';
 
 function SignUp() {
     const navigate = useNavigate();
@@ -30,14 +31,14 @@ function SignUp() {
             });
 
             console.log("Signup success:", data);
+            toast.success("Account created successfully! Please log in.");
 
             // Navigate to login after successful signup
             navigate("/login");
         } catch (err) {
-            setError(
-                err.response?.data?.message ||
-                "Signup failed. Please try again."
-            );
+            const errorMessage = err.response?.data?.message || "Signup failed. Please try again.";
+            setError(errorMessage);
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }
