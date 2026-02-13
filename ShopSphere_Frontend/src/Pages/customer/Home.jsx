@@ -5,6 +5,7 @@ import { FaHeart, FaShoppingBag, FaArrowRight } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import toast from "react-hot-toast";
 
 // CONFIGURATION
 
@@ -145,24 +146,29 @@ function Home() {
   const handleWishlistClick = (item) => {
     const user = localStorage.getItem("user");
     if (!user) {
+      toast.error("Please login to add items to your wishlist");
       navigate("/login");
       return;
     }
 
     if (isInWishlist(item.name)) {
       dispatch(RemoveFromWishlist(item));
+      toast.success("Removed from wishlist");
     } else {
       dispatch(AddToWishlist(item));
+      toast.success("Added to wishlist");
     }
   };
 
   const handleAddToCartClick = (item) => {
     const user = localStorage.getItem("user");
     if (!user) {
+      toast.error("Please login to add items to your cart");
       navigate("/login");
       return;
     }
     dispatch(AddToCart(item));
+    toast.success("Added to cart");
   };
 
   return (

@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { clearCart } from "../../Store";
 import { CheckCircle, ShoppingBag, ArrowRight, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 
 function Success() {
   const [order, setOrder] = useState(null);
@@ -13,9 +14,13 @@ function Success() {
   useEffect(() => {
     const data = localStorage.getItem("orderSuccess");
     if (data) {
-      setOrder(JSON.parse(data));
+      const parsedData = JSON.parse(data);
+      setOrder(parsedData);
       // Clear the cart in Redux
       dispatch(clearCart());
+      toast.success("Order confirmed! Thank you for shopping with us.", {
+        id: "order-success-toast",
+      });
     }
   }, [dispatch]);
 

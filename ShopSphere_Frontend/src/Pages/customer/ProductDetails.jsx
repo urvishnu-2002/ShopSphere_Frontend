@@ -17,6 +17,7 @@ import {
     FaChevronLeft
 } from "react-icons/fa";
 import { AddToCart, AddToWishlist, RemoveFromWishlist } from "../../Store";
+import toast from "react-hot-toast";
 
 // Mock Rating Component
 const Rating = ({ rating }) => {
@@ -83,30 +84,36 @@ const ProductDetails = () => {
     const handleWishlistToggle = () => {
         const user = localStorage.getItem("user");
         if (!user) {
+            toast.error("Please login to manage your wishlist");
             navigate("/login");
             return;
         }
 
         if (isInWishlist(product.name)) {
             dispatch(RemoveFromWishlist(product));
+            toast.success("Removed from wishlist");
         } else {
             dispatch(AddToWishlist(product));
+            toast.success("Added to wishlist");
         }
     };
 
     const handleAddToCart = () => {
         const user = localStorage.getItem("user");
         if (!user) {
+            toast.error("Please login to add items to your cart");
             navigate("/login");
             return;
         }
         dispatch(AddToCart({ ...product, quantity }));
+        toast.success("Added to cart");
         // Optional: show a toast or feedback
     };
 
     const handleBuyNow = () => {
         const user = localStorage.getItem("user");
         if (!user) {
+            toast.error("Please login to proceed with your purchase");
             navigate("/login");
             return;
         }
