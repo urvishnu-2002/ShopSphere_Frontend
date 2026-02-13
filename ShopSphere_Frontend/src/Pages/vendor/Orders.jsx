@@ -4,17 +4,30 @@ export default function Orders() {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    const products = JSON.parse(localStorage.getItem("products")) || [];
-
-    const approved = products.filter(p => p.approved);
-
-    const fakeOrders = approved.map((p, i) => ({
-      id: `ORD00${i + 1}`,
-      product: p.name,
-      price: p.price,
-      status: "Delivered",
-      date: new Date().toLocaleDateString()
-    }));
+    // Dummy orders data
+    const fakeOrders = [
+      {
+        id: "ORD001",
+        product: "Wireless Mouse",
+        price: 799,
+        status: "Delivered",
+        date: "12/02/2026"
+      },
+      {
+        id: "ORD002",
+        product: "Bluetooth Headphones",
+        price: 1499,
+        status: "Delivered",
+        date: "11/02/2026"
+      },
+      {
+        id: "ORD003",
+        product: "Laptop Stand",
+        price: 999,
+        status: "Delivered",
+        date: "10/02/2026"
+      }
+    ];
 
     setOrders(fakeOrders);
   }, []);

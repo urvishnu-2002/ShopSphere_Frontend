@@ -6,7 +6,6 @@ import UserManagement from './admin/User';
 import VendorReview from './admin/VendorReview';
 import VendorDetails from './admin/VendorDetails';
 import VendorApproval from './admin/VendorApproval';
-import VendorList from './admin/VendorList';
 import VendorRequests from './admin/VendorRequests';
 import ProductManagement from './admin/ProductManagement';
 import Reports from './admin/Reports';
@@ -17,6 +16,7 @@ import { NotificationProvider } from './context/NotificationContext';
 import { VendorProvider } from './context/VendorContext';
 import { UserProvider } from './context/UserContext';
 import { ProductProvider } from './context/ProductContext';
+import DeliveryAgentLogin from './Pages/DeliveryAgentLogin';
 import './App.css';
 
 function App() {
@@ -30,10 +30,11 @@ function App() {
                 {/* Splash Screen as default route */}
                 <Route path="/" element={<SplashScreen />} />
 
-                {/* Login Route */}
+                {/* Login Routes */}
                 <Route path="/login" element={<AdminLogin />} />
+                <Route path="/delivery-login" element={<DeliveryAgentLogin />} />
 
-                {/* Protected Routes */}
+                {/* Protected Admin Routes */}
                 <Route
                   path="/dashboard"
                   element={
@@ -116,3 +117,4 @@ function App() {
 }
 
 export default App;
+

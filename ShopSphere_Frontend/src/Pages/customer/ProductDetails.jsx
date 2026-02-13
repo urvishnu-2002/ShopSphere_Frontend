@@ -17,6 +17,7 @@ import {
     FaChevronLeft
 } from "react-icons/fa";
 import { AddToCart, AddToWishlist, RemoveFromWishlist } from "../../Store";
+import toast from "react-hot-toast";
 
 // Mock Rating Component
 const Rating = ({ rating }) => {
@@ -81,16 +82,43 @@ const ProductDetails = () => {
     };
 
     const handleWishlistToggle = () => {
+        const user = localStorage.getItem("user");
+        if (!user) {
+            toast.error("Please login to manage your wishlist");
+            navigate("/login");
+            return;
+        }
+
         if (isInWishlist(product.name)) {
             dispatch(RemoveFromWishlist(product));
+            toast.success("Removed from wishlist");
         } else {
             dispatch(AddToWishlist(product));
+            toast.success("Added to wishlist");
         }
     };
 
     const handleAddToCart = () => {
+        const user = localStorage.getItem("user");
+        if (!user) {
+            toast.error("Please login to add items to your cart");
+            navigate("/login");
+            return;
+        }
         dispatch(AddToCart({ ...product, quantity }));
+        toast.success("Added to cart");
         // Optional: show a toast or feedback
+    };
+
+    const handleBuyNow = () => {
+        const user = localStorage.getItem("user");
+        if (!user) {
+            toast.error("Please login to proceed with your purchase");
+            navigate("/login");
+            return;
+        }
+        dispatch(AddToCart({ ...product, quantity }));
+        navigate("/checkout");
     };
 
     if (!product) {
@@ -107,7 +135,7 @@ const ProductDetails = () => {
                 {/* Back Button */}
                 <button
                     onClick={() => navigate(-1)}
-                    className="mb-6 flex items-center gap-2 text-gray-600 hover:text-blue-600 font-bold transition-all group"
+                    className="mb-6 flex items-center gap-2 text-gray-600 hover:text-violet-600 font-bold transition-all group"
                 >
                     <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm group-hover:shadow-md border border-gray-100 transition-all">
                         <FaChevronLeft size={16} />
@@ -129,7 +157,7 @@ const ProductDetails = () => {
                                         setMainImage(img);
                                         setSelectedImgIndex(idx);
                                     }}
-                                    className={`relative flex-shrink-0 w-20 h-20 bg-gray-50 rounded-2xl overflow-hidden border-2 transition-all duration-300 ${selectedImgIndex === idx ? "border-blue-600 scale-105 shadow-lg" : "border-transparent opacity-70 hover:opacity-100"
+                                    className={`relative flex-shrink-0 w-20 h-20 bg-gray-50 rounded-2xl overflow-hidden border-2 transition-all duration-300 ${selectedImgIndex === idx ? "border-violet-600 scale-105 shadow-lg" : "border-transparent opacity-70 hover:opacity-100"
                                         }`}
                                 >
                                     <img src={img} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover" />
@@ -172,7 +200,7 @@ const ProductDetails = () => {
                     <div className="w-full lg:w-[45%] p-8 lg:p-14 lg:border-l border-gray-100 flex flex-col justify-between">
                         <div>
                             {/* Brand / Category */}
-                            <p className="text-blue-600 text-[12px] font-black uppercase tracking-[3px] mb-3">Premium Collection</p>
+                            <p className="text-violet-600 text-[12px] font-black uppercase tracking-[3px] mb-3">Premium Collection</p>
 
                             {/* Name */}
                             <h1 className="text-4xl lg:text-5xl font-black text-gray-900 leading-[1.1] mb-6 tracking-tight">
@@ -194,7 +222,7 @@ const ProductDetails = () => {
                                 <p className="text-2xl font-bold text-gray-300 line-through mb-1.5">
                                     ₹{product.oldPrice.toFixed(2)}
                                 </p>
-                                <div className="px-3 py-1 bg-green-100 text-green-600 text-[11px] font-black uppercase tracking-[1px] rounded-lg mb-2">
+                                <div className="px-3 py-1 bg-purple-100 text-purple-600 text-[11px] font-black uppercase tracking-[1px] rounded-lg mb-2">
                                     Save {Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}%
                                 </div>
                             </div>
@@ -213,14 +241,14 @@ const ProductDetails = () => {
                                 <div className="flex items-center bg-gray-50 border border-gray-200 rounded-2xl p-1.5 shadow-inner">
                                     <button
                                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                        className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-500 hover:bg-white hover:text-blue-600 transition-all font-bold"
+                                        className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-500 hover:bg-white hover:text-violet-600 transition-all font-bold"
                                     >
                                         <FaMinus size={12} />
                                     </button>
                                     <span className="w-12 text-center text-lg font-black text-gray-900">{quantity}</span>
                                     <button
                                         onClick={() => setQuantity(quantity + 1)}
-                                        className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-500 hover:bg-white hover:text-blue-600 transition-all font-bold"
+                                        className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-500 hover:bg-white hover:text-violet-600 transition-all font-bold"
                                     >
                                         <FaPlus size={12} />
                                     </button>
@@ -236,7 +264,8 @@ const ProductDetails = () => {
                                     <FaShoppingCart size={18} /> Add to Cart
                                 </button>
                                 <button
-                                    className="flex-1 py-5 bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-[24px] font-black text-lg shadow-xl shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-1 transition-all flex items-center justify-center gap-3 active:scale-95"
+                                    onClick={handleBuyNow}
+                                    className="flex-1 py-5 bg-gradient-to-br from-violet-600 to-purple-700 text-white rounded-[24px] font-black text-lg shadow-xl shadow-violet-500/20 hover:shadow-violet-500/40 hover:-translate-y-1 transition-all flex items-center justify-center gap-3 active:scale-95"
                                 >
                                     <FaBolt size={18} /> Buy it Now
                                 </button>
@@ -247,7 +276,7 @@ const ProductDetails = () => {
                         <div className="border-t border-gray-100 pt-8 mt-auto">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div className="flex gap-4">
-                                    <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center flex-shrink-0">
+                                    <div className="w-12 h-12 bg-violet-50 text-violet-600 rounded-2xl flex items-center justify-center flex-shrink-0">
                                         <FaTruck size={20} />
                                     </div>
                                     <div>
@@ -256,7 +285,7 @@ const ProductDetails = () => {
                                     </div>
                                 </div>
                                 <div className="flex gap-4">
-                                    <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center flex-shrink-0">
+                                    <div className="w-12 h-12 bg-fuchsia-50 text-fuchsia-600 rounded-2xl flex items-center justify-center flex-shrink-0">
                                         <FaUndo size={20} />
                                     </div>
                                     <div>
@@ -271,7 +300,7 @@ const ProductDetails = () => {
                                 <input
                                     type="text"
                                     placeholder="Enter your pincode"
-                                    className="w-full pl-5 pr-32 py-4 bg-gray-50 border border-gray-200 rounded-[20px] text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                                    className="w-full pl-5 pr-32 py-4 bg-gray-50 border border-gray-200 rounded-[20px] text-sm font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/20 transition-all"
                                 />
                                 <button className="absolute right-2 top-2 bottom-2 px-6 bg-gray-900 text-white rounded-2xl text-[11px] font-black uppercase tracking-[1px] hover:bg-black transition-colors">
                                     Check
