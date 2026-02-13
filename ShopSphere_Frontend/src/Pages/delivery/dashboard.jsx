@@ -1,7 +1,4 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Badge } from '../../components/ui/badge';
 import { FaBox, FaDollarSign, FaMapMarkerAlt, FaCheck, FaSignOutAlt, FaBars, FaTruck, FaClipboardList, FaMoneyBillWave, FaTachometerAlt } from 'react-icons/fa';
 
 
@@ -17,11 +14,15 @@ const toast = {
 };
 
 import { useNavigate } from 'react-router-dom';
+import { mockOrders } from '../../utils/deliveryMockData';
 
-// ... imports ...
-
-export default function DeliveryDashboard({ onLogout }) {
+export default function DeliveryDashboard({ onLogout: propLogout }) {
     const navigate = useNavigate();
+
+    const onLogout = () => {
+        if (propLogout) propLogout();
+        navigate('/delivery');
+    };
     const deliveryPersonId = 'd1';
     const [orders, setOrders] = useState(mockOrders);
     const [sidebarOpen, setSidebarOpen] = useState(true);
