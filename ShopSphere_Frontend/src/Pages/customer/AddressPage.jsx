@@ -1,13 +1,38 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getAddresses, addAddress, deleteAddress } from "../../api/axios";
 
 export default function AddressPage() {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [useCurrent, setUseCurrent] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState(null);
-  const [error, setError] = useState("");
-
   const [savedAddresses, setSavedAddresses] = useState([]);
+  const [error, setError] = useState(""); // General page errors
+  const [formError, setFormError] = useState(""); // Form validation errors
+
+  useEffect(() => {
+    fetchAddresses();
+  }, []);
+
+  const fetchAddresses = async () => {
+    try {
+      const data = await getAddresses();
+      console.log("Fetched addresses:", data);
+      const list = data.addresses || (Array.isArray(data) ? data : []);
+      setSavedAddresses(list);
+
+      // Auto-select first address if none selected
+      if (list.length > 0 && !selectedAddress) {
+        setSelectedAddress(list[0].id);
+      }
+    } catch (err) {
+      console.error("Failed to fetch addresses:", err);
+      // Only show error if the user is actually supposed to be logged in
+      if (localStorage.getItem("accessToken")) {
+        setError("Unable to load addresses. Please refresh.");
+      }
+    }
+  };
 
   const emptyForm = {
     name: "",
@@ -60,11 +85,14 @@ export default function AddressPage() {
     );
   };
 
-  const handleChange = (e) =>
+  const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (formError) setFormError("");
+  };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setFormError("");
 
     if (
       !formData.name ||
@@ -74,33 +102,27 @@ export default function AddressPage() {
       !formData.city ||
       !formData.state
     )
-      return setError("All fields are required");
+      return setFormError("All fields are required");
 
     if (formData.phone.length !== 10)
-      return setError("Phone must be 10 digits");
+      return setFormError("Phone must be 10 digits");
 
     if (formData.pincode.length !== 6)
-      return setError("Pincode must be 6 digits");
+      return setFormError("Pincode must be 6 digits");
 
-    setError("");
+    try {
+      await addAddress(formData);
+      await fetchAddresses(); // Refresh from DB
 
-    if (editId) {
-      setSavedAddresses(
-        savedAddresses.map((a) =>
-          a.id === editId ? { ...formData, id: editId } : a
-        )
-      );
-      setSelectedAddress(editId);
-    } else {
-      const newId = Date.now();
-      setSavedAddresses([...savedAddresses, { ...formData, id: newId }]);
-      setSelectedAddress(newId);
+      setUseCurrent(false);
+      setShowForm(false);
+      setEditId(null);
+      setFormData(emptyForm);
+      setFormError("");
+    } catch (err) {
+      console.error("Error saving address:", err);
+      setFormError("Failed to save address. Please try again.");
     }
-
-    setUseCurrent(false);
-    setShowForm(false);
-    setEditId(null);
-    setFormData(emptyForm);
   };
 
   const handleEdit = (addr) => {
@@ -109,9 +131,15 @@ export default function AddressPage() {
     setShowForm(true);
   };
 
-  const handleDelete = (id) => {
-    setSavedAddresses(savedAddresses.filter((a) => a.id !== id));
-    if (selectedAddress === id) setSelectedAddress(null);
+  const handleDelete = async (id) => {
+    try {
+      await deleteAddress(id);
+      await fetchAddresses();
+      if (selectedAddress === id) setSelectedAddress(null);
+    } catch (err) {
+      console.error("Error deleting address:", err);
+      setError("Failed to delete address");
+    }
   };
 
   return (
@@ -199,7 +227,7 @@ export default function AddressPage() {
                 value={formData[field]}
                 onChange={handleChange}
                 placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                className={`border rounded-xl p-3 focus:ring-2 focus:ring-violet-500 outline-none ${error && !formData[field] ? "border-red-500" : ""
+                className={`border rounded-xl p-3 focus:ring-2 focus:ring-violet-500 outline-none ${formError && !formData[field] ? "border-red-500" : ""
                   }`}
               />
             ))}
@@ -212,11 +240,11 @@ export default function AddressPage() {
             onChange={handleChange}
             placeholder="Full Address"
             rows="3"
-            className={`w-full border rounded-xl p-3 focus:ring-2 focus:ring-violet-500 outline-none ${error && !formData.address ? "border-red-500" : ""
+            className={`w-full border rounded-xl p-3 focus:ring-2 focus:ring-violet-500 outline-none ${formError && !formData.address ? "border-red-500" : ""
               }`}
           />
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {formError && <p className="text-red-500 text-sm font-medium">{formError}</p>}
 
           <button
             type="submit"

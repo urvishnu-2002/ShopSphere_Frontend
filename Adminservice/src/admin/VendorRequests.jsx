@@ -3,11 +3,28 @@ import { useNavigate } from 'react-router-dom';
 import { useVendors } from '../context/VendorContext';
 import Sidebar from '../components/Sidebar';
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { fetchVendorRequests } from '../api/axios';
+import { useEffect } from 'react';
 
 const VendorRequests = () => {
     const navigate = useNavigate();
     const { vendors, updateVendorStatus } = useVendors();
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+
+
+    useEffect(() => {
+        const loadVendors = async () => {
+            try {
+                const data = await fetchVendorRequests(); // 👈 axios call
+                updateVendorStatus(data);                          // 👈 store DB data
+            } catch (error) {
+                console.error("Failed to fetch vendor requests", error);
+            }
+        };
+
+        loadVendors();
+    }, []);
 
     // Filter to show ONLY pending requests
     const pendingRequests = vendors.filter(vendor => vendor.status === 'Pending');
