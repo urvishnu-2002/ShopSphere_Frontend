@@ -26,3 +26,13 @@ export const logout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
 };
+
+
+export const addProduct = async (formData) => {
+  const response = await axios.post(
+    `${API_BASE_URL}/vendor/products/add/`,
+    formData
+  );
+
+  return response.data;
+};
