@@ -79,3 +79,42 @@ export const processPayment = async (paymentData) => {
 
   return response.data;
 };
+
+// ADDRESS MANAGEMENT (Protected)
+
+export const getAddresses = async () => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) throw new Error("No access token found");
+
+  const response = await axios.get(`${API_BASE_URL}/address`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+export const addAddress = async (addressData) => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) throw new Error("No access token found");
+
+  const response = await axios.post(`${API_BASE_URL}/address`, addressData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
+};
+
+export const deleteAddress = async (id) => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) throw new Error("No access token found");
+
+  const response = await axios.post(`${API_BASE_URL}/delete-address/${id}`, {}, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
