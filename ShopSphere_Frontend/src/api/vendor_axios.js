@@ -28,11 +28,34 @@ export const logout = () => {
 };
 
 
-export const addProduct = async (formData) => {
-  const response = await axios.post(
-    `${API_BASE_URL}/vendor/products/add/`,
-    formData
-  );
+export const add_Product = async (productData) => {
+    const token = localStorage.getItem("accessToken");
+    const headers = {
+        "Content-Type": "multipart/form-data",
+    };
+    if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+    }
 
-  return response.data;
+    const formData = new FormData();
+    Object.keys(productData).forEach((key) => {
+        if (key === "images") {
+            productData.images.forEach((image) => {
+                formData.append("images", image);
+            });
+        } else if (key === "stock") {
+            // Map 'stock' from frontend to 'quantity' for backend
+            formData.append("quantity", productData[key]);
+        } else {
+            formData.append(key, productData[key]);
+        }
+    });
+
+    const response = await axios.post(
+        `${API_BASE_URL}/vendor/products/add/`,
+        formData,
+        { headers }
+    );
+
+    return response.data;
 };
