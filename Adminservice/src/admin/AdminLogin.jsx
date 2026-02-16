@@ -66,9 +66,9 @@ function AdminLogin() {
                 setError(data.message || 'Invalid email or password.');
             }
         } catch (err) {
-            
+
             if (email === 'admin@shopsphere.com' && password === 'admin123') {
-               
+
                 const fakeToken = 'eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiU1VQRVJfQURNSU4ifQ.fake_sig';
                 sessionStorage.setItem('authToken', fakeToken);
                 navigate('/dashboard');
@@ -79,7 +79,7 @@ function AdminLogin() {
                     setError('Invalid credentials or backend unavailable.');
                 }
             }
-           
+
         } finally {
             setIsLoading(false);
             clearTimeout(timeoutId);
@@ -92,7 +92,7 @@ function AdminLogin() {
 
     return (
         <div className="relative min-h-screen w-full flex items-center justify-center p-4">
-          
+
             <div
                 className="fixed inset-0 z-0"
                 style={{
@@ -105,18 +105,18 @@ function AdminLogin() {
                 <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]"></div>
             </div>
 
-          
+
             <div className="w-full max-w-md relative z-10 animate-in fade-in zoom-in duration-500">
                 <div className="bg-white/70 backdrop-blur-xl border border-white/60 rounded-2xl shadow-2xl shadow-gray-200/60 p-5 sm:p-6 transition-all duration-500 hover:shadow-[0_35px_60px_-12px_rgba(0,0,0,0.15)]">
 
-              
+
                     <div className="flex justify-center mb-5">
                         <div className="w-24 h-24 flex items-center justify-center transform transition-transform duration-300 hover:scale-105">
                             <img src="/s_logo.png" alt="ShopSphere Logo" className="w-full h-full object-contain" />
                         </div>
                     </div>
 
-                   
+
                     <div className="text-center mb-3">
                         <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight mb-0.5">
                             <span className="text-gray-800">Shop</span>

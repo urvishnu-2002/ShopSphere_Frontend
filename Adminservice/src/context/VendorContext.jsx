@@ -97,7 +97,7 @@ const INITIAL_VENDORS = [
 ];
 
 export const VendorProvider = ({ children }) => {
-    const [vendors, setVendors] = useState(INITIAL_VENDORS);
+    const [vendors, setVendors] = useState([]);
     const [toasts, setToasts] = useState([]);
     const { addNotification, markAsRead, handleVendorAction } = useNotifications();
 
@@ -109,47 +109,29 @@ export const VendorProvider = ({ children }) => {
         }, 3000);
     }, []);
 
-    // Status Transition Logic
-    const updateVendorStatus = useCallback(async (vendorId, newStatus, notifId) => {
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
+    // .............
 
-        let success = false;
-        let errorMessage = '';
+    const updateVendorStatus = async (vendorId, newStatus) => {
+        const token = localStorage.getItem("accessToken");
 
-        setVendors(prev => {
-            return prev.map(v => {
-                if (v.id === vendorId) {
-                    const currentStatus = v.status;
-
-                    // Validation Rules
-                    const isValid = (
-                        (currentStatus === 'Pending' && (newStatus === 'Approved' || newStatus === 'Blocked')) ||
-                        (currentStatus === 'Approved' && (newStatus === 'Suspended' || newStatus === 'Blocked')) ||
-                        (currentStatus === 'Suspended' && (newStatus === 'Approved' || newStatus === 'Blocked')) ||
-                        (currentStatus === 'Blocked' && newStatus === 'Approved')
-                    );
-
-                    if (isValid) {
-                        success = true;
-                        return { ...v, status: newStatus };
-                    } else {
-                        errorMessage = `Invalid transition from ${currentStatus} to ${newStatus}.`;
-                    }
-                }
-                return v;
-            });
-        });
-
-        if (success) {
-            addToast(`Vendor successfully ${newStatus.toLowerCase()}`, 'success');
-            if (notifId) handleVendorAction(notifId, newStatus);
-            return true;
-        } else {
-            addToast(errorMessage || 'Action failed', 'error');
-            return false;
+        if (newStatus === "Approved") {
+            await fetch(
+                `http://localhost:8000/admin/api/vendor-requests/${vendorId}/approve/`,
+                { method: "POST", headers: { Authorization: `Bearer ${token}` } }
+            );
         }
-    }, [addToast, handleVendorAction]);
+
+        if (newStatus === "Blocked") {
+            await fetch(
+                `http://localhost:8000/admin/api/vendor-requests/${vendorId}/reject/`,
+                { method: "POST", headers: { Authorization: `Bearer ${token}` } }
+            );
+        }
+
+        await loadVendors(); // 🔥 THIS IS KEY
+        return true;
+    };
+
 
     const value = useMemo(() => ({
         vendors,
