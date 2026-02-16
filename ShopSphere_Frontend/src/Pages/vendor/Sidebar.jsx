@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   HomeIcon,
@@ -17,65 +17,68 @@ export default function Sidebar() {
   const [desktopOpen, setDesktopOpen] = useState(true);
   const location = useLocation();
 
+  useEffect(() => {
+    // notify layout about current sidebar state
+    window.dispatchEvent(new CustomEvent('vendorSidebarToggle', { detail: { open: desktopOpen } }));
+  }, [desktopOpen]);
+
+  useEffect(() => {
+    // hide top nav and footer when vendor sidebar is mounted
+    const selectors = ['nav', 'header', '.navbar', 'footer', '.site-footer'];
+    const elems = [];
+
+    selectors.forEach(sel => {
+      document.querySelectorAll(sel).forEach(el => {
+        elems.push({ el, display: el.style.display });
+        el.style.display = 'none';
+      });
+    });
+
+    return () => {
+      // restore original display styles
+      elems.forEach(({ el, display }) => {
+        el.style.display = display || '';
+      });
+    };
+  }, []);
+
   const menu = [
-    { path: "/", label: "Dashboard", icon: HomeIcon },
-    { path: "/products", label: "Products", icon: CubeIcon },
-    { path: "/addproduct", label: "Add Product", icon: PlusCircleIcon },
-    { path: "/orders", label: "Orders", icon: ShoppingCartIcon },
-    { path: "/earnings", label: "Earnings", icon: BanknotesIcon }
+                { path: "/welcome", label: "Dashboard", icon: HomeIcon },
+    { path: "/vendorallproducts", label: "Products", icon: CubeIcon },
+    { path: "/vendoraddproduct", label: "Add Product", icon: PlusCircleIcon },
+    { path: "/vendororders", label: "Orders", icon: ShoppingCartIcon },
+    { path: "/vendorearning", label: "Earnings", icon: BanknotesIcon }
   ];
 
   return (
     <>
-      {/* MOBILE TOP BAR */}
-      <div className="md:hidden flex items-center justify-between p-4 shadow bg-white fixed w-full z-40">
-        <h2 className="font-bold">Vendor Portal</h2>
-        <Bars3Icon
-          className="h-6 w-6 cursor-pointer"
-          onClick={() => setMobileOpen(true)}
-        />
-      </div>
-
-      {/* MOBILE OVERLAY */}
-      {mobileOpen && (
-        <div
-          className="fixed inset-0 bg-black/40 z-40"
-          onClick={() => setMobileOpen(false)}
-        />
-      )}
-
-      {/* MOBILE SIDEBAR */}
+      {/* MOBILE SIDEBAR (always visible, fixed) */}
       <aside
-        className={`fixed z-50 top-0 left-0 h-full bg-white w-64 p-4 transition-transform duration-300 md:hidden
-        ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}
+        className="fixed z-50 top-0 left-0 h-full bg-white w-64 p-4 md:hidden"
       >
 
         <div className="flex justify-between items-center mb-6">
           <h2 className="font-bold text-xl">Vendor Portal</h2>
-          <XMarkIcon
-            className="h-6 w-6 cursor-pointer"
-            onClick={() => setMobileOpen(false)}
-          />
         </div>
 
-        <Menu menu={menu} location={location} close={() => setMobileOpen(false)} />
+        <Menu menu={menu} location={location} close={() => {}} />
 
       </aside>
 
       {/* DESKTOP SIDEBAR */}
       <aside
-        className={`hidden md:block fixed top-0 left-0 h-screen bg-white shadow-lg p-4 transition-all duration-300 z-30
-        ${desktopOpen ? "w-64" : "w-20"}`}
+        className={`hidden md:block fixed top-0 left-0 h-screen bg-white shadow-lg p-4 transition-all duration-300 z-30 ${desktopOpen ? 'w-64' : 'w-20'}`}
       >
 
         <div className="flex justify-between items-center mb-8">
 
           {desktopOpen && <h2 className="font-bold text-xl">Vendor Portal</h2>}
 
-          <Bars3Icon
-            className="h-6 w-6 cursor-pointer"
-            onClick={() => setDesktopOpen(!desktopOpen)}
-          />
+          <button onClick={() => setDesktopOpen(!desktopOpen)} aria-label="Toggle sidebar">
+            <Bars3Icon
+              className="h-6 w-6 cursor-pointer"
+            />
+          </button>
 
         </div>
 
@@ -104,7 +107,7 @@ export default function Sidebar() {
               className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-50 text-red-500"
             >
               <ArrowRightOnRectangleIcon className="h-5 w-5" />
-              {desktopOpen && "Logout"}
+              {desktopOpen && 'Logout'}
             </Link>
           </li>
 

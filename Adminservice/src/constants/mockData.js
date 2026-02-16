@@ -1,0 +1,50 @@
+export const MOCK_PRODUCTS = [
+    {
+        id: 'PRD-001',
+        name: 'ear phones',
+        vendor: 'Bharat Electronics',
+        price: 1500.00,
+        stock: 5,
+        status: 'Active',
+    },
+    {
+        id: 'PRD-002',
+        name: 'laptop',
+        vendor: 'Bharat Electronics',
+        price: 50000.00,
+        stock: 18,
+        status: 'Active',
+    },
+    {
+        id: 'PRD-003',
+        name: 'Smart Watch',
+        vendor: 'Mumbai Gadget Mart',
+        price: 2999.00,
+        stock: 45,
+        status: 'Active',
+    },
+    {
+        id: 'PRD-004',
+        name: 'Organic Honey',
+        vendor: 'Jaipur Organic Hub',
+        price: 450.00,
+        stock: 120,
+        status: 'Active',
+    },
+    {
+        id: 'PRD-005',
+        name: 'Almond Oil',
+        vendor: 'Jaipur Organic Hub',
+        price: 850.00,
+        stock: 35,
+        status: 'Active',
+    },
+    {
+        id: 'PRD-006',
+        name: 'razor mobile',
+        vendor: 'Razer',
+        price: 65000.00,
+        stock: 12,
+        status: 'Active',
+    }
+];
