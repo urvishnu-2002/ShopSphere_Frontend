@@ -12,7 +12,7 @@ export const vendorRegister = async (signupData) => {
     if (token) {
         headers["Authorization"] = `Bearer ${token}`;
     }
-
+    console.log(signupData);
     const response = await axios.post(
         `${API_BASE_URL}/vendor/register/`,
         signupData,

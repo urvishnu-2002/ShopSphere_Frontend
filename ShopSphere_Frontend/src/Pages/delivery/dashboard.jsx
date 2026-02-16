@@ -1,8 +1,11 @@
 import { useState } from 'react';
+<<<<<<< HEAD
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
+=======
+>>>>>>> ee929c05fbcedaac122e57867ddc06630f7a9f74
 import { FaBox, FaDollarSign, FaMapMarkerAlt, FaCheck, FaSignOutAlt, FaBars, FaTruck, FaClipboardList, FaMoneyBillWave, FaTachometerAlt } from 'react-icons/fa';
 
 const toast = {
@@ -15,6 +18,7 @@ const toast = {
     }
 };
 
+<<<<<<< HEAD
 
 const mockOrders = [
     { id: 'ORD001', userName: 'John Doe', deliveryAddress: '123 Main St, New York, NY', status: 'confirmed', deliveryPersonId: null },
@@ -32,6 +36,18 @@ export default function DeliveryDashboard({ onLogout: propOnLogout }) {
         navigate('/login');
     });
 
+=======
+import { useNavigate } from 'react-router-dom';
+import { mockOrders } from '../../utils/deliveryMockData';
+
+export default function DeliveryDashboard({ onLogout: propLogout }) {
+    const navigate = useNavigate();
+
+    const onLogout = () => {
+        if (propLogout) propLogout();
+        navigate('/delivery');
+    };
+>>>>>>> ee929c05fbcedaac122e57867ddc06630f7a9f74
     const deliveryPersonId = 'd1';
     const [orders, setOrders] = useState(mockOrders);
     const [sidebarOpen, setSidebarOpen] = useState(true);

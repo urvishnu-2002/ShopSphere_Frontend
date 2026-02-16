@@ -1,102 +1,90 @@
 import React, { useState } from 'react';
-import {
-    Users,
-    Store,
-    ShoppingCart,
-    PanelLeftClose,
-    PanelLeftOpen,
-    Bell,
-    Search,
-    ChevronDown,
-    DollarSign,
-    TrendingUp,
-    UserPlus
-} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Store, ShoppingCart, PanelLeftClose, PanelLeftOpen, ClipboardList } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
-import {
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    AreaChart,
-    Area
-} from 'recharts';
-import { motion } from 'framer-motion';
+import NotificationBell from '../components/NotificationBell';
+import { motion as Motion } from 'framer-motion';
+import { useVendors } from '../context/VendorContext';
+import { useProducts } from '../context/ProductContext';
 
 const AdminDashboard = () => {
+    const navigate = useNavigate();
+    const { vendors } = useVendors();
+    const { products } = useProducts();
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
     const handleLogout = () => {
-        // Add your logout logic here
-        console.log('Logging out...');
-        // Example: navigate to login page
-        // window.location.href = '/login';
+        localStorage.removeItem('authToken');
+        sessionStorage.clear();
+        window.location.href = '/';
     };
-
-    // Mock Data
-    const salesData = [
-        { name: 'Jan', sales: 4000, revenue: 2400 },
-        { name: 'Feb', sales: 3000, revenue: 1398 },
-        { name: 'Mar', sales: 2000, revenue: 9800 },
-        { name: 'Apr', sales: 2780, revenue: 3908 },
-        { name: 'May', sales: 1890, revenue: 4800 },
-        { name: 'Jun', sales: 2390, revenue: 3800 },
-        { name: 'Jul', sales: 3490, revenue: 4300 },
-    ];
-
+// dummydata
     const stats = [
         {
-            title: 'Total Revenue',
-            value: '$949.93',
-            change: '+12.5% from last month',
-            icon: DollarSign,
-            color: 'text-green-500',
-            bgColor: 'bg-green-50'
-        },
-        {
-            title: 'Total Orders',
-            value: '4',
-            change: '+8.2% from last month',
-            icon: ShoppingCart,
-            color: 'text-blue-500',
-            bgColor: 'bg-blue-50'
-        },
-        {
-            title: 'Total Users',
-            value: '2',
-            change: '+5.1% from last month',
-            icon: Users,
-            color: 'text-purple-500',
-            bgColor: 'bg-purple-50'
-        },
-        {
-            title: 'Active Vendors',
-            value: '3',
-            change: '+3 new this month',
+            title: 'Total Vendors',
+            value: vendors.length,
             icon: Store,
-            color: 'text-orange-500',
-            bgColor: 'bg-orange-50'
+            color: 'text-violet-600',
+            bgColor: 'bg-violet-50',
+            route: '/vendors'
+        },
+        {
+            title: 'Pending Vendors',
+            value: vendors.filter(v => v.status === 'Pending').length,
+            icon: ClipboardList,
+            color: 'text-amber-600',
+            bgColor: 'bg-amber-50',
+            route: '/vendors/requests'
+        },
+        {
+            title: 'Approved Vendors',
+            value: vendors.filter(v => v.status === 'Approved').length,
+            icon: Store,
+            color: 'text-green-600',
+            bgColor: 'bg-green-50',
+            route: '/vendors',
+            routeState: { filter: 'Approved' }
+        },
+        {
+            title: 'Blocked Vendors',
+            value: vendors.filter(v => v.status === 'Blocked').length,
+            icon: Store,
+            color: 'text-red-600',
+            bgColor: 'bg-red-50',
+            route: '/vendors',
+            routeState: { filter: 'Blocked' }
+        },
+        {
+            title: 'Total Products',
+            value: products.length,
+            icon: ShoppingCart,
+            color: 'text-blue-600',
+            bgColor: 'bg-blue-50',
+            route: '/products'
+        },
+        {
+            title: 'Blocked Products',
+            value: products.filter(p => p.status === 'Blocked').length,
+            icon: ShoppingCart,
+            color: 'text-gray-600',
+            bgColor: 'bg-gray-50',
+            route: '/products',
+            routeState: { status: 'Blocked' }
         },
     ];
-
-
-
 
     return (
         <div className="flex h-screen bg-gray-50 font-sans text-slate-800">
-            {/* Sidebar */}
-            {isSidebarOpen && (
-                <Sidebar
-                    isSidebarOpen={isSidebarOpen}
-                    activePage="Dashboard"
-                    onLogout={handleLogout}
-                />
-            )}
+           
+            <Sidebar
+                isSidebarOpen={isSidebarOpen}
+                activePage="Dashboard"
+                onLogout={handleLogout}
+            />
 
-            {/* Main Content */}
-            <main className={`flex-1 overflow-y-auto transition-all duration-300 ${!isSidebarOpen ? 'ml-0' : ''}`}>
-                {/* Header */}
+           {/* main */}
+            <main className="flex-1 overflow-y-auto transition-all duration-300">
+               {/* header */}
                 <header className="bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-gray-100 px-8 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <button
@@ -114,135 +102,72 @@ const AdminDashboard = () => {
                     </div>
 
                     <div className="flex items-center gap-6">
-                        < div className="relative hidden md:block">
-                            < Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                            < input
-                                type="text"
-                                placeholder="Search..."
-                                className="pl-10 pr-4 py-2 rounded-full border border-gray-200 bg-gray-50 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none w-64 text-sm transition-all"
-                            />
-                        </div >
-                        <button className="relative p-2 text-slate-500 hover:bg-gray-100 rounded-full transition-colors">
-                            < Bell className="w-5 h-5" />
-                            < span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-                        </button >
-                    </div >
-                </header >
+                        <NotificationBell />
+                    </div>
+                </header>
 
                 <div className="p-8 space-y-8 max-w-7xl mx-auto">
-                    {/* Stats Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {
-                            stats.map((stat, index) => (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: index * 0.1 }}
-                                    key={stat.title}
-                                    className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow border border-gray-100"
-                                >
-                                    <div className="flex items-start justify-between mb-4">
-                                        < div >
-                                            <h3 className="text-slate-500 text-sm font-medium">{stat.title}</h3>
-                                            < p className="text-3xl font-bold text-slate-800 mt-1">{stat.value}</p>
-                                        </div >
-                                        <div className={`p-3 rounded-xl ${stat.bgColor}`}>
-                                            <stat.icon className={`w-6 h-6 ${stat.color}`} />
-                                        </div>
-                                    </div >
-                                    <div className="flex items-center gap-1.5 text-sm">
-                                        < TrendingUp className="w-4 h-4 text-emerald-500" />
-                                        < span className="text-emerald-500 font-medium whitespace-nowrap">{stat.change}</span>
-                                    </div >
-                                </motion.div >
-                            ))
-                        }
-                    </div >
 
-                    {/* Charts Section */}
-                    < div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {/* Sales Overview */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.4 }}
-                            className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-gray-100"
-                        >
-                            <div className="flex items-center justify-between mb-6">
-                                < h2 className="text-lg font-bold text-slate-800">Sales Overview</h2>
-                                < button className="p-2 hover:bg-gray-50 rounded-lg text-slate-400">
-                                    < ChevronDown className="w-5 h-5" />
-                                </button >
-                            </div >
-                            <div className="h-80">
-                                < ResponsiveContainer width="100%" height="100%">
-                                    < AreaChart data={salesData} >
-                                        <defs>
-                                            <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1} />
-                                                <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
-                                            </linearGradient>
-                                        </defs >
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                                        < XAxis
-                                            dataKey="name"
-                                            axisLine={false}
-                                            tickLine={false}
-                                            tick={{ fill: '#94a3b8', fontSize: 12 }}
-                                            dy={10}
-                                        />
-                                        <YAxis
-                                            axisLine={false}
-                                            tickLine={false}
-                                            tick={{ fill: '#94a3b8', fontSize: 12 }}
-                                        />
-                                        <Tooltip
-                                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                        />
-                                        <Area
-                                            type="monotone"
-                                            dataKey="sales"
-                                            stroke="#6366f1"
-                                            strokeWidth={3}
-                                            fillOpacity={1}
-                                            fill="url(#colorSales)"
-                                        />
-                                    </AreaChart >
-                                </ResponsiveContainer >
-                            </div >
-                        </motion.div >
+                    <div className="mb-6">
+                        <h2 className="text-2xl font-bold text-slate-800">Dashboard Overview</h2>
+                    </div>
 
-                        {/* Recent Activity / Secondary Chart or List */}
-                        < motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.5 }}
-                            className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100"
-                        >
-                            <div className="flex items-center justify-between mb-6">
-                                < h2 className="text-lg font-bold text-slate-800">Recent Activity</h2>
-                                < button className="text-sm text-indigo-600 font-medium hover:underline">View All</button>
-                            </div >
-                            <div className="space-y-6">
-                                {
-                                    [1, 2, 3, 4].map((i) => (
-                                        <div key={i} className="flex items-start gap-4 pb-4 border-b border-gray-50 last:border-0 last:pb-0">
-                                            < div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100">
-                                                < UserPlus className="w-5 h-5 text-slate-500" />
-                                            </div >
-                                            <div>
-                                                <p className="text-sm font-semibold text-slate-800">New user registered</p>
-                                                <p className="text-xs text-slate-500 mt-1">2 minutes ago</p>
-                                            </div >
-                                        </div >
-                                    ))
-                                }
-                            </div >
-                        </motion.div >
-                    </div >
-                </div >
-            </main >
-        </div >
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {stats.map((stat, index) => (
+                            <Motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                                key={stat.title}
+                                onClick={() => navigate(stat.route, stat.routeState ? { state: stat.routeState } : undefined)}
+                                className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow border border-gray-100 cursor-pointer"
+                            >
+                                <div className="flex items-start justify-between mb-4">
+                                    <div>
+                                        <h3 className="text-slate-500 text-sm font-medium">{stat.title}</h3>
+                                        <p className="text-3xl font-bold text-slate-800 mt-1">{stat.value}</p>
+                                    </div>
+                                    <div className={`p-3 rounded-xl ${stat.bgColor}`}>
+                                        <stat.icon className={`w-6 h-6 ${stat.color}`} />
+                                    </div>
+                                </div>
+                            </Motion.div>
+                        ))}
+                    </div>
+                  <br></br>
+                  <br></br>
+
+                    <Motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.6 }}
+                        className="mt-12"
+                    >
+                        <h2 className="text-2xl font-bold text-slate-800 mb-6">Vendor Management</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Vendor Requests Button */}
+                            <button
+                                onClick={() => navigate('/vendors/requests')}
+                                className="bg-gradient-to-r from-violet-500 to-violet-900 hover:from-violet-700 hover:to-violet-800 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-3 font-semibold text-lg"
+                            >
+                                <ClipboardList className="w-6 h-6" />
+                                Vendor Requests
+                            </button>
+
+                            {/* All Vendors Button */}
+                            <button
+                                onClick={() => navigate('/vendors')}
+                                className="bg-gradient-to-r from-violet-500 to-violet-900 hover:from-indigo-700 hover:to-violet-800 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-3 font-semibold text-lg"
+                            >
+                                <Store className="w-6 h-6" />
+                                All Vendors
+                            </button>
+                        </div>
+                    </Motion.div>
+                </div>
+            </main>
+        </div>
     );
 };
 

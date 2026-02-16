@@ -3,18 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-    FaStar,
-    FaStarHalfAlt,
-    FaRegStar,
-    FaPlus,
-    FaMinus,
-    FaShoppingCart,
-    FaBolt,
-    FaHeart,
-    FaTruck,
-    FaUndo,
-    FaMapMarkerAlt,
-    FaChevronLeft
+    FaStar, FaStarHalfAlt, FaRegStar, FaPlus, FaMinus, FaShoppingCart, FaBolt, FaHeart, FaTruck, FaUndo, FaMapMarkerAlt, FaChevronLeft, FaCamera, FaTimes, FaUser
 } from "react-icons/fa";
 import { AddToCart, AddToWishlist, RemoveFromWishlist } from "../../Store";
 import toast from "react-hot-toast";
@@ -47,6 +36,15 @@ const ProductDetails = () => {
     const [mainImage, setMainImage] = useState("");
     const [quantity, setQuantity] = useState(1);
     const [selectedImgIndex, setSelectedImgIndex] = useState(0);
+    const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+    const [reviews, setReviews] = useState([]);
+    const [newReview, setNewReview] = useState({
+        name: "",
+        rating: 5,
+        comment: "",
+        image: null,
+        imagePreview: null
+    });
 
     // Find product logic
     useEffect(() => {
@@ -76,6 +74,77 @@ const ProductDetails = () => {
             setMainImage(augmentedProduct.images[0]);
         }
     }, [id, allProductsInCategories]);
+
+    // Initialize product-specific dummy reviews
+    useEffect(() => {
+        if (product) {
+            setReviews([
+                {
+                    name: "Rahul Sharma",
+                    rating: 5,
+                    date: "2 days ago",
+                    comment: `Absolutely amazing quality! This ${product.name} exceeded my expectations. The delivery was super fast too.`,
+                    avatar: "RS",
+                    image: null
+                },
+                {
+                    name: "Priya Patel",
+                    rating: 4,
+                    date: "1 week ago",
+                    comment: `Great ${product.name.toLowerCase()}, very premium feel. Only downside was the packaging was a bit crushed, but the item was perfect.`,
+                    avatar: "PP",
+                    image: null
+                },
+                {
+                    name: "Amit Verma",
+                    rating: 5,
+                    date: "2 weeks ago",
+                    comment: `Best purchase I've made this year. This ${product.name} is exactly what I was looking for.`,
+                    avatar: "AV",
+                    image: null
+                },
+                {
+                    name: "Sneha Reddy",
+                    rating: 5,
+                    date: "1 month ago",
+                    comment: `Perfect fit and finish. The color of this ${product.name} is exactly as shown in the pictures. Love it!`,
+                    avatar: "SR",
+                    image: null
+                }
+            ]);
+        }
+    }, [product]);
+
+    const handleImageUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setNewReview({
+                    ...newReview,
+                    image: file,
+                    imagePreview: reader.result
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleReviewSubmit = (e) => {
+        e.preventDefault();
+        const reviewToAdd = {
+            name: newReview.name || "Anonymous",
+            rating: newReview.rating,
+            date: "Just now",
+            comment: newReview.comment,
+            avatar: (newReview.name || "A").substring(0, 2).toUpperCase(),
+            image: newReview.imagePreview
+        };
+        setReviews([reviewToAdd, ...reviews]);
+        setIsReviewModalOpen(false);
+        setNewReview({ name: "", rating: 5, comment: "", image: null, imagePreview: null });
+        toast.success("Review submitted successfully!");
+    };
 
     const isInWishlist = (itemName) => {
         return wishlist.some((item) => item.name === itemName);
@@ -313,7 +382,172 @@ const ProductDetails = () => {
                     </div>
 
                 </div>
+
+                {/* REVIEWS SECTION */}
+                <div className="mt-12 bg-white rounded-[40px] shadow-2xl shadow-gray-200/50 overflow-hidden border border-gray-100 p-8 lg:p-14">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
+                        <div>
+                            <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-2">Customer Reviews</h2>
+                            <div className="flex items-center gap-4">
+                                <Rating rating={product.rating} />
+                                <span className="text-gray-400 font-bold">Based on {reviews.length + 124} reviews</span>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => setIsReviewModalOpen(true)}
+                            className="px-8 py-4 bg-gray-900 text-white rounded-2xl font-black text-[13px] uppercase tracking-[2px] hover:bg-black transition-all shadow-lg hover:shadow-xl active:scale-95"
+                        >
+                            Write a Review
+                        </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {reviews.map((review, idx) => (
+                            <motion.div
+                                key={idx}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: idx * 0.1 }}
+                                className="p-8 bg-gray-50 rounded-[32px] border border-gray-100 hover:border-violet-200 transition-all group"
+                            >
+                                <div className="flex justify-between items-start mb-6">
+                                    <div className="flex gap-4">
+                                        <div className="w-12 h-12 bg-gradient-to-br from-violet-600 to-purple-700 text-white rounded-2xl flex items-center justify-center font-black shadow-lg">
+                                            {review.avatar}
+                                        </div>
+                                        <div>
+                                            <h4 className="font-black text-gray-900">{review.name}</h4>
+                                            <p className="text-[11px] text-gray-400 font-black uppercase tracking-[1px]">{review.date}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex text-yellow-400 text-sm">
+                                        {[...Array(review.rating)].map((_, i) => (
+                                            <FaStar key={i} />
+                                        ))}
+                                    </div>
+                                </div>
+                                <p className="text-gray-600 font-medium leading-relaxed mb-4">
+                                    "{review.comment}"
+                                </p>
+                                {review.image && (
+                                    <div className="w-24 h-24 rounded-2xl overflow-hidden border border-gray-200 mb-2">
+                                        <img src={review.image} alt="Review attachment" className="w-full h-full object-cover" />
+                                    </div>
+                                )}
+                            </motion.div>
+                        ))}
+                    </div>
+
+                    <div className="mt-12 text-center">
+                        <button className="text-violet-600 font-black text-sm uppercase tracking-[2px] hover:text-violet-700 transition-all flex items-center gap-2 mx-auto">
+                            View All Reviews <FaPlus size={10} />
+                        </button>
+                    </div>
+                </div>
             </div>
+
+            {/* WRITE REVIEW MODAL */}
+            <AnimatePresence>
+                {isReviewModalOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsReviewModalOpen(false)}
+                            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        ></motion.div>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="relative w-full max-w-lg bg-white rounded-[40px] shadow-2xl p-8 md:p-12 overflow-hidden"
+                        >
+                            <button
+                                onClick={() => setIsReviewModalOpen(false)}
+                                className="absolute top-8 right-8 text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                                <FaTimes size={24} />
+                            </button>
+
+                            <h2 className="text-3xl font-black text-gray-900 mb-2">Write a Review</h2>
+                            <p className="text-gray-400 font-bold mb-8">Share your experience with this product</p>
+
+                            <form onSubmit={handleReviewSubmit} className="space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-[11px] font-black text-gray-400 uppercase tracking-[2px] block">Your Name</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={newReview.name}
+                                        onChange={(e) => setNewReview({ ...newReview, name: e.target.value })}
+                                        placeholder="Enter your name"
+                                        className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-[11px] font-black text-gray-400 uppercase tracking-[2px] block">Rating</label>
+                                    <div className="flex gap-2">
+                                        {[1, 2, 3, 4, 5].map((star) => (
+                                            <button
+                                                key={star}
+                                                type="button"
+                                                onClick={() => setNewReview({ ...newReview, rating: star })}
+                                                className={`text-2xl transition-all ${star <= newReview.rating ? "text-yellow-400 scale-110" : "text-gray-200 hover:text-yellow-200"}`}
+                                            >
+                                                <FaStar />
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-[11px] font-black text-gray-400 uppercase tracking-[2px] block">Your Comment</label>
+                                    <textarea
+                                        required
+                                        rows="4"
+                                        value={newReview.comment}
+                                        onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+                                        placeholder="What did you like or dislike?"
+                                        className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all resize-none"
+                                    ></textarea>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-[11px] font-black text-gray-400 uppercase tracking-[2px] block">Upload Photo</label>
+                                    <div className="flex items-center gap-4">
+                                        <label className="cursor-pointer w-16 h-16 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl flex items-center justify-center text-gray-400 hover:border-violet-500 hover:text-violet-500 transition-all">
+                                            <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
+                                            <FaCamera size={20} />
+                                        </label>
+                                        {newReview.imagePreview && (
+                                            <div className="relative w-16 h-16 rounded-2xl overflow-hidden border border-gray-200 group">
+                                                <img src={newReview.imagePreview} className="w-full h-full object-cover" alt="Preview" />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setNewReview({ ...newReview, image: null, imagePreview: null })}
+                                                    className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity"
+                                                >
+                                                    <FaTimes size={12} />
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="w-full py-5 bg-gradient-to-br from-violet-600 to-purple-700 text-white rounded-[24px] font-black text-lg shadow-xl shadow-violet-500/20 hover:shadow-violet-500/40 hover:-translate-y-1 transition-all active:scale-95 flex items-center justify-center gap-3"
+                                >
+                                    Submit Review
+                                </button>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

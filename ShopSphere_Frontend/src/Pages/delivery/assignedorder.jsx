@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { mockOrders } from '../../utils/deliveryMockData';
 import { FaBox, FaMapMarkerAlt, FaCheck, FaSignOutAlt, FaBars, FaTruck, FaClipboardList, FaMoneyBillWave, FaTachometerAlt, FaPhoneAlt, FaDirections, FaDotCircle, FaStore, FaUser, FaClock, FaListUl } from 'react-icons/fa';
 
 const toast = {
@@ -28,7 +29,7 @@ export default function AssignedOrders() {
     const [activeTab, setActiveTab] = useState('active'); // 'active' or 'history'
 
     const onLogout = () => {
-        navigate('/login');
+        navigate('/delivery');
     };
 
     const activeDeliveries = orders.filter(o =>
