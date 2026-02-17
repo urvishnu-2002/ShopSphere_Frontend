@@ -9,14 +9,12 @@ const DeliveryAgentLogin = ({ onLoginSuccess }) => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Login form state
     const [loginForm, setLoginForm] = useState({
         email: '',
         password: '',
         rememberMe: false
     });
 
-    // Signup form state
     const [signupForm, setSignupForm] = useState({
         fullName: '',
         email: '',
@@ -28,7 +26,6 @@ const DeliveryAgentLogin = ({ onLoginSuccess }) => {
         agreeTerms: false
     });
 
-    // Forgot password state
     const [forgotEmail, setForgotEmail] = useState('');
     const [showForgotPassword, setShowForgotPassword] = useState(false);
     const [resetEmailSent, setResetEmailSent] = useState(false);
@@ -39,7 +36,6 @@ const DeliveryAgentLogin = ({ onLoginSuccess }) => {
         setTimeout(() => {
             setIsLoading(false);
             console.log('Login submitted:', loginForm);
-            // Navigate to dashboard after successful login
             navigate('/delivery/dashboard');
             if (onLoginSuccess) {
                 onLoginSuccess();
@@ -78,17 +74,14 @@ const DeliveryAgentLogin = ({ onLoginSuccess }) => {
     return (
         <div className="min-h-screen w-full flex font-sans overflow-x-hidden m-0 p-0 bg-white">
 
-            {/* Split Layout - Ensuring 100vw and 100vh */}
+            
             <div className="w-full flex flex-col lg:flex-row min-h-screen">
 
-                {/* LEFT PANEL: Vibrant Purple Branding (Full Viewport Height on Desktop) */}
                 <div className="w-full lg:w-1/2 bg-purple-700 min-h-[50vh] lg:min-h-screen p-8 lg:p-20 flex flex-col justify-center items-center relative overflow-hidden">
-                    {/* Decorative Elements */}
                     <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/10 rounded-full translate-x-1/2 -translate-y-1/2 blur-[100px] pointer-events-none"></div>
                     <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-white/10 rounded-full -translate-x-1/2 translate-y-1/2 blur-[80px] pointer-events-none"></div>
 
                     <div className="relative z-10 w-full max-w-lg">
-                        {/* Logo */}
                         <div className="flex items-center gap-6 mb-12 justify-center lg:justify-start">
                             <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-2xl">
                                 <svg className="w-10 h-10 text-purple-700" fill="currentColor" viewBox="0 0 24 24">
@@ -108,7 +101,7 @@ const DeliveryAgentLogin = ({ onLoginSuccess }) => {
                             </p>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8">
+                        {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8">
                             <div className="flex flex-col items-center lg:items-start group p-6 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all">
                                 <div className="text-3xl mb-3">⚡</div>
                                 <span className="text-white font-bold tracking-[3px] uppercase text-[10px]">Real-time Stats</span>
@@ -117,11 +110,10 @@ const DeliveryAgentLogin = ({ onLoginSuccess }) => {
                                 <div className="text-3xl mb-3">💎</div>
                                 <span className="text-white font-bold tracking-[3px] uppercase text-[10px]">Premium Perks</span>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
 
-                {/* RIGHT PANEL: White Form Area (Full Viewport Height on Desktop, Centered) */}
                 <div className="w-full lg:w-1/2 p-8 lg:p-20 flex flex-col justify-center items-center bg-white min-h-[50vh] lg:min-h-screen">
                     <div className="w-full max-w-md animate-fadeIn">
 
@@ -130,7 +122,6 @@ const DeliveryAgentLogin = ({ onLoginSuccess }) => {
                             <p className="text-black font-extrabold uppercase tracking-[6px] text-[10px] opacity-80">Secure Access Point</p>
                         </div>
 
-                        {/* TABS: Refined Design for Visibility */}
                         <div className="flex bg-purple-50/50 rounded-[32px] p-2 mb-12 border border-purple-100 shadow-sm">
                             <button
                                 className={`flex-1 py-4.5 rounded-[26px] text-[11px] font-black uppercase tracking-[2px] transition-all duration-300 ${activeTab === 'login'
@@ -152,7 +143,7 @@ const DeliveryAgentLogin = ({ onLoginSuccess }) => {
                             </button>
                         </div>
 
-                        {/* FORMS */}
+                      
                         <div className="space-y-6">
                             {activeTab === 'login' ? (
                                 <form className="space-y-6" onSubmit={handleLoginSubmit}>
@@ -188,7 +179,7 @@ const DeliveryAgentLogin = ({ onLoginSuccess }) => {
                                         </div>
                                     </div>
 
-                                    {/* Forgot Password - Simplified & Bold */}
+                                    
                                     <div className="flex justify-end pr-1">
                                         <button
                                             type="button"
@@ -264,7 +255,6 @@ const DeliveryAgentLogin = ({ onLoginSuccess }) => {
                             )}
                         </div>
 
-                        {/* Social Federation */}
                         <div className="mt-16">
                             <div className="flex items-center gap-6 mb-8 text-[#00000033]">
                                 <div className="flex-1 h-px bg-purple-100"></div>
@@ -284,7 +274,6 @@ const DeliveryAgentLogin = ({ onLoginSuccess }) => {
                 </div>
             </div>
 
-            {/* MODAL: Fixed Centering & Visibility */}
             {showForgotPassword && (
                 <div className="fixed inset-0 bg-purple-950/90 flex items-center justify-center z-[100] backdrop-blur-xl p-6" onClick={closeForgotModal}>
                     <div className="bg-white rounded-[48px] p-12 md:p-16 max-w-md w-full relative shadow-3xl animate-fadeIn text-center" onClick={(e) => e.stopPropagation()}>

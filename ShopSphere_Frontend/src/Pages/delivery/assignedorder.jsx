@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { mockOrders } from '../../utils/deliveryMockData';
 import { FaBox, FaMapMarkerAlt, FaCheck, FaSignOutAlt, FaBars, FaTruck, FaClipboardList, FaMoneyBillWave, FaTachometerAlt, FaPhoneAlt, FaDirections, FaDotCircle, FaStore, FaUser, FaClock, FaListUl } from 'react-icons/fa';
 
-
-// Simple toast notification helper
 const toast = {
     success: (message) => {
         const toastEl = document.createElement('div');
@@ -15,9 +13,17 @@ const toast = {
     }
 };
 
+const mockOrders = [
+    { id: 'ORD001', userName: 'John Doe', deliveryAddress: '123 Main St, New York, NY', status: 'confirmed', deliveryPersonId: null },
+    { id: 'ORD002', userName: 'Jane Smith', deliveryAddress: '456 Park Ave, Los Angeles, CA', status: 'shipped', deliveryPersonId: 'd1' },
+    { id: 'ORD003', userName: 'Mike Johnson', deliveryAddress: '789 Elm St, Chicago, IL', status: 'delivered', deliveryPersonId: 'd1' },
+    { id: 'ORD004', userName: 'Sarah Wilson', deliveryAddress: '101 Pine St, Seattle, WA', status: 'confirmed', deliveryPersonId: null },
+];
+
 export default function AssignedOrders() {
     const navigate = useNavigate();
     const deliveryPersonId = 'd1';
+
     const [orders, setOrders] = useState(mockOrders);
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [activeTab, setActiveTab] = useState('active'); // 'active' or 'history'
@@ -26,7 +32,6 @@ export default function AssignedOrders() {
         navigate('/delivery');
     };
 
-    // Filter for orders currently being delivered
     const activeDeliveries = orders.filter(o =>
         o.deliveryPersonId === deliveryPersonId && o.status === 'shipped'
     );
@@ -48,7 +53,6 @@ export default function AssignedOrders() {
 
     return (
         <div className="min-h-screen flex bg-gray-50 font-sans">
-            {/* Sidebar */}
             <aside className={`${sidebarOpen ? 'w-64' : 'w-20'} bg-gray-900 text-white flex flex-col transition-all duration-300 fixed h-full z-20`}>
                 <div className="p-4 flex items-center gap-3 border-b border-gray-700">
                     <FaTruck className="w-6 h-6 text-purple-400" />
@@ -90,7 +94,6 @@ export default function AssignedOrders() {
                 </div>
             </aside>
 
-            {/* Main Content */}
             <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-20'} p-8`}>
                 <header className="flex justify-between items-center mb-8">
                     <div>
@@ -123,10 +126,8 @@ export default function AssignedOrders() {
                     <div className="space-y-8">
                         {activeDeliveries.map((order) => (
                             <div key={order.id} className="bg-white rounded-[2rem] p-8 shadow-xl border border-purple-50 relative overflow-hidden">
-                                {/* Decorative BG */}
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-purple-50 rounded-full translate-x-1/2 -translate-y-1/2 opacity-50 pointer-events-none"></div>
 
-                                {/* Header Section */}
                                 <div className="relative flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                                     <div>
                                         <div className="flex items-center gap-3 mb-2">
@@ -144,9 +145,7 @@ export default function AssignedOrders() {
                                 </div>
 
                                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative">
-                                    {/* Left Column: Timeline & Route */}
                                     <div className="lg:col-span-2 space-y-8">
-                                        {/* Timeline */}
                                         <div className="bg-gray-50 rounded-3xl p-6 border border-gray-100">
                                             <h3 className="text-sm font-black uppercase text-gray-400 tracking-widest mb-6">Delivery Timeline</h3>
                                             <div className="relative pl-8 space-y-8 border-l-2 border-dashed border-gray-300 ml-2">
@@ -165,7 +164,6 @@ export default function AssignedOrders() {
                                                     </div>
                                                 </div>
 
-                                                {/* Current Status (Arrow) */}
                                                 <div className="relative">
                                                     <div className="absolute -left-[41px] bg-purple-600 w-6 h-6 rounded-full border-4 border-white shadow-md flex items-center justify-center animate-pulse">
                                                         <div className="w-2 h-2 bg-white rounded-full"></div>
@@ -182,13 +180,11 @@ export default function AssignedOrders() {
                                             </div>
                                         </div>
 
-                                        {/* Order Details Checklist */}
                                         <div className="bg-gray-50 rounded-3xl p-6 border border-gray-100">
                                             <h3 className="text-sm font-black uppercase text-gray-400 tracking-widest mb-4 flex items-center gap-2">
                                                 <FaListUl /> Order Items
                                             </h3>
                                             <div className="space-y-3">
-                                                {/* Dummy Items for UI Demo */}
                                                 <div className="flex items-center justify-between p-3 bg-white rounded-xl border border-gray-100">
                                                     <div className="flex items-center gap-3">
                                                         <div className="bg-orange-100 text-orange-600 w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm">1x</div>
@@ -214,7 +210,6 @@ export default function AssignedOrders() {
                                         </div>
                                     </div>
 
-                                    {/* Right Column: Actions */}
                                     <div className="flex flex-col gap-4">
                                         <div className="bg-purple-600 text-white rounded-3xl p-6 shadow-xl shadow-purple-200 text-center">
                                             <p className="text-purple-200 text-xs font-bold uppercase tracking-widest mb-2">Time Remaining</p>

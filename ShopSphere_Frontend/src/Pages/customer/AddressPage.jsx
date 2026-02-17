@@ -1,13 +1,38 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getAddresses, addAddress, deleteAddress } from "../../api/axios";
 
 export default function AddressPage() {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [useCurrent, setUseCurrent] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState(null);
-  const [error, setError] = useState("");
-
   const [savedAddresses, setSavedAddresses] = useState([]);
+  const [error, setError] = useState(""); // General page errors
+  const [formError, setFormError] = useState(""); // Form validation errors
+
+  useEffect(() => {
+    fetchAddresses();
+  }, []);
+
+  const fetchAddresses = async () => {
+    try {
+      const data = await getAddresses();
+      console.log("Fetched addresses:", data);
+      const list = data.addresses || (Array.isArray(data) ? data : []);
+      setSavedAddresses(list);
+
+      // Auto-select first address if none selected
+      if (list.length > 0 && !selectedAddress) {
+        setSelectedAddress(list[0].id);
+      }
+    } catch (err) {
+      console.error("Failed to fetch addresses:", err);
+      // Only show error if the user is actually supposed to be logged in
+      if (localStorage.getItem("accessToken")) {
+        setError("Unable to load addresses. Please refresh.");
+      }
+    }
+  };
 
   const emptyForm = {
     name: "",
@@ -60,11 +85,14 @@ export default function AddressPage() {
     );
   };
 
-  const handleChange = (e) =>
+  const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (formError) setFormError("");
+  };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setFormError("");
 
     if (
       !formData.name ||
@@ -74,33 +102,27 @@ export default function AddressPage() {
       !formData.city ||
       !formData.state
     )
-      return setError("All fields are required");
+      return setFormError("All fields are required");
 
     if (formData.phone.length !== 10)
-      return setError("Phone must be 10 digits");
+      return setFormError("Phone must be 10 digits");
 
     if (formData.pincode.length !== 6)
-      return setError("Pincode must be 6 digits");
+      return setFormError("Pincode must be 6 digits");
 
-    setError("");
+    try {
+      await addAddress(formData);
+      await fetchAddresses(); // Refresh from DB
 
-    if (editId) {
-      setSavedAddresses(
-        savedAddresses.map((a) =>
-          a.id === editId ? { ...formData, id: editId } : a
-        )
-      );
-      setSelectedAddress(editId);
-    } else {
-      const newId = Date.now();
-      setSavedAddresses([...savedAddresses, { ...formData, id: newId }]);
-      setSelectedAddress(newId);
+      setUseCurrent(false);
+      setShowForm(false);
+      setEditId(null);
+      setFormData(emptyForm);
+      setFormError("");
+    } catch (err) {
+      console.error("Error saving address:", err);
+      setFormError("Failed to save address. Please try again.");
     }
-
-    setUseCurrent(false);
-    setShowForm(false);
-    setEditId(null);
-    setFormData(emptyForm);
   };
 
   const handleEdit = (addr) => {
@@ -109,88 +131,109 @@ export default function AddressPage() {
     setShowForm(true);
   };
 
-  const handleDelete = (id) => {
-    setSavedAddresses(savedAddresses.filter((a) => a.id !== id));
-    if (selectedAddress === id) setSelectedAddress(null);
+  const handleDelete = async (id) => {
+    try {
+      await deleteAddress(id);
+      await fetchAddresses();
+      if (selectedAddress === id) setSelectedAddress(null);
+    } catch (err) {
+      console.error("Error deleting address:", err);
+      setError("Failed to delete address");
+    }
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-6">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">
+          Delivery Address
+        </h1>
 
-      <h2 className="text-2xl font-bold mb-6">Select Delivery Address</h2>
-
-      {/* CURRENT LOCATION */}
-      <div className="bg-white rounded-2xl shadow-lg p-5 flex gap-4 mb-6 hover:-translate-y-0.5 transition-all">
-
-        <input type="radio" checked={useCurrent} onChange={getCurrentLocation} />
-
-        <div>
-          <p className="font-bold">Use Current Location</p>
-          <p className="text-sm text-gray-500">Auto detect your address using GPS</p>
-        </div>
-
-      </div>
-
-      {/* SAVED ADDRESSES */}
-      <div className="grid md:grid-cols-2 gap-6">
-
-        {savedAddresses.map((addr, i) => (
-          <div
-            key={addr.id}
-            className={`bg-white rounded-3xl p-6 shadow-lg transition-all hover:-translate-y-0.5 border-2 ${selectedAddress === addr.id ? "border-violet-600" : "border-transparent"
-              }`}
-          >
-
-            {i === 0 && (
-              <span className="absolute right-4 top-4 bg-violet-600 text-white text-xs px-3 py-1 rounded-lg">
-                Default
-              </span>
-            )}
-
-            <div className="flex gap-4">
-
-              <input
-                type="radio"
-                checked={!useCurrent && selectedAddress === addr.id}
-                onChange={() => {
-                  setUseCurrent(false);
-                  setSelectedAddress(addr.id);
-                }}
-              />
-
-              <div>
-                <p className="font-bold">{addr.name}</p>
-                <p className="text-sm text-gray-500">{addr.address}, {addr.city}</p>
-                <p className="text-xs text-gray-400 mt-1">{addr.phone}</p>
-              </div>
-
-            </div>
-
-            <div className="flex gap-4 mt-4 pt-4 border-t text-sm font-bold">
-              <button onClick={() => handleEdit(addr)} className="text-violet-600 hover:underline">Edit</button>
-              <button onClick={() => handleDelete(addr.id)} className="text-red-500 hover:underline">Delete</button>
-            </div>
-
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {error}
           </div>
-        ))}
+        )}
 
-      </div>
-
-      <button
-        className="mt-8 bg-violet-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-violet-700 hover:-translate-y-0.5 transition-all"
-        onClick={() => setShowForm(true)}
-      >
-        + Add New Address
-      </button>
-
-      {/* FORM */}
-      {showForm && (
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white rounded-3xl shadow-lg p-8 mt-10 space-y-5 animate-in fade-in"
+        {/* Use Current Location */}
+        <button
+          onClick={getCurrentLocation}
+          className="w-full bg-white border-2 border-dashed border-violet-400 text-violet-600 py-3 rounded-xl mb-6 hover:bg-violet-50 transition flex items-center justify-center gap-2"
         >
+          <span>📍</span> Use Current Location
+        </button>
 
-          <div className="grid md:grid-cols-2 gap-4">
+        {/* Saved Addresses */}
+        {savedAddresses.length > 0 && (
+          <div className="space-y-3 mb-6">
+            {savedAddresses.map((addr) => (
+              <div
+                key={addr.id}
+                className={`p-4 rounded-xl border-2 cursor-pointer transition ${selectedAddress === addr.id
+                    ? "border-violet-500 bg-violet-50"
+                    : "border-gray-200 bg-white hover:border-violet-300"
+                  }`}
+                onClick={() => setSelectedAddress(addr.id)}
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="font-semibold text-gray-800">{addr.name}</p>
+                    <p className="text-sm text-gray-600">{addr.phone}</p>
+                    <p className="text-sm text-gray-600 mt-1">{addr.address}</p>
+                    <p className="text-sm text-gray-600">
+                      {addr.city}, {addr.state} - {addr.pincode}
+                    </p>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEdit(addr);
+                      }}
+                      className="text-blue-600 hover:text-blue-800 text-sm"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(addr.id);
+                      }}
+                      className="text-red-600 hover:text-red-800 text-sm"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Add New Address Button */}
+        {!showForm && (
+          <button
+            onClick={() => {
+              setShowForm(true);
+              setEditId(null);
+              setFormData(emptyForm);
+            }}
+            className="w-full bg-violet-600 text-white py-3 rounded-xl hover:bg-violet-700 transition"
+          >
+            + Add New Address
+          </button>
+        )}
+
+        {/* Address Form */}
+        {showForm && (
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white p-6 rounded-xl shadow-lg space-y-4"
+          >
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+              {editId ? "Edit Address" : "Add New Address"}
+            </h2>
 
             {["name", "phone", "pincode", "city", "state"].map((field) => (
               <input
@@ -199,39 +242,45 @@ export default function AddressPage() {
                 value={formData[field]}
                 onChange={handleChange}
                 placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                className={`border rounded-xl p-3 focus:ring-2 focus:ring-violet-500 outline-none ${error && !formData[field] ? "border-red-500" : ""
+                className={`w-full border rounded-xl p-3 focus:ring-2 focus:ring-violet-500 outline-none ${formError && !formData[field] ? "border-red-500" : ""
                   }`}
               />
             ))}
 
-          </div>
+            <textarea
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              placeholder="Full Address"
+              rows="3"
+              className={`w-full border rounded-xl p-3 focus:ring-2 focus:ring-violet-500 outline-none ${formError && !formData.address ? "border-red-500" : ""
+                }`}
+            />
 
-          <textarea
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            placeholder="Full Address"
-            rows="3"
-            className={`w-full border rounded-xl p-3 focus:ring-2 focus:ring-violet-500 outline-none ${error && !formData.address ? "border-red-500" : ""
-              }`}
-          />
+            {formError && <p className="text-red-500 text-sm font-medium">{formError}</p>}
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+            <button
+              type="submit"
+              className="w-full bg-violet-600 text-white py-3 rounded-xl hover:bg-violet-700 transition"
+            >
+              Save Address
+            </button>
 
-          <button
-            type="submit"
-            className="w-full bg-violet-600 text-white py-3 rounded-xl font-bold hover:bg-violet-700 hover:-translate-y-0.5 transition-all"
-          >
-            {editId ? "Update Address" : "Save Address"}
-          </button>
-
-        </form>
-      )}
-
+            <button
+              type="button"
+              onClick={() => {
+                setShowForm(false);
+                setEditId(null);
+                setFormData(emptyForm);
+                setFormError("");
+              }}
+              className="w-full border border-gray-300 text-gray-700 py-3 rounded-xl hover:bg-gray-50 transition"
+            >
+              Cancel
+            </button>
+          </form>
+        )}
+      </div>
     </div>
   );
-
 }
-
-
-

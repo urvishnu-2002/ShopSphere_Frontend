@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { FaBox, FaDollarSign, FaMapMarkerAlt, FaCheck, FaSignOutAlt, FaBars, FaTruck, FaClipboardList, FaMoneyBillWave, FaTachometerAlt } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import { mockOrders } from '../../utils/deliveryMockData';
 
-
-// Simple toast notification helper
 const toast = {
     success: (message) => {
         const toastEl = document.createElement('div');
@@ -13,29 +13,27 @@ const toast = {
     }
 };
 
-import { useNavigate } from 'react-router-dom';
-import { mockOrders } from '../../utils/deliveryMockData';
-
 export default function DeliveryDashboard({ onLogout: propLogout }) {
     const navigate = useNavigate();
 
     const onLogout = () => {
         if (propLogout) propLogout();
+        localStorage.removeItem("accessToken");
         navigate('/delivery');
     };
+
     const deliveryPersonId = 'd1';
     const [orders, setOrders] = useState(mockOrders);
     const [sidebarOpen, setSidebarOpen] = useState(true);
 
-    // ... filters ...
+
     const assignedOrders = orders.filter(o => o.deliveryPersonId === deliveryPersonId);
     const availableOrders = orders.filter(o => !o.deliveryPersonId && o.status === 'confirmed');
     const completedOrders = assignedOrders.filter(o => o.status === 'delivered');
-    // Active deliveries are now handled in the Assigned Orders page
 
     const totalEarnings = completedOrders.length * 10;
 
-    // ... handlers ...
+
     const handleAcceptOrder = (orderId) => {
         setOrders(orders.map(o =>
             o.id === orderId
@@ -45,7 +43,6 @@ export default function DeliveryDashboard({ onLogout: propLogout }) {
         toast.success('Order accepted! Go to Assigned Orders to track it.');
     };
 
-    // ... (rest of handlers) ...
 
     const navItems = [
         { id: 'dashboard', label: 'Dashboard', icon: FaTachometerAlt, path: '/delivery/dashboard' },
@@ -55,9 +52,9 @@ export default function DeliveryDashboard({ onLogout: propLogout }) {
 
     return (
         <div className="min-h-screen flex bg-gray-50">
-            {/* Sidebar */}
+
             <aside className={`${sidebarOpen ? 'w-64' : 'w-20'} bg-gray-900 text-white flex flex-col transition-all duration-300`}>
-                {/* Sidebar Header */}
+
                 <div className="p-4 flex items-center gap-3 border-b border-gray-700">
                     <FaTruck className="w-6 h-6 text-purple-400" />
                     {sidebarOpen && <span className="font-bold text-lg">Delivery Portal</span>}
@@ -69,11 +66,11 @@ export default function DeliveryDashboard({ onLogout: propLogout }) {
                     </button>
                 </div>
 
-                {/* Navigation */}
+
                 <nav className="flex-1 p-4 space-y-2">
                     {navItems.map((item) => {
                         const Icon = item.icon;
-                        const isActive = item.id === 'dashboard'; // Highlighting only dashboard on this page
+                        const isActive = item.id === 'dashboard';
                         return (
                             <button
                                 key={item.id}
@@ -90,7 +87,7 @@ export default function DeliveryDashboard({ onLogout: propLogout }) {
                     })}
                 </nav>
 
-                {/* User Section */}
+
                 <div className="p-4 border-t border-gray-700">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center font-bold">
@@ -113,22 +110,22 @@ export default function DeliveryDashboard({ onLogout: propLogout }) {
                 </div>
             </aside>
 
-            {/* Main Content */}
+
             <main className="flex-1 overflow-auto">
-                {/* Header */}
+
                 <div className="bg-white border-b px-8 py-6">
                     <h1 className="text-2xl font-bold text-gray-900">Delivery Dashboard</h1>
                 </div>
 
-                {/* Content */}
+
                 <div className="p-8">
-                    {/* Welcome Section */}
+
                     <div className="mb-8">
                         <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome back!</h2>
                         <p className="text-gray-500">Pick up new orders and track your earnings.</p>
                     </div>
 
-                    {/* Stats Grid */}
+
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                         <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-100 hover:shadow-lg transition-all duration-300">
                             <div className="flex items-center justify-between mb-4">
@@ -164,7 +161,7 @@ export default function DeliveryDashboard({ onLogout: propLogout }) {
                         </div>
                     </div>
 
-                    {/* Available Orders */}
+
                     {availableOrders.length > 0 ? (
                         <div className="mb-8">
                             <h3 className="text-xl font-bold text-gray-900 mb-4">Available Orders</h3>
@@ -210,7 +207,6 @@ export default function DeliveryDashboard({ onLogout: propLogout }) {
                         </div>
                     )}
 
-                    {/* Recent Deliveries */}
                     {completedOrders.length > 0 && (
                         <div>
                             <h3 className="text-xl font-bold text-gray-900 mb-4">Recent History</h3>
