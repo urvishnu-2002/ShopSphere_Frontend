@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+
 import {
     FaShoppingCart,
     FaHeart,
@@ -8,6 +9,7 @@ import {
     FaBars,
     FaTimes,
     FaSearch,
+    FaMicrophone,
     FaChevronDown,
     FaSignOutAlt,
     FaBox,
@@ -126,8 +128,66 @@ function Navbar() {
         setSearchQuery("");
         navigate('/home', { replace: true });
     };
+    //===========================
+    //Voice Search Implementation
+    //===========================
+    const [isListening, setIsListening] = useState(false);
+    const recognitionRef = useRef(null);
+
+    const toggleListening = () => {
+        if (isListening) {
+            if (recognitionRef.current) {
+                recognitionRef.current.stop();
+            }
+            setIsListening(false);
+            return;
+        }
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            toast.error("Voice search is not supported in this browser.");
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+        recognitionRef.current = recognition;
+
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = "en-US";
+
+        recognition.onstart = () => {
+            setIsListening(true);
+            toast.success("Listening...");
+        };
+
+        recognition.onend = () => {
+            setIsListening(false);
+        };
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            if (transcript) {
+                // Navigate to home page and update URL parameter
+                setSearchQuery(transcript);
+                navigate(`/home?search=${encodeURIComponent(transcript)}`, { replace: true });
+                toast.success(`Searched for: ${transcript}`);
+            }
+        };
+
+        recognition.onerror = (event) => {
+            console.error("Speech recognition error", event.error);
+            setIsListening(false);
+            if (event.error === 'not-allowed') {
+                toast.error("Microphone permission denied.");
+            } else {
+                toast.error("Voice search failed. Please try again.");
+            }
+        };
 
 
+        recognition.start();
+    };
 
     const isActive = (path) => location.pathname === path;
 
@@ -191,12 +251,12 @@ function Navbar() {
                                     <div className={`absolute inset-0 bg-gradient-to-r from-violet-600 to-purple-600 rounded-xl blur opacity-25 group-hover:opacity-40 transition-opacity duration-300 ${searchFocused ? 'opacity-60' : ''}`} />
                                     <input
                                         type="text"
-                                        placeholder="Search products..."
+                                        placeholder={isListening ? "Listening..." : "Search products..."}
                                         value={searchQuery}
                                         onChange={handleSearchChange}
                                         onFocus={() => setSearchFocused(true)}
                                         onBlur={() => setSearchFocused(false)}
-                                        className={`relative w-full pl-11 pr-10 py-2.5 rounded-xl text-sm transition-all duration-300 ease-out outline-none ${searchFocused
+                                        className={`relative w-full pl-11 pr-20 py-2.5 rounded-xl text-sm transition-all duration-300 ease-out outline-none ${searchFocused
                                             ? "bg-white/10 border-violet-400 text-white placeholder-violet-200 ring-2 ring-violet-500/30"
                                             : "bg-white/5 border-white/10 text-violet-100 placeholder-violet-300/60 hover:bg-white/10 hover:border-violet-500/30"
                                             } border backdrop-blur-sm`}
@@ -207,16 +267,30 @@ function Navbar() {
                                             } z-10`}
                                         size={14}
                                     />
-                                    {searchQuery && (
+
+                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 z-10">
+                                        {searchQuery && (
+                                            <button
+                                                type="button"
+                                                onClick={handleClearSearch}
+                                                className="p-1.5 text-violet-300 hover:text-white transition-colors duration-200 rounded-lg hover:bg-white/10"
+                                                aria-label="Clear search"
+                                            >
+                                                <FaTimes size={12} />
+                                            </button>
+                                        )}
                                         <button
                                             type="button"
-                                            onClick={handleClearSearch}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-violet-300 hover:text-white transition-colors duration-200 z-10"
-                                            aria-label="Clear search"
+                                            onClick={toggleListening}
+                                            className={`p-1.5 rounded-lg transition-all duration-300 ${isListening
+                                                ? "text-red-500 bg-red-400/10 p-2.5 rounded-xl"
+                                                : "text-violet-300 hover:text-white hover:bg-white/10"}`}
+                                            aria-label="Voice search"
+                                            title="Voice Search"
                                         >
-                                            <FaTimes size={12} />
+                                            <FaMicrophone size={14} />
                                         </button>
-                                    )}
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -434,5 +508,4 @@ function Navbar() {
         </nav>
     );
 }
-
 export default Navbar;
