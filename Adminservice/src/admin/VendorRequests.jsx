@@ -1,33 +1,32 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useVendors } from '../context/VendorContext';
 import Sidebar from '../components/Sidebar';
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
-import { fetchVendorRequests } from '../api/axios';
+import { fetchVendorRequests, approveVendorRequest, rejectVendorRequest } from '../api/axios';
 import { useEffect } from 'react';
 
 const VendorRequests = () => {
     const navigate = useNavigate();
-    const { vendors, updateVendorStatus } = useVendors();
+    const [vendors, setVendors] = useState([]);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
 
 
-    useEffect(() => {
-        const loadVendors = async () => {
-            try {
-                const data = await fetchVendorRequests(); // 👈 axios call
-                updateVendorStatus(data);                          // 👈 store DB data
-            } catch (error) {
-                console.error("Failed to fetch vendor requests", error);
-            }
-        };
+    const loadVendors = async () => {
+        try {
+            const data = await fetchVendorRequests();
+            setVendors(Array.isArray(data) ? data : []);
+        } catch (error) {
+            console.error("Failed to fetch vendor requests", error);
+        }
+    };
 
+    useEffect(() => {
         loadVendors();
     }, []);
 
     // Filter to show ONLY pending requests
-    const pendingRequests = vendors.filter(vendor => vendor.status === 'Pending');
+    const pendingRequests = vendors.filter(vendor => vendor.approval_status === 'pending');
 
     const handleLogout = () => {
         localStorage.removeItem('authToken');
@@ -35,10 +34,16 @@ const VendorRequests = () => {
         navigate('/');
     };
 
-    const handleAction = async (id, status, name) => {
-        const success = await updateVendorStatus(id, status);
-        if (success) {
-            // Toast is handled by context
+    const handleAction = async (id, action, name) => {
+        try {
+            if (action === "Approved") {
+                await approveVendorRequest(id);
+            } else {
+                await rejectVendorRequest(id, "Rejected by administrator");
+            }
+            await loadVendors();
+        } catch (error) {
+            console.error("Action execution failed:", error);
         }
     };
 
@@ -92,14 +97,14 @@ const VendorRequests = () => {
                                 <tbody className="divide-y divide-gray-50">
                                     {pendingRequests.map((vendor) => (
                                         <tr key={vendor.id} className="hover:bg-gray-50/50 transition-colors">
-                                            <td className="px-4 md:px-6 py-4 text-sm font-medium text-gray-900">{vendor.storeName}</td>
-                                            <td className="px-4 md:px-6 py-4 text-sm text-gray-600">{vendor.owner}</td>
+                                            <td className="px-4 md:px-6 py-4 text-sm font-medium text-gray-900">{vendor.shop_name}</td>
+                                            <td className="px-4 md:px-6 py-4 text-sm text-gray-600">{vendor.user_email}</td>
                                             <td className="px-4 md:px-6 py-4">
-                                                <span className="text-xs font-medium px-2.5 py-0.5 rounded border bg-yellow-100 text-yellow-800 border-yellow-200">
-                                                    PENDING
+                                                <span className="text-xs font-medium px-2.5 py-0.5 rounded border bg-yellow-100 text-yellow-800 border-yellow-200 uppercase">
+                                                    {vendor.approval_status}
                                                 </span>
                                             </td>
-                                            <td className="px-4 md:px-6 py-4 text-sm text-gray-500">{vendor.registrationDate}</td>
+                                            <td className="px-4 md:px-6 py-4 text-sm text-gray-500">{new Date(vendor.created_at).toLocaleDateString()}</td>
                                             <td className="px-4 md:px-6 py-4">
                                                 <div className="flex items-center gap-2">
                                                     <button
@@ -109,13 +114,13 @@ const VendorRequests = () => {
                                                         View
                                                     </button>
                                                     <button
-                                                        onClick={() => handleAction(vendor.id, 'Approved', vendor.storeName)}
+                                                        onClick={() => handleAction(vendor.id, 'Approved', vendor.shop_name)}
                                                         className="px-3 py-1.5 text-xs font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-md transition-colors"
                                                     >
                                                         Approve
                                                     </button>
                                                     <button
-                                                        onClick={() => handleAction(vendor.id, 'Blocked', vendor.storeName)}
+                                                        onClick={() => handleAction(vendor.id, 'Blocked', vendor.shop_name)}
                                                         className="px-3 py-1.5 text-xs font-medium text-white bg-red-500 hover:bg-red-600 rounded-md transition-colors"
                                                     >
                                                         Reject

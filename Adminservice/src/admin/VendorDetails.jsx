@@ -1,24 +1,37 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
-import { useVendors } from '../context/VendorContext';
 import { useProducts } from '../context/ProductContext';
+import { fetchAllVendors, blockVendor, unblockVendor, approveVendorRequest } from '../api/axios';
+import { useEffect } from 'react';
 import { PanelLeftClose, PanelLeftOpen, ArrowLeft, Lock, Unlock, ShoppingBag, Clock, CheckCircle2, XCircle, AlertCircle, AlertTriangle, Store } from 'lucide-react';
 
 const VendorDetails = () => {
     const navigate = useNavigate();
     const { id } = useParams();
-    const { vendors, updateVendorStatus } = useVendors();
+    const [vendors, setVendors] = useState([]);
+    const [vendor, setVendor] = useState(null);
     const { products, updateProductStatus } = useProducts();
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-    const vendor = useMemo(() => {
-        return vendors.find(v => v.id === id);
-    }, [vendors, id]);
+    const loadData = async () => {
+        try {
+            const data = await fetchAllVendors();
+            setVendors(Array.isArray(data) ? data : []);
+            const found = Array.isArray(data) ? data.find(v => v.id.toString() === id.toString()) : null;
+            setVendor(found || null);
+        } catch (error) {
+            console.error("Failed to load vendor details", error);
+        }
+    };
+
+    useEffect(() => {
+        loadData();
+    }, [id]);
 
     const vendorProducts = useMemo(() => {
         if (!vendor) return [];
-        return products.filter(p => p.vendor === vendor.storeName);
+        return products.filter(p => p.vendor === vendor.shop_name);
     }, [products, vendor]);
 
     const handleLogout = () => {
@@ -27,10 +40,27 @@ const VendorDetails = () => {
         navigate('/');
     };
 
+    const updateVendorStatusLocal = async (vendorId, newStatus) => {
+        try {
+            if (newStatus === 'Blocked') {
+                await blockVendor(vendorId, "Policy violation or manual administrative block");
+            } else if (newStatus === 'Approved') {
+                if (vendor.approval_status === 'pending') {
+                    await approveVendorRequest(vendorId);
+                } else {
+                    await unblockVendor(vendorId);
+                }
+            }
+            await loadData();
+        } catch (error) {
+            console.error("Action failed:", error);
+        }
+    };
+
     const handleStatusToggle = async () => {
         if (!vendor) return;
-        const newStatus = vendor.status === 'Approved' ? 'Blocked' : 'Approved';
-        await updateVendorStatus(vendor.id, newStatus);
+        const newStatus = vendor.approval_status === 'approved' ? 'Blocked' : 'Approved';
+        await updateVendorStatusLocal(vendor.id, newStatus);
     };
 
     if (!vendor) {
@@ -98,29 +128,29 @@ const VendorDetails = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 lg:gap-x-24 gap-y-6 md:gap-y-8 mb-8">
                                     <div className="space-y-1">
                                         <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">Shop Name</label>
-                                        <p className="text-lg font-semibold text-slate-900">{vendor.storeName}</p>
+                                        <p className="text-lg font-semibold text-slate-900">{vendor.shop_name}</p>
                                     </div>
                                     <div className="space-y-1">
                                         <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">Owner</label>
-                                        <p className="text-lg font-semibold text-slate-900">{vendor.owner}</p>
+                                        <p className="text-lg font-semibold text-slate-900">{vendor.user_username || vendor.user_email}</p>
                                     </div>
                                     <div className="space-y-1">
                                         <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">Email</label>
-                                        <p className="text-lg font-semibold text-slate-900">{vendor.email}</p>
+                                        <p className="text-lg font-semibold text-slate-900">{vendor.user_email}</p>
                                     </div>
                                     <div className="space-y-1">
                                         <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">Approval Status</label>
                                         <div>
-                                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border ${vendor.status === 'Approved' ? 'bg-green-100 text-green-700 border-green-200' : 'bg-yellow-100 text-yellow-700 border-yellow-200'}`}>
-                                                {vendor.status}
+                                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border ${vendor.approval_status === 'approved' ? 'bg-green-100 text-green-700 border-green-200' : 'bg-yellow-100 text-yellow-700 border-yellow-200'}`}>
+                                                {vendor.approval_status}
                                             </span>
                                         </div>
                                     </div>
                                     <div className="space-y-1">
                                         <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">Account Status</label>
                                         <div>
-                                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border ${vendor.status === 'Approved' ? 'bg-green-100 text-green-700 border-green-200' : (vendor.status === 'Blocked' ? 'bg-red-100 text-red-700 border-red-200' : 'bg-amber-100 text-amber-700 border-amber-200')}`}>
-                                                {vendor.status === 'Approved' ? 'Active' : vendor.status}
+                                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border ${vendor.approval_status === 'approved' ? 'bg-green-100 text-green-700 border-green-200' : (vendor.is_blocked ? 'bg-red-100 text-red-700 border-red-200' : 'bg-amber-100 text-amber-700 border-amber-200')}`}>
+                                                {vendor.approval_status === 'approved' && !vendor.is_blocked ? 'Active' : (vendor.is_blocked ? 'Blocked' : vendor.approval_status)}
                                             </span>
                                         </div>
                                     </div>
@@ -134,22 +164,22 @@ const VendorDetails = () => {
                                     </div>
                                     <div className="space-y-1">
                                         <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">Registered Date</label>
-                                        <p className="text-lg font-semibold text-slate-900">{vendor.registrationDate}</p>
+                                        <p className="text-lg font-semibold text-slate-900">{new Date(vendor.created_at).toLocaleDateString()}</p>
                                     </div>
                                 </div>
 
                                 {/* Action Buttons */}
-                                {vendor.status === 'Pending' ? (
+                                {vendor.approval_status === 'pending' ? (
                                     <div className="flex gap-3">
                                         <button
-                                            onClick={() => updateVendorStatus(vendor.id, 'Approved')}
+                                            onClick={() => updateVendorStatusLocal(vendor.id, 'Approved')}
                                             className="flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-bold text-sm transition-all duration-200 border bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border-emerald-100"
                                         >
                                             <CheckCircle2 className="w-4 h-4" />
                                             Approve Vendor
                                         </button>
                                         <button
-                                            onClick={() => updateVendorStatus(vendor.id, 'Blocked')}
+                                            onClick={() => updateVendorStatusLocal(vendor.id, 'Blocked')}
                                             className="flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-bold text-sm transition-all duration-200 border bg-rose-50 text-rose-600 hover:bg-rose-100 border-rose-100"
                                         >
                                             <XCircle className="w-4 h-4" />
@@ -159,12 +189,12 @@ const VendorDetails = () => {
                                 ) : (
                                     <button
                                         onClick={handleStatusToggle}
-                                        className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg font-bold text-sm transition-all duration-200 border ${vendor.status === 'Approved'
+                                        className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg font-bold text-sm transition-all duration-200 border ${vendor.approval_status === 'approved' && !vendor.is_blocked
                                             ? 'bg-rose-50 text-rose-600 hover:bg-rose-100 border-rose-100'
                                             : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border-emerald-100'
                                             }`}
                                     >
-                                        {vendor.status === 'Approved' ? (
+                                        {vendor.approval_status === 'approved' && !vendor.is_blocked ? (
                                             <>
                                                 <Lock className="w-4 h-4" />
                                                 Block Vendor

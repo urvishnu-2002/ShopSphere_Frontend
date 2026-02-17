@@ -22,14 +22,14 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import Sidebar from '../components/Sidebar';
 import NotificationBell from '../components/NotificationBell';
-import { useVendors } from '../context/VendorContext';
+import { fetchVendorRequests, approveVendorRequest, rejectVendorRequest, blockVendor } from '../api/axios';
 import { useNotifications } from '../context/NotificationContext';
 
 const VendorReview = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const { vendors, updateVendorStatus } = useVendors();
+    const [vendors, setVendors] = useState([]);
     const { markAsRead } = useNotifications();
     const [vendor, setVendor] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -40,23 +40,29 @@ const VendorReview = () => {
     const hasMarkedRef = useRef(false);
 
     useEffect(() => {
-        // Find vendor by ID or by notifId
-        const foundVendor = vendors.find(v => v.id === id || v.notifId === id);
+        const loadVendorData = async () => {
+            setIsLoading(true);
+            try {
+                const data = await fetchVendorRequests();
+                setVendors(data);
 
-        if (foundVendor) {
-            setVendor(foundVendor);
-            setIsLoading(false);
-
-            // Automatically mark as read if it's a notification-based view
-            if (!hasMarkedRef.current && foundVendor.notifId) {
-                markAsRead(foundVendor.notifId);
-                hasMarkedRef.current = true;
+                const foundVendor = data.find(v => v.id.toString() === id.toString() || v.notifId === id);
+                if (foundVendor) {
+                    setVendor(foundVendor);
+                    if (!hasMarkedRef.current && foundVendor.notifId) {
+                        markAsRead(foundVendor.notifId);
+                        hasMarkedRef.current = true;
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to load vendor details:", error);
+            } finally {
+                setIsLoading(false);
             }
-        } else {
-            const timer = setTimeout(() => setIsLoading(false), 2000);
-            return () => clearTimeout(timer);
-        }
-    }, [id, vendors, markAsRead]);
+        };
+
+        loadVendorData();
+    }, [id, markAsRead]);
 
     const handleActionClick = (action) => {
         setPendingAction(action);
@@ -69,11 +75,19 @@ const VendorReview = () => {
         setIsActioning(true);
         setIsActionModalOpen(false);
 
-        const success = await updateVendorStatus(vendor.id, pendingAction, vendor.notifId);
-
-        setIsActioning(false);
-        if (success) {
+        try {
+            if (pendingAction === "Approved") {
+                await approveVendorRequest(vendor.id);
+            } else if (pendingAction === "Blocked" || pendingAction === "Suspended") {
+                await blockVendor(vendor.id, "Actioned via Security Review");
+            } else {
+                await rejectVendorRequest(vendor.id, "Declined via Security Review");
+            }
             navigate('/vendors');
+        } catch (error) {
+            console.error("Action execution failed:", error);
+        } finally {
+            setIsActioning(false);
         }
     };
 
@@ -92,8 +106,8 @@ const VendorReview = () => {
                         </div>
                     </div>
                     <div className="text-center">
-                        <p className="text-sm font-black text-slate-900 uppercase tracking-widest mb-1">Authorization Layer</p>
-                        <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Decrypting Vendor Profile...</p>
+                        <p className="text-sm font-black text-slate-900 uppercase tracking-widest mb-1">Loading Profile</p>
+                        <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Fetching vendor audit data...</p>
                     </div>
                 </div>
             </div>
@@ -121,9 +135,9 @@ const VendorReview = () => {
     }
 
     // Determine available actions based on current status
-    const canApprove = vendor.status === 'Pending' || vendor.status === 'Suspended';
-    const canSuspend = vendor.status === 'Approved';
-    const canBlock = vendor.status !== 'Blocked';
+    const canApprove = vendor.approval_status === 'pending';
+    const canBlock = !vendor.is_blocked;
+    const canSuspend = vendor.approval_status === 'approved';
 
     return (
         <div className="flex h-screen bg-[#F8FAFC] font-sans overflow-hidden text-slate-900">
@@ -146,7 +160,7 @@ const VendorReview = () => {
                     <div className="flex items-center gap-6">
                         <NotificationBell />
                         <div className="hidden lg:flex items-center bg-indigo-50 border border-indigo-100 rounded-full px-4 py-2 text-[10px] font-black text-indigo-600 uppercase tracking-widest gap-2">
-                            <ShieldCheck className="w-4 h-4" /> Level 4 Clearance
+                            <ShieldCheck className="w-4 h-4" /> Admin Controls
                         </div>
                     </div>
                 </header>
@@ -160,26 +174,26 @@ const VendorReview = () => {
                         >
                             <div className="absolute top-0 right-0 p-12">
                                 <div className="bg-slate-50 backdrop-blur-xl rounded-2xl px-6 py-4 border border-slate-200 text-right">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-indigo-600 mb-1">Compliance Score</p>
-                                    <p className="text-3xl font-black text-slate-900">{vendor.riskScore === 'Low' ? '98.2%' : '84.5%'}</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-indigo-600 mb-1">Status Overview</p>
+                                    <p className="text-3xl font-black text-slate-900">{vendor.approval_status}</p>
                                 </div>
                             </div>
 
                             <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
                                 <div className="w-32 h-32 bg-indigo-600 rounded-[2.5rem] flex items-center justify-center text-5xl font-black text-white shadow-2xl shadow-indigo-600/20">
-                                    {vendor.storeName.charAt(0)}
+                                    {(vendor.shop_name || "V").charAt(0)}
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-4 mb-4">
-                                        <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-slate-50 border border-slate-200 ${vendor.status === 'Approved' ? 'text-emerald-600' :
-                                            vendor.status === 'Pending' ? 'text-amber-600' : 'text-rose-600'
+                                        <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-slate-50 border border-slate-200 ${vendor.approval_status === 'approved' ? 'text-emerald-600' :
+                                            vendor.approval_status === 'pending' ? 'text-amber-600' : 'text-rose-600'
                                             }`}>
-                                            {vendor.status}
+                                            {vendor.approval_status}
                                         </span>
-                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Enrolled: {vendor.registrationDate}</span>
+                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Enrolled: {new Date(vendor.created_at).toLocaleDateString()}</span>
                                     </div>
-                                    <h2 className="text-5xl font-black tracking-tighter mb-4 text-slate-900">{vendor.storeName}</h2>
-                                    <p className="text-slate-500 font-bold max-w-xl text-sm leading-relaxed">{vendor.description}</p>
+                                    <h2 className="text-5xl font-black tracking-tighter mb-4 text-slate-900">{vendor.shop_name}</h2>
+                                    <p className="text-slate-500 font-bold max-w-xl text-sm leading-relaxed">{vendor.shop_description}</p>
                                 </div>
                             </div>
                         </motion.div>
@@ -198,7 +212,7 @@ const VendorReview = () => {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-y-12 gap-x-16">
                                         <div>
                                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 block">Legally Registered Name</label>
-                                            <p className="text-lg font-black text-slate-900">{vendor.legalName}</p>
+                                            <p className="text-lg font-black text-slate-900">{vendor.shop_name}</p>
                                         </div>
                                         <div>
                                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 block">Primary Operations Hub</label>
@@ -208,11 +222,11 @@ const VendorReview = () => {
                                         </div>
                                         <div>
                                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 block">Business Sector</label>
-                                            <span className="px-4 py-1.5 bg-indigo-50 text-indigo-600 rounded-xl text-xs font-black border border-indigo-100 uppercase tracking-widest">{vendor.category}</span>
+                                            <span className="px-4 py-1.5 bg-indigo-50 text-indigo-600 rounded-xl text-xs font-black border border-indigo-100 uppercase tracking-widest">{vendor.business_type}</span>
                                         </div>
                                         <div>
                                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 block">Tax Verification ID</label>
-                                            <p className="text-lg font-black text-slate-900 font-mono tracking-tighter italic">TXN-00-{vendor.id.split('-')[2]}</p>
+                                            <p className="text-lg font-black text-slate-900 font-mono tracking-tighter italic">{vendor.gst_number || vendor.id}</p>
                                         </div>
                                     </div>
                                 </section>
@@ -223,22 +237,25 @@ const VendorReview = () => {
                                     </h3>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        {vendor.documents.map((doc, idx) => (
-                                            <div key={idx} className="group p-6 bg-slate-50 rounded-3xl border border-slate-100 flex items-center justify-between hover:bg-white hover:border-indigo-500/30 hover:shadow-lg transition-all cursor-pointer">
+                                        {vendor.id_proof_file ? (
+                                            <div className="group p-6 bg-slate-50 rounded-3xl border border-slate-100 flex items-center justify-between hover:bg-white hover:border-indigo-500/30 hover:shadow-lg transition-all cursor-pointer"
+                                                onClick={() => window.open(`http://localhost:8000${vendor.id_proof_file}`, '_blank')}>
                                                 <div className="flex items-center gap-5">
                                                     <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-indigo-600 border border-slate-200 group-hover:scale-110 transition-transform">
                                                         <FileText className="w-7 h-7" />
                                                     </div>
                                                     <div>
-                                                        <p className="text-sm font-black text-slate-900">{doc.name}</p>
-                                                        <p className="text-[10px] font-black text-slate-400 uppercase mt-1 tracking-widest">{doc.type} • {doc.size}</p>
+                                                        <p className="text-sm font-black text-slate-900">Identity Proof</p>
+                                                        <p className="text-[10px] font-black text-slate-400 uppercase mt-1 tracking-widest">{vendor.id_type || 'ID Document'}</p>
                                                     </div>
                                                 </div>
                                                 <motion.div whileHover={{ x: 5 }} className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                                     <ArrowLeft className="w-5 h-5 text-indigo-600 rotate-180" />
                                                 </motion.div>
                                             </div>
-                                        ))}
+                                        ) : (
+                                            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest p-6 text-center border-2 border-dashed border-slate-100 rounded-3xl col-span-2">No documents submitted for review</p>
+                                        )}
                                     </div>
                                 </section>
 
@@ -296,10 +313,10 @@ const VendorReview = () => {
                                     <div className="space-y-8">
                                         <div className="flex items-center gap-6 p-6 bg-slate-50 rounded-3xl border border-slate-100">
                                             <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center font-black text-2xl text-white shadow-lg shadow-indigo-600/20">
-                                                {vendor.owner.charAt(0)}
+                                                {(vendor.user_username || "A").charAt(0)}
                                             </div>
                                             <div>
-                                                <p className="text-base font-black text-slate-900 leading-tight">{vendor.owner}</p>
+                                                <p className="text-base font-black text-slate-900 leading-tight">{vendor.user_username}</p>
                                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Authorized Official</p>
                                             </div>
                                         </div>
@@ -309,7 +326,7 @@ const VendorReview = () => {
                                                 <div className="w-10 h-10 bg-slate-50 flex items-center justify-center rounded-xl group-hover:bg-indigo-50 border border-slate-100">
                                                     <Mail className="w-5 h-5" />
                                                 </div>
-                                                <span className="tracking-tight">{vendor.email}</span>
+                                                <span className="tracking-tight">{vendor.user_email}</span>
                                             </div>
                                             <div className="flex items-center gap-5 text-sm font-bold text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer group">
                                                 <div className="w-10 h-10 bg-slate-50 flex items-center justify-center rounded-xl group-hover:bg-indigo-50 border border-slate-100">
@@ -323,20 +340,11 @@ const VendorReview = () => {
 
                                 <section className="bg-white rounded-[2.5rem] p-10 border border-slate-200 shadow-sm">
                                     <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-10 flex items-center gap-4">
-                                        <div className="w-2 h-2 rounded-full bg-indigo-600" /> Vector Analysis
+                                        <div className="w-2 h-2 rounded-full bg-indigo-600" /> Administrative Info
                                     </h3>
-
                                     <div className="p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 text-center relative overflow-hidden group">
-                                        <div className={`text-4xl font-black mb-2 tracking-tighter ${vendor.riskScore === 'Low' ? 'text-emerald-600' : 'text-amber-600'}`}>
-                                            {vendor.riskScore}
-                                        </div>
-                                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Platform Risk Index</div>
-
-                                        <div className="mt-8 flex justify-center gap-2">
-                                            {[1, 2, 3, 4, 5].map(i => (
-                                                <div key={i} className={`w-2 h-8 rounded-full ${i <= (vendor.riskScore === 'Low' ? 4 : 3) ? 'bg-indigo-600 shadow-lg shadow-indigo-600/40' : 'bg-slate-200'}`} />
-                                            ))}
-                                        </div>
+                                        <div className="text-2xl font-black text-slate-900 mb-2 truncate">{vendor.business_type}</div>
+                                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Registered Category</div>
                                     </div>
                                 </section>
                             </div>
@@ -349,7 +357,7 @@ const VendorReview = () => {
                     <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-12">
                         <div>
                             <h4 className="text-lg font-black text-slate-900 tracking-tight uppercase">Decision Portal</h4>
-                            <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mt-1 italic opacity-50">Audit Trace: SUPER_ADMIN_AUTHORIZED</p>
+                            <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mt-1 italic opacity-50">Authorized Review Process</p>
                         </div>
 
                         <div className="flex items-center gap-6 w-full sm:w-auto">
@@ -413,9 +421,9 @@ const VendorReview = () => {
                             <div className="w-28 h-28 bg-rose-50 rounded-[2.5rem] flex items-center justify-center mb-12 border border-rose-100 mx-auto">
                                 <AlertTriangle className="w-14 h-14 text-rose-500" />
                             </div>
-                            <h2 className="text-3xl font-black text-slate-900 mb-6 tracking-tighter uppercase">High Priority Execution</h2>
+                            <h2 className="text-3xl font-black text-slate-900 mb-6 tracking-tighter uppercase">Review Execution</h2>
                             <p className="text-sm text-slate-500 font-bold leading-relaxed mb-12 px-2 italic">
-                                Modifying partner status to <span className="text-slate-900 font-black uppercase tracking-[0.2em] underline decoration-indigo-600/40">{pendingAction}</span>. This event will be permanently recorded. Confirm?
+                                Modifying partner status to <span className="text-slate-900 font-black uppercase tracking-[0.2em] underline decoration-indigo-600/40">{pendingAction}</span>. Confirm?
                             </p>
                             <div className="flex flex-col gap-5">
                                 <button
