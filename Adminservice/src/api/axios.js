@@ -133,6 +133,15 @@ export const adminLogin = async (username, password) => {
     return response.data;
 };
 
+export const fetchAllProducts = async () => {
+    const response = await axios.get(
+        `${base_url}/userProducts`
+    );
+
+    return response.data;
+};
+
+
 export const logout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("refreshToken");
