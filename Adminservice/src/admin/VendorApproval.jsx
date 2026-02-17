@@ -23,11 +23,11 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import Sidebar from '../components/Sidebar';
 import NotificationBell from '../components/NotificationBell';
-import { useVendors } from '../context/VendorContext';
+import { fetchAllVendors, blockVendor, unblockVendor, approveVendorRequest } from '../api/axios';
 
 const VendorApproval = () => {
     const navigate = useNavigate();
-    const { vendors, updateVendorStatus } = useVendors();
+    const [vendors, setVendors] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('All Vendors');
@@ -36,16 +36,27 @@ const VendorApproval = () => {
     const [isActionModalOpen, setIsActionModalOpen] = useState(false);
     const [pendingAction, setPendingAction] = useState(null);
 
+    const loadVendors = async () => {
+        setIsLoading(true);
+        try {
+            const data = await fetchAllVendors();
+            setVendors(Array.isArray(data) ? data : []);
+        } catch (error) {
+            console.error("Failed to load vendors:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const timer = setTimeout(() => setIsLoading(false), 800);
-        return () => clearTimeout(timer);
+        loadVendors();
     }, []);
 
     const filteredVendors = useMemo(() => {
         return vendors.filter(v => {
-            const matchesSearch = v.storeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                v.owner.toLowerCase().includes(searchTerm.toLowerCase());
-            const matchesFilter = filterStatus === 'All Vendors' || v.status === filterStatus;
+            const matchesSearch = v.shop_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                v.user_email.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesFilter = filterStatus === 'All Vendors' || v.approval_status === filterStatus.toLowerCase();
             return matchesSearch && matchesFilter;
         });
     }, [vendors, searchTerm, filterStatus]);
@@ -59,16 +70,28 @@ const VendorApproval = () => {
         if (!pendingAction) return;
         const { vendor, action } = pendingAction;
         setIsActionModalOpen(false);
-        const nextStatus = action === 'Block' ? 'Blocked' : 'Approved';
-        await updateVendorStatus(vendor.id, nextStatus);
+
+        try {
+            if (action === 'Block') {
+                await blockVendor(vendor.id, "Security Policy Enforcement");
+            } else if (action === 'Unblock') {
+                await unblockVendor(vendor.id);
+            } else if (action === 'Approve') {
+                await approveVendorRequest(vendor.id);
+            }
+
+            await loadVendors();
+        } catch (error) {
+            console.error("Action failed:", error);
+        }
         setPendingAction(null);
     };
 
     const getStatusColor = (status) => {
-        switch (status) {
-            case 'Approved': return 'text-emerald-500 bg-emerald-50 border-emerald-100/50';
-            case 'Pending': return 'text-amber-600 bg-amber-50 border-amber-100/50';
-            case 'Blocked': return 'text-rose-500 bg-rose-50 border-rose-100/50';
+        switch (status?.toLowerCase()) {
+            case 'approved': return 'text-emerald-500 bg-emerald-50 border-emerald-100/50';
+            case 'pending': return 'text-amber-600 bg-amber-50 border-amber-100/50';
+            case 'blocked': return 'text-rose-500 bg-rose-50 border-rose-100/50';
             default: return 'text-slate-500 bg-slate-50 border-slate-100/50';
         }
     };
@@ -142,14 +165,14 @@ const VendorApproval = () => {
                                     ) : filteredVendors.length > 0 ? (
                                         filteredVendors.map(vendor => (
                                             <tr key={vendor.id} className="hover:bg-slate-50/50 transition-colors">
-                                                <td className="px-8 py-6 text-sm font-bold text-slate-900">{vendor.storeName}</td>
-                                                <td className="px-8 py-6 text-sm font-medium text-slate-500">{vendor.owner}</td>
+                                                <td className="px-8 py-6 text-sm font-bold text-slate-900">{vendor.shop_name}</td>
+                                                <td className="px-8 py-6 text-sm font-medium text-slate-500">{vendor.user_email}</td>
                                                 <td className="px-8 py-6">
-                                                    <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest border ${getStatusColor(vendor.status)}`}>
-                                                        {vendor.status}
+                                                    <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest border ${getStatusColor(vendor.approval_status)}`}>
+                                                        {vendor.approval_status}
                                                     </span>
                                                 </td>
-                                                <td className="px-8 py-6 text-sm font-medium text-slate-400">{vendor.registrationDate}</td>
+                                                <td className="px-8 py-6 text-sm font-medium text-slate-400">{new Date(vendor.created_at).toLocaleDateString()}</td>
                                                 <td className="px-8 py-6">
                                                     <div className="flex items-center gap-4">
                                                         <button
@@ -158,7 +181,7 @@ const VendorApproval = () => {
                                                         >
                                                             View
                                                         </button>
-                                                        {vendor.status === 'Approved' && (
+                                                        {vendor.approval_status === 'approved' && !vendor.is_blocked && (
                                                             <button
                                                                 onClick={() => handleActionClick(vendor, 'Block')}
                                                                 className="px-4 py-1.5 bg-rose-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:shadow-lg hover:shadow-rose-500/20 transition-all"
@@ -166,7 +189,7 @@ const VendorApproval = () => {
                                                                 Block
                                                             </button>
                                                         )}
-                                                        {vendor.status === 'Blocked' && (
+                                                        {vendor.is_blocked && (
                                                             <button
                                                                 onClick={() => handleActionClick(vendor, 'Unblock')}
                                                                 className="px-4 py-1.5 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:shadow-lg hover:shadow-emerald-500/20 transition-all"
@@ -221,7 +244,7 @@ const VendorApproval = () => {
                             </div>
                             <h2 className="text-2xl font-black text-slate-900 text-center mb-3">Critical Action</h2>
                             <p className="text-sm text-slate-500 text-center font-medium leading-relaxed mb-10 px-4">
-                                You are about to <span className="text-slate-900 font-black underline decoration-indigo-500/20">{pendingAction?.action}</span> <span className="text-slate-900 font-bold">{pendingAction?.vendor.storeName}</span>. This change will affect portal access immediately.
+                                You are about to <span className="text-slate-900 font-black underline decoration-indigo-500/20">{pendingAction?.action}</span> <span className="text-slate-900 font-bold">{pendingAction?.vendor.shop_name}</span>. This change will affect portal access immediately.
                             </p>
                             <div className="flex flex-col gap-4">
                                 <button

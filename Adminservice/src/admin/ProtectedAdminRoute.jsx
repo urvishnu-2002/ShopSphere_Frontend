@@ -17,15 +17,9 @@ const ProtectedAdminRoute = ({ children }) => {
         const padding = '='.repeat((4 - (base64.length % 4)) % 4);
         const payload = JSON.parse(atob(base64 + padding));
 
-        // ✅ ONLY SUPER_ADMIN ALLOWED (as per latest business rules)
-        if (payload.role !== 'SUPER_ADMIN' && payload.role !== 'ADMIN') {
-            // Allowing ADMIN for transition if needed, but SuperAdmin is primary
-            // The task said SuperAdmin ONLY for Vendors, but Dashboard might need Admin.
-            // Let's stick to SUPER_ADMIN if that's what was requested.
-        }
-
-        if (payload.role !== 'SUPER_ADMIN') {
-            console.warn("Access denied: SUPER_ADMIN role required");
+        const allowedRoles = ['SUPER_ADMIN', 'ADMIN', 'admin', 'super_admin'];
+        if (!allowedRoles.includes(payload.role)) {
+            console.warn("Access denied: Admin role required, found:", payload.role);
             return <Navigate to="/" replace />;
         }
 

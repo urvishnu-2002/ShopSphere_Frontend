@@ -13,7 +13,6 @@ import CommissionSettings from './admin/CommissionSettings';
 import ProtectedAdminRoute from './admin/ProtectedAdminRoute';
 import SplashScreen from './admin/SplashScreen';
 import { NotificationProvider } from './context/NotificationContext';
-import { VendorProvider } from './context/VendorContext';
 import { UserProvider } from './context/UserContext';
 import { ProductProvider } from './context/ProductContext';
 
@@ -21,95 +20,93 @@ import { ProductProvider } from './context/ProductContext';
 function App() {
   return (
     <NotificationProvider>
-      <VendorProvider>
-        <UserProvider>
-          <ProductProvider>
-            <Router>
-              <Routes>
-                {/* Splash Screen as default route */}
-                <Route path="/" element={<SplashScreen />} />
+      <UserProvider>
+        <ProductProvider>
+          <Router>
+            <Routes>
+              {/* Splash Screen as default route */}
+              <Route path="/" element={<SplashScreen />} />
 
-                {/* Login Routes */}
-                <Route path="/login" element={<AdminLogin />} />
+              {/* Login Routes */}
+              <Route path="/login" element={<AdminLogin />} />
 
-                {/* Protected Admin Routes */}
-                <Route
-                  path="/dashboard"
-                  element={
-                    <ProtectedAdminRoute>
-                      <AdminDashboard />
-                    </ProtectedAdminRoute>
-                  }
-                />
-                <Route
-                  path="/users"
-                  element={
-                    <ProtectedAdminRoute>
-                      <UserManagement />
-                    </ProtectedAdminRoute>
-                  }
-                />
-                <Route
-                  path="/vendors"
-                  element={
-                    <ProtectedAdminRoute>
-                      <VendorApproval />
-                    </ProtectedAdminRoute>
-                  }
-                />
-                <Route
-                  path="/vendors/requests"
-                  element={
-                    <ProtectedAdminRoute>
-                      <VendorRequests />
-                    </ProtectedAdminRoute>
-                  }
-                />
-                <Route
-                  path="/vendor/:id"
-                  element={
-                    <ProtectedAdminRoute>
-                      <VendorDetails />
-                    </ProtectedAdminRoute>
-                  }
-                />
-                <Route
-                  path="/vendors/review/:id"
-                  element={
-                    <ProtectedAdminRoute>
-                      <VendorReview />
-                    </ProtectedAdminRoute>
-                  }
-                />
-                <Route
-                  path="/products"
-                  element={
-                    <ProtectedAdminRoute>
-                      <ProductManagement />
-                    </ProtectedAdminRoute>
-                  }
-                />
-                <Route
-                  path="/reports"
-                  element={
-                    <ProtectedAdminRoute>
-                      <Reports />
-                    </ProtectedAdminRoute>
-                  }
-                />
-                <Route
-                  path="/settings/commission"
-                  element={
-                    <ProtectedAdminRoute>
-                      <CommissionSettings />
-                    </ProtectedAdminRoute>
-                  }
-                />
-              </Routes>
-            </Router>
-          </ProductProvider>
-        </UserProvider>
-      </VendorProvider>
+              {/* Protected Admin Routes */}
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedAdminRoute>
+                    <AdminDashboard />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path="/users"
+                element={
+                  <ProtectedAdminRoute>
+                    <UserManagement />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path="/vendors"
+                element={
+                  <ProtectedAdminRoute>
+                    <VendorApproval />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path="/vendors/requests"
+                element={
+                  <ProtectedAdminRoute>
+                    <VendorRequests />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path="/vendor/:id"
+                element={
+                  <ProtectedAdminRoute>
+                    <VendorDetails />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path="/vendors/review/:id"
+                element={
+                  <ProtectedAdminRoute>
+                    <VendorReview />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path="/products"
+                element={
+                  <ProtectedAdminRoute>
+                    <ProductManagement />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path="/reports"
+                element={
+                  <ProtectedAdminRoute>
+                    <Reports />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path="/settings/commission"
+                element={
+                  <ProtectedAdminRoute>
+                    <CommissionSettings />
+                  </ProtectedAdminRoute>
+                }
+              />
+            </Routes>
+          </Router>
+        </ProductProvider>
+      </UserProvider>
     </NotificationProvider>
   );
 }

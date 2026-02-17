@@ -4,25 +4,38 @@ import { Store, ShoppingCart, PanelLeftClose, PanelLeftOpen, ClipboardList } fro
 import Sidebar from '../components/Sidebar';
 import NotificationBell from '../components/NotificationBell';
 import { motion as Motion } from 'framer-motion';
-import { useVendors } from '../context/VendorContext';
 import { useProducts } from '../context/ProductContext';
+import { fetchDashboardStats } from '../api/axios';
+import { useEffect } from 'react';
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
-    const { vendors } = useVendors();
+    const [dashData, setDashData] = useState(null);
     const { products } = useProducts();
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+    useEffect(() => {
+        const loadStats = async () => {
+            try {
+                const data = await fetchDashboardStats();
+                setDashData(data);
+            } catch (error) {
+                console.error("Failed to load dashboard data", error);
+            }
+        };
+        loadStats();
+    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem('authToken');
         sessionStorage.clear();
         window.location.href = '/';
     };
-// dummydata
+    // dummydata
     const stats = [
         {
             title: 'Total Vendors',
-            value: vendors.length,
+            value: dashData?.vendors.total || 0,
             icon: Store,
             color: 'text-violet-600',
             bgColor: 'bg-violet-50',
@@ -30,7 +43,7 @@ const AdminDashboard = () => {
         },
         {
             title: 'Pending Vendors',
-            value: vendors.filter(v => v.status === 'Pending').length,
+            value: dashData?.vendors.pending || 0,
             icon: ClipboardList,
             color: 'text-amber-600',
             bgColor: 'bg-amber-50',
@@ -38,21 +51,21 @@ const AdminDashboard = () => {
         },
         {
             title: 'Approved Vendors',
-            value: vendors.filter(v => v.status === 'Approved').length,
+            value: dashData?.vendors.approved || 0,
             icon: Store,
             color: 'text-green-600',
             bgColor: 'bg-green-50',
             route: '/vendors',
-            routeState: { filter: 'Approved' }
+            routeState: { filter: 'approved' }
         },
         {
             title: 'Blocked Vendors',
-            value: vendors.filter(v => v.status === 'Blocked').length,
+            value: dashData?.vendors.blocked || 0,
             icon: Store,
             color: 'text-red-600',
             bgColor: 'bg-red-50',
             route: '/vendors',
-            routeState: { filter: 'Blocked' }
+            routeState: { filter: 'blocked' }
         },
         {
             title: 'Total Products',
@@ -75,16 +88,16 @@ const AdminDashboard = () => {
 
     return (
         <div className="flex h-screen bg-gray-50 font-sans text-slate-800">
-           
+
             <Sidebar
                 isSidebarOpen={isSidebarOpen}
                 activePage="Dashboard"
                 onLogout={handleLogout}
             />
 
-           {/* main */}
+            {/* main */}
             <main className="flex-1 overflow-y-auto transition-all duration-300">
-               {/* header */}
+                {/* header */}
                 <header className="bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-gray-100 px-8 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <button
@@ -135,8 +148,8 @@ const AdminDashboard = () => {
                             </Motion.div>
                         ))}
                     </div>
-                  <br></br>
-                  <br></br>
+                    <br></br>
+                    <br></br>
 
                     <Motion.div
                         initial={{ opacity: 0, y: 20 }}
