@@ -52,8 +52,11 @@ const ProductDetails = () => {
         // Here we search across categories. Since 'id' might be the product name in this setup.
         let foundProduct = null;
         Object.values(allProductsInCategories).forEach(categoryProducts => {
-            const match = categoryProducts.find(p => encodeURIComponent(p.name) === id || p.name === id);
-            if (match) foundProduct = match;
+            // Only process if categoryProducts is an array (skip 'status', 'error', etc.)
+            if (Array.isArray(categoryProducts)) {
+                const match = categoryProducts.find(p => encodeURIComponent(p.name) === id || p.name === id);
+                if (match) foundProduct = match;
+            }
         });
 
         if (foundProduct) {
@@ -62,13 +65,15 @@ const ProductDetails = () => {
                 ...foundProduct,
                 oldPrice: foundProduct.oldPrice || foundProduct.price + 20, // Mocked
                 rating: foundProduct.rating || 4.5, // Mocked
-                // Ensure we have an array of images. If only one exists, we repeat it with different hints or use placeholders
-                images: foundProduct.images || [
-                    foundProduct.image,
-                    foundProduct.image, // Just repeating the same image for gallery demonstration
-                    foundProduct.image,
-                    foundProduct.image
-                ]
+                // Use existing images array if it exists, otherwise create one from the single image
+                images: foundProduct.images && foundProduct.images.length > 0
+                    ? foundProduct.images
+                    : [
+                        foundProduct.image,
+                        foundProduct.image, // Just repeating the same image for gallery demonstration
+                        foundProduct.image,
+                        foundProduct.image
+                    ]
             };
             setProduct(augmentedProduct);
             setMainImage(augmentedProduct.images[0]);
@@ -286,13 +291,13 @@ const ProductDetails = () => {
                             {/* Price */}
                             <div className="flex items-end gap-5 mb-8">
                                 <p className="text-5xl font-black text-gray-900 tracking-tighter">
-                                    ₹{product.price.toFixed(2)}
+                                    ₹{Number(product.price).toFixed(2)}
                                 </p>
                                 <p className="text-2xl font-bold text-gray-300 line-through mb-1.5">
-                                    ₹{product.oldPrice.toFixed(2)}
+                                    ₹{Number(product.oldPrice).toFixed(2)}
                                 </p>
                                 <div className="px-3 py-1 bg-purple-100 text-purple-600 text-[11px] font-black uppercase tracking-[1px] rounded-lg mb-2">
-                                    Save {Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}%
+                                    Save {Math.round(((Number(product.oldPrice) - Number(product.price)) / Number(product.oldPrice)) * 100)}%
                                 </div>
                             </div>
 

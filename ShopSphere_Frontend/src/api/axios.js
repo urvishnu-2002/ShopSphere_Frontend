@@ -79,3 +79,11 @@ export const processPayment = async (paymentData) => {
 
   return response.data;
 };
+
+// GET ALL PRODUCTS (PUBLIC)
+export const getProducts = async () => {
+  const response = await axios.get(
+    `${API_BASE_URL}/userProducts`
+  );
+  return response.data;
+};

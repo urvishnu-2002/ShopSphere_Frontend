@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { AddToCart, AddToWishlist, RemoveFromWishlist } from "../../Store";
+import { AddToCart, AddToWishlist, fetchProducts, RemoveFromWishlist } from "../../Store";
 import { FaHeart, FaShoppingBag, FaArrowRight } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,15 +12,15 @@ import toast from "react-hot-toast";
 const CATEGORIES = [
   { id: "all", label: "All", key: null },
   { id: "electronics", label: "Electronics", key: "electronics" },
-  // { id: "fruits", label: "Fruits", key: "fruits" },
-  // { id: "vegetables", label: "Vegetables", key: "vegetables" },
-  // { id: "milk", label: "Milk Products", key: "milkproducts" },
-  // { id: "snacks", label: "Snacks", key: "snacks" },
-  // { id: "chocolates", label: "Chocolates", key: "chocolates" },
-  { id: "sports", label: "Sports", key: "sports" },
   { id: "fashion", label: "Fashion", key: "fashion" },
+  { id: "home_kitchen", label: "Home & Kitchen", key: "home_kitchen" },
+  { id: "beauty", label: "Beauty & Personal Care", key: "beauty" },
+  { id: "sports", label: "Sports & Fitness", key: "sports" },
+  { id: "toys", label: "Toys & Games", key: "toys" },
+  { id: "automotive", label: "Automotive", key: "automotive" },
+  { id: "grocery", label: "Grocery", key: "grocery" },
   { id: "books", label: "Books", key: "books" },
-  { id: "accessories", label: "Accessories", key: "accessories" },
+  { id: "services", label: "Services", key: "services" },
 ];
 
 const BANNERS = [
@@ -63,6 +63,13 @@ function Home() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (products.status === "idle") {
+      dispatch(fetchProducts());
+    }
+  }, [dispatch, products.status]);
+
+
   // LOCAL STATE
   const [activeCategory, setActiveCategory] = useState("all");
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -92,15 +99,15 @@ function Home() {
 
     const allProducts = [
       ...(products.electronics || []),
-      ...(products.fruits || []),
-      ...(products.vegetables || []),
-      ...(products.milkproducts || []),
-      ...(products.snacks || []),
-      ...(products.chocolates || []),
-      ...(products.sports || []),
       ...(products.fashion || []),
+      ...(products.home_kitchen || []),
+      ...(products.beauty || []),
+      ...(products.sports || []),
+      ...(products.toys || []),
+      ...(products.automotive || []),
+      ...(products.grocery || []),
       ...(products.books || []),
-      ...(products.accessories || []),
+      ...(products.services || []),
     ];
 
     let result = [];
@@ -340,7 +347,7 @@ function Home() {
                 >
                   <div className="relative overflow-hidden bg-gradient-to-br from-violet-50 to-purple-50 h-56 sm:h-64 flex items-center justify-center">
                     <img
-                      src={item.image}
+                      src={item.images ? item.images[0] : item.image}
                       alt={item.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
                     />
