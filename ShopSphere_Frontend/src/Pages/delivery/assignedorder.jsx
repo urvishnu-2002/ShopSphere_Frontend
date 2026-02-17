@@ -13,12 +13,7 @@ const toast = {
     }
 };
 
-const mockOrders = [
-    { id: 'ORD001', userName: 'John Doe', deliveryAddress: '123 Main St, New York, NY', status: 'confirmed', deliveryPersonId: null },
-    { id: 'ORD002', userName: 'Jane Smith', deliveryAddress: '456 Park Ave, Los Angeles, CA', status: 'shipped', deliveryPersonId: 'd1' },
-    { id: 'ORD003', userName: 'Mike Johnson', deliveryAddress: '789 Elm St, Chicago, IL', status: 'delivered', deliveryPersonId: 'd1' },
-    { id: 'ORD004', userName: 'Sarah Wilson', deliveryAddress: '101 Pine St, Seattle, WA', status: 'confirmed', deliveryPersonId: null },
-];
+
 
 export default function AssignedOrders() {
     const navigate = useNavigate();
