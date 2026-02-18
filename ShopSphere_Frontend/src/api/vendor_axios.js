@@ -29,10 +29,10 @@ export const logout = () => {
 
 
 export const addProduct = async (formData) => {
-  const response = await axios.post(
-    `${API_BASE_URL}/vendor/products/add/`,
-    formData
-  );
+    const response = await axios.post(
+        `${API_BASE_URL}/vendor/products/add/`,
+        formData
+    );
 
-  return response.data;
+    return response.data;
 };

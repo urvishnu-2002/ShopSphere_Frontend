@@ -4,6 +4,7 @@ import Navbar from "./Components/common/Navbar";
 import Footer from "./Components/common/Footer";
 import { Toaster } from "react-hot-toast";
 
+
 function Layout() {
   const location = useLocation();
   const hideNavbarFooter = ["/", "/vendor", "/delivery", "/login", "/signup", "/delivery/dashboard", "/delivery/assigned", "/delivery/earnings", "/account-verification", "/verify-otp", "/verifyGST", "/verifyPAN", "/store-name", "/shipping-address", "/shipping-method", "/shipping-fee-preferences", "/bank-details"].includes(location.pathname);
@@ -57,7 +58,7 @@ function App() {
   return (
     <BrowserRouter>
       <Layout />
-      
+
     </BrowserRouter>
   );
 }

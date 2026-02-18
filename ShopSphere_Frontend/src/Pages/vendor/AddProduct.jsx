@@ -86,7 +86,7 @@
 //   };
 
 //   return (
-    
+
 //     <div>
 //       <h1 className="text-2xl font-bold mb-6">Product Information</h1>
 
@@ -229,7 +229,7 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { add_Product } from "../../api/vendor_axios"; // ✅ import backend function
+import { addProduct } from "../../api/vendor_axios"; // ✅ import backend function
 
 export default function AddProduct() {
   const navigate = useNavigate();
