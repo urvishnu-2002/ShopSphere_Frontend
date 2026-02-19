@@ -126,9 +126,61 @@ export const unblockVendor = async (vendorId, reason = '') => {
 export const adminLogin = async (username, password) => {
     // We use the general login API which returns JWT tokens for any user role
     const response = await axios.post(
-        `${base_url}/login`,
+        `${base_url}/user_login`,
         { username, password },
         { headers: { 'Accept': 'application/json' } }
+    );
+    return response.data;
+};
+
+export const fetchAllProducts = async () => {
+    const response = await axios.get(
+        `${base_url}/userProducts`
+    );
+
+    return response.data;
+};
+
+
+export const fetchDeliveryRequests = async () => {
+    const token = localStorage.getItem("authToken");
+
+    const response = await axios.get(
+        `${base_url}/superAdmin/api/delivery-agents/pending_approvals/`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+
+    return response.data;
+};
+
+export const approveDeliveryRequest = async (agentId) => {
+    const token = localStorage.getItem("authToken");
+    const response = await axios.post(
+        `${base_url}/superAdmin/api/delivery-agents/${agentId}/approve/`,
+        {},
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+    return response.data;
+};
+
+export const rejectDeliveryRequest = async (agentId, reason) => {
+    const token = localStorage.getItem("authToken");
+    const response = await axios.post(
+        `${base_url}/superAdmin/api/delivery-agents/${agentId}/reject/`,
+        { reason },
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
     );
     return response.data;
 };
@@ -138,3 +190,45 @@ export const logout = () => {
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("adminAuthenticated");
 };
+
+// ── ORDER MANAGEMENT ──────────────────────────────────────────────────────────
+
+export const fetchAllOrders = async () => {
+    const token = localStorage.getItem("authToken");
+    const response = await axios.get(
+        `${base_url}/superAdmin/api/orders/`,
+        { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data;
+};
+
+export const fetchApprovedDeliveryAgents = async () => {
+    const token = localStorage.getItem("authToken");
+    const response = await axios.get(
+        `${base_url}/superAdmin/api/delivery-agents/`,
+        { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data;
+};
+
+export const assignDeliveryAgent = async (orderId, agentId) => {
+    const token = localStorage.getItem("authToken");
+    const response = await axios.post(
+        `${base_url}/superAdmin/api/orders/${orderId}/assign_delivery/`,
+        { agent_id: agentId },
+        { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data;
+};
+
+export const updateOrderItemStatus = async (itemId, newStatus) => {
+    const token = localStorage.getItem("authToken");
+    const response = await axios.post(
+        `${base_url}/superAdmin/api/orders/${itemId}/update_status/`,
+        { status: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data;
+};
+
+export default axiosInstance;

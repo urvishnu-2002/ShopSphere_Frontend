@@ -13,47 +13,82 @@ import {
   ResponsiveContainer
 } from "recharts";
 import { FaWallet, FaDownload, FaArrowUp } from 'react-icons/fa';
+import { fetchVendorProducts, fetchAdminRevenueReport } from "../../api/vendor_axios";
+import { getUserInfo } from "../../api/axios";
 
 // vendor earnings page styled like delivery earnings
 export default function Earnings() {
   const [timeFilter, setTimeFilter] = useState('weekly');
   const [products, setProducts] = useState([]);
+  const [adminStats, setAdminStats] = useState(null);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const all = JSON.parse(localStorage.getItem('products')) || [];
-    const approved = all.filter(p => p.approved);
-    setProducts(approved.map(p => ({ ...p, price: Number(p.price) || 0 })));
+    const init = async () => {
+      try {
+        setLoading(true);
+        const userInfo = await getUserInfo();
+        setUser(userInfo);
+
+        if (userInfo?.role === 'admin') {
+          const stats = await fetchAdminRevenueReport(30);
+          setAdminStats(stats);
+        } else {
+          const data = await fetchVendorProducts();
+          const productList = data.results || data || [];
+          setProducts(productList.map(p => ({
+            ...p,
+            price: Number(p.price) || 0,
+            approved: p.status === 'active'
+          })));
+        }
+      } catch (error) {
+        console.error("Error loading earnings data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    init();
   }, []);
 
   // derive simple stats
-  const totalRevenue = products.reduce((s, p) => s + p.price, 0);
-  const totalOrders = products.length;
+  const totalRevenue = user?.role === 'admin'
+    ? parseFloat(adminStats?.total_revenue || 0)
+    : products.reduce((s, p) => s + p.price, 0);
 
-  // mock datasets for chart switching (use products for revenue by product when possible)
-  const yearlyData = Array.from({ length: 12 }, (_, i) => ({ name: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][i], earnings: Math.floor(Math.random()*5000)+1000 }));
-  const monthlyData = Array.from({ length: 30 }, (_, i) => ({ name: `${i+1}`, earnings: Math.floor(Math.random()*300)+50 }));
-  const weeklyData = products.slice(0,7).map((p,i)=>({ name: p.name.slice(0,8), earnings: p.price }))
-    .concat(weeklyDataFallback());
-  const hourlyData = Array.from({ length: 12 }, (_, i) => ({ name: `${9+i}AM`, earnings: Math.floor(Math.random()*120) }));
+  const totalOrders = user?.role === 'admin'
+    ? adminStats?.total_count || 0
+    : products.length;
 
-  function weeklyDataFallback() {
-    if (products.length >= 7) return [];
-    return Array.from({ length: Math.max(0,7-products.length) }, (_,i)=>({ name: `P${i+1}`, earnings: Math.floor(Math.random()*200)+20 }));
-  }
-
-  const getChartConfig = () => {
-    switch(timeFilter) {
-      case 'yearly': return { data: yearlyData, type: 'bar', color: '#8b5cf6' };
-      case 'monthly': return { data: monthlyData, type: 'line', color: '#10b981' };
-      case 'today': return { data: hourlyData, type: 'area', color: '#f59e0b' };
-      default: return { data: weeklyData, type: 'bar', color: '#3b82f6' };
+  const getChartData = () => {
+    if (user?.role === 'admin' && adminStats?.chart_data) {
+      return adminStats.chart_data.map(item => ({
+        name: new Date(item.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
+        earnings: parseFloat(item.revenue)
+      }));
     }
-  }
 
-  const { data, type, color } = getChartConfig();
+    // Fallback/Vendor logic
+    return products.slice(0, 10).map(p => ({
+      name: p.name.slice(0, 8),
+      earnings: p.price
+    }));
+  };
 
-  // build transactions from recent products
-  const transactions = products.slice().reverse().slice(0,6).map((p,idx)=>({ id: idx+1, date: 'Today', desc: `Sale: ${p.name}`, amount: p.price, type: 'credit' }));
+  const chartData = getChartData();
+  const type = 'bar'; // Simplified for consistency
+  const color = user?.role === 'admin' ? '#6366f1' : '#3b82f6';
+
+  // build transactions
+  const transactions = user?.role === 'admin' ? [] :
+    products.slice().reverse().slice(0, 6).map((p, idx) => ({
+      id: idx + 1,
+      date: 'Recent',
+      desc: `Sale: ${p.name}`,
+      amount: p.price,
+      type: 'credit'
+    }));
 
   return (
     <div>
@@ -99,9 +134,9 @@ export default function Earnings() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <h3 className="text-xl font-bold text-gray-900">Earnings Analytics</h3>
           <div className="bg-gray-100 p-1.5 rounded-xl flex">
-            {['today','weekly','monthly','yearly'].map(filter=> (
-              <button key={filter} onClick={() => setTimeFilter(filter)} className={`px-4 py-2 rounded-lg text-sm font-bold capitalize transition-all ${timeFilter===filter? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
-                {filter==='today' ? 'Hourly' : filter}
+            {['today', 'weekly', 'monthly', 'yearly'].map(filter => (
+              <button key={filter} onClick={() => setTimeFilter(filter)} className={`px-4 py-2 rounded-lg text-sm font-bold capitalize transition-all ${timeFilter === filter ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
+                {filter === 'today' ? 'Hourly' : filter}
               </button>
             ))}
           </div>
@@ -113,15 +148,15 @@ export default function Earnings() {
               <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} tickFormatter={(v)=>`₹${v}`} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} tickFormatter={(v) => `₹${v}`} />
                 <Tooltip cursor={{ fill: '#f9fafb' }} contentStyle={{ borderRadius: '12px', border: 'none' }} />
-                <Bar dataKey={type === 'bar' ? (data[0] && data[0].earnings !== undefined ? 'earnings' : 'value') : 'earnings'} fill={color} radius={[6,6,0,0]} barSize={40} />
+                <Bar dataKey={type === 'bar' ? (data[0] && data[0].earnings !== undefined ? 'earnings' : 'value') : 'earnings'} fill={color} radius={[6, 6, 0, 0]} barSize={40} />
               </BarChart>
             ) : type === 'line' ? (
               <LineChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} tickFormatter={(v)=>`₹${v}`} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} tickFormatter={(v) => `₹${v}`} />
                 <Tooltip contentStyle={{ borderRadius: '12px', border: 'none' }} />
                 <Line type="monotone" dataKey="earnings" stroke={color} strokeWidth={4} dot={{ r: 0 }} activeDot={{ r: 6, strokeWidth: 0 }} />
               </LineChart>
@@ -135,7 +170,7 @@ export default function Earnings() {
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} tickFormatter={(v)=>`₹${v}`} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} tickFormatter={(v) => `₹${v}`} />
                 <Tooltip contentStyle={{ borderRadius: '12px', border: 'none' }} />
                 <Area type="monotone" dataKey="earnings" stroke={color} fillOpacity={1} fill="url(#colorEarnings)" strokeWidth={3} />
               </AreaChart>

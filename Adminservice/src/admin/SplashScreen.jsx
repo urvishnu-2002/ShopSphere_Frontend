@@ -22,6 +22,14 @@ const SplashScreen = () => {
                     const padding = '='.repeat((4 - (base64.length % 4)) % 4);
                     const payload = JSON.parse(atob(base64 + padding));
 
+                    // Check for token expiration
+                    const currentTime = Math.floor(Date.now() / 1000);
+                    if (payload.exp && payload.exp < currentTime) {
+                        localStorage.removeItem('authToken');
+                        navigate('/login');
+                        return;
+                    }
+
                     if (payload.role === 'ADMIN' || payload.role === 'SUPER_ADMIN') {
                         navigate('/dashboard');
                     } else {

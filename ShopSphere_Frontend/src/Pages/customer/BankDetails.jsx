@@ -7,6 +7,9 @@ export default function BankDetails() {
     const navigate = useNavigate();
 
     const [form, setForm] = useState({
+        username: "",
+        email: "",
+        password: "",
         holderName: "",
         accountNumber: "",
         confirmAccountNumber: "",
@@ -44,7 +47,7 @@ export default function BankDetails() {
             panName: gstData.panName || localStorage.getItem("pan_name"),
             idType: gstData.idType || localStorage.getItem("id_type"),
             username: localStorage.getItem("username") || authData.username || "",
-            email: localStorage.getItem("email") || authData.email || "",
+            email: localStorage.getItem("email") || localStorage.getItem("verify_email") || authData.email || "",
             password: localStorage.getItem("password") || ""
         };
 
@@ -58,12 +61,35 @@ export default function BankDetails() {
 
         console.log("Loaded Vendor Data from Storage:", combinedData);
         setVendorData(combinedData);
+
+        // Pre-fill credentials if they exist in localStorage
+        setForm(prev => ({
+            ...prev,
+            username: combinedData.username || "",
+            email: combinedData.email || "",
+            password: combinedData.password || ""
+        }));
     }, []);
 
     // FIELD VALIDATION
 
     const validateField = (name, value, currentForm) => {
         switch (name) {
+            case "username":
+                if (!value.trim()) return "Username is required";
+                if (value.length < 3) return "Username must be at least 3 characters";
+                return "";
+
+            case "email":
+                if (!value.trim()) return "Email is required";
+                if (!/\S+@\S+\.\S+/.test(value)) return "Please enter a valid email";
+                return "";
+
+            case "password":
+                if (!value) return "Password is required";
+                if (value.length < 6) return "Password must be at least 6 characters";
+                return "";
+
             case "holderName": {
                 const letters = value.replace(/[^A-Za-z]/g, "");
                 if (!value.trim()) return "Account holder name is required";
@@ -147,10 +173,10 @@ export default function BankDetails() {
         try {
             // Combine all vendor data with bank details
             const completeVendorData = {
-                // User credentials
-                username: vendorData.username || "",
-                email: vendorData.email || "",
-                password: vendorData.password || "",
+                // User credentials - Priority to form values
+                username: form.username || vendorData.username || "",
+                email: form.email || vendorData.email || "",
+                password: form.password || vendorData.password || "",
 
                 // GST/PAN details
                 gst_number: vendorData.gstNumber || vendorData.gst || "",
@@ -234,8 +260,9 @@ export default function BankDetails() {
                 <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-10">
 
                     <h2 className="text-2xl font-bold mb-3">
-                        Add your bank account
+                        Registration Details
                     </h2>
+                    <p className="text-gray-600 mb-8">Please provide your login credentials and bank account details.</p>
 
                     {/* API Error Message */}
                     {apiError && (
@@ -243,6 +270,73 @@ export default function BankDetails() {
                             <p className="text-sm text-red-600">{apiError}</p>
                         </div>
                     )}
+
+                    {/* USERNAME */}
+                    <div className="mb-6">
+                        <label className="block text-sm font-medium mb-2">
+                            Username
+                        </label>
+                        <input
+                            value={form.username}
+                            onChange={(e) =>
+                                handleChange("username", e.target.value)
+                            }
+                            placeholder="Choose a unique username"
+                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-600"
+                            disabled={isSubmitting}
+                        />
+                        {errors.username && (
+                            <p className="text-xs text-red-500 mt-1">
+                                {errors.username}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* EMAIL */}
+                    <div className="mb-6">
+                        <label className="block text-sm font-medium mb-2">
+                            Email address
+                        </label>
+                        <input
+                            type="email"
+                            value={form.email}
+                            onChange={(e) =>
+                                handleChange("email", e.target.value)
+                            }
+                            placeholder="your@email.com"
+                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-600"
+                            disabled={isSubmitting}
+                        />
+                        {errors.email && (
+                            <p className="text-xs text-red-500 mt-1">
+                                {errors.email}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* PASSWORD */}
+                    <div className="mb-8 border-b pb-8">
+                        <label className="block text-sm font-medium mb-2">
+                            Password
+                        </label>
+                        <input
+                            type="password"
+                            value={form.password}
+                            onChange={(e) =>
+                                handleChange("password", e.target.value)
+                            }
+                            placeholder="Min 6 characters"
+                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-600"
+                            disabled={isSubmitting}
+                        />
+                        {errors.password && (
+                            <p className="text-xs text-red-500 mt-1">
+                                {errors.password}
+                            </p>
+                        )}
+                    </div>
+
+                    <h3 className="text-xl font-bold mb-6">Bank account details</h3>
 
                     {/* ACCOUNT HOLDER NAME */}
                     <div className="mb-6">

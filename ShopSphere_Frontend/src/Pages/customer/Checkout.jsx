@@ -10,6 +10,7 @@ import {
   FaCheckCircle,
   FaLock,
   FaCalendarAlt,
+  FaMapMarkerAlt,
 } from "react-icons/fa";
 import { MdOutlinePayments, MdOutlineTimer } from "react-icons/md";
 import { processPayment } from "../../api/axios";
@@ -102,11 +103,27 @@ function Checkout() {
       handler: async function (response) {
         setIsProcessing(true);
         try {
+          // Get address from localStorage if available
+          const savedAddress = localStorage.getItem("pickupAddress") || localStorage.getItem("shipping_address");
+          let addressData = null;
+
+          if (savedAddress) {
+            try {
+              // Try parsing as JSON first (from pickupAddress)
+              addressData = JSON.parse(savedAddress);
+            } catch (e) {
+              // If it's a string (from shipping_address), handle it gracefully
+              addressData = { address: savedAddress };
+            }
+          }
+
           // Sync with Backend
           await processPayment({
             payment_mode: selectedMethod,
             transaction_id: response.razorpay_payment_id,
+            address_data: addressData,
             items: cartObjects.map(item => ({
+              id: item.id,
               name: item.name,
               quantity: item.quantity,
               price: item.price
@@ -227,6 +244,19 @@ function Checkout() {
           <div className="lg:w-[400px] flex-shrink-0">
             <div className="sticky top-28 space-y-6">
               <div className="bg-white rounded-[32px] p-8 shadow-sm border border-gray-100">
+                {/* Shipping info */}
+                {localStorage.getItem("shipping_address") && (
+                  <div className="mb-8 p-4 bg-violet-50 rounded-2xl border border-violet-100">
+                    <div className="flex items-center gap-2 mb-2">
+                      <FaMapMarkerAlt size={14} className="text-violet-600" />
+                      <span className="text-[10px] font-black text-violet-400 uppercase tracking-widest">Shipping to</span>
+                    </div>
+                    <p className="text-sm font-bold text-violet-900 line-clamp-2">
+                      {localStorage.getItem("shipping_address")}
+                    </p>
+                  </div>
+                )}
+
                 <h2 className="text-2xl font-black text-gray-900 mb-8 tracking-tight">Order Details</h2>
 
                 <div className="space-y-4 mb-4">

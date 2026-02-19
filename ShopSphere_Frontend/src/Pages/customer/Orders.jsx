@@ -133,6 +133,14 @@ function Orders() {
                       <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
                       PAID
                     </span>
+                    <span className={`text-[9px] font-black uppercase tracking-[2px] px-3 py-1 rounded-full border flex items-center gap-1.5 ${order.status === 'delivered' ? 'bg-green-50 text-green-600 border-green-100' :
+                      order.status === 'shipping' ? 'bg-purple-50 text-purple-600 border-purple-100' :
+                        order.status === 'confirmed' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                          order.status === 'cancelled' ? 'bg-red-50 text-red-600 border-red-100' :
+                            'bg-amber-50 text-amber-600 border-amber-100'
+                      }`}>
+                      {order.status === 'pending' ? 'Wait' : order.status}
+                    </span>
                   </div>
 
                   <p className="text-[11px] text-gray-400 font-bold flex items-center gap-2 uppercase tracking-widest">
@@ -180,30 +188,109 @@ function Orders() {
                     </div>
 
                     <div className="space-y-4">
-                      {order.items?.map((item, idx) => (
-                        <div
-                          key={idx}
-                          className="flex justify-between items-center bg-white rounded-3xl p-5 border border-gray-100 shadow-sm transition-all hover:border-blue-100 group/item"
-                        >
-                          <div className="flex items-center gap-5">
-                            <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-xs font-black text-gray-500 border border-gray-100 group-hover/item:bg-violet-600 group-hover/item:text-white group-hover/item:border-violet-600 transition-all">
-                              {item.quantity}×
-                            </div>
-                            <div>
-                              <span className="font-bold text-gray-800 text-sm block mb-0.5">
-                                {item.product_name}
-                              </span>
-                              <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
-                                Unit Price: ₹{Number(item.price).toFixed(2)}
-                              </span>
-                            </div>
-                          </div>
+                      {order.items?.map((item, idx) => {
+                        const getStatusColor = (status) => {
+                          switch (status) {
+                            case 'waiting': return 'text-amber-500 bg-amber-50 border-amber-100';
+                            case 'confirmed': return 'text-blue-500 bg-blue-50 border-blue-100';
+                            case 'shipped': return 'text-purple-500 bg-purple-50 border-purple-100';
+                            case 'out_for_delivery': return 'text-orange-500 bg-orange-50 border-orange-100';
+                            case 'delivered': return 'text-green-500 bg-green-50 border-green-100';
+                            case 'cancelled': return 'text-red-500 bg-red-50 border-red-100';
+                            default: return 'text-gray-500 bg-gray-50 border-gray-100';
+                          }
+                        };
 
-                          <span className="font-black text-gray-900">
-                            ₹{(Number(item.price) * item.quantity).toFixed(2)}
-                          </span>
-                        </div>
-                      ))}
+                        const getStatusLabel = (status) => {
+                          switch (status) {
+                            case 'waiting': return 'Wait';
+                            case 'confirmed': return 'Order Confirmed';
+                            case 'shipped': return 'Shipped';
+                            case 'out_for_delivery': return 'Out for Delivery';
+                            case 'delivered': return 'Delivered';
+                            case 'cancelled': return 'Cancelled';
+                            default: return status || 'Processing';
+                          }
+                        };
+
+                        return (
+                          <div
+                            key={idx}
+                            className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white rounded-3xl p-5 border border-gray-100 shadow-sm transition-all hover:border-blue-100 group/item gap-4"
+                          >
+                            <div className="flex items-center gap-5">
+                              <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-xs font-black text-gray-500 border border-gray-100 group-hover/item:bg-violet-600 group-hover/item:text-white group-hover/item:border-violet-600 transition-all shrink-0">
+                                {item.quantity}×
+                              </div>
+                              <div>
+                                <span className="font-bold text-gray-800 text-sm block mb-0.5">
+                                  {item.product_name}
+                                </span>
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                                    Price: ₹{Number(item.product_price || item.price).toFixed(2)}
+                                  </span>
+                                  <span className={`text-[9px] font-black uppercase tracking-[1px] px-2 py-0.5 rounded-full border ${getStatusColor(item.vendor_status)}`}>
+                                    {getStatusLabel(item.vendor_status)}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <span className="font-black text-gray-900 self-end sm:self-center">
+                              ₹{(Number(item.product_price || item.price) * item.quantity).toFixed(2)}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Order Tracking History - Timeline View */}
+                    <div className="mt-12 pt-8 border-t border-gray-100">
+                      <div className="flex items-center gap-3 mb-8">
+                        <Truck size={16} className="text-violet-500" />
+                        <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-[3px]">
+                          Order Journey
+                        </h3>
+                      </div>
+
+                      <div className="space-y-8 relative ml-4">
+                        {/* Vertical line connector */}
+                        <div className="absolute left-[7px] top-2 bottom-2 w-0.5 bg-gray-100"></div>
+
+                        {order.tracking_history && order.tracking_history.length > 0 ? (
+                          order.tracking_history.map((track, tidx) => (
+                            <div key={tidx} className="relative pl-10 group/status">
+                              {/* Connector dot */}
+                              <div className={`absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full border-2 bg-white z-10 transition-all duration-500 ${tidx === 0 ? 'border-violet-600 scale-125 shadow-lg shadow-violet-200' : 'border-gray-200 group-hover/status:border-violet-400'}`}></div>
+
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                                <span className={`text-[10px] font-black uppercase tracking-widest ${tidx === 0 ? 'text-violet-600' : 'text-gray-900 font-bold'}`}>
+                                  {track.status === 'pending' ? 'Wait' :
+                                    track.status === 'confirmed' ? 'Order Confirmed' :
+                                      track.status === 'shipping' ? 'In Transit' :
+                                        track.status.charAt(0).toUpperCase() + track.status.slice(1)}
+                                </span>
+                                <span className="text-[9px] font-bold text-gray-400">
+                                  {new Date(track.timestamp).toLocaleString('en-IN', {
+                                    day: 'numeric',
+                                    month: 'short',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </span>
+                              </div>
+                              <p className="text-xs text-gray-500 mt-1 max-w-lg leading-relaxed">
+                                {track.notes}
+                              </p>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="pl-10 text-xs text-gray-400 font-bold italic">
+                            Initial status: Processing order details...
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     <div className="mt-10 pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">

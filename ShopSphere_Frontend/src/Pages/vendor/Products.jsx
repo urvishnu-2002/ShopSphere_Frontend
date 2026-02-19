@@ -1,106 +1,125 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { fetchVendorProducts, updateProduct, delete_Product, toggleProductBlock } from "../../api/vendor_axios";
+import { toast } from "react-hot-toast";
+import { getUserInfo } from "../../api/axios";
 
 export default function ProductList() {
   const [products, setProducts] = useState([]);
-  const [editingIndex, setEditingIndex] = useState(null);
-  const [editedProduct, setEditedProduct] = useState({});
-  const [previews, setPreviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [editForm, setEditForm] = useState({});
+  const [newImages, setNewImages] = useState([]);
+  const [viewProduct, setViewProduct] = useState(null);
   const [sliderIndex, setSliderIndex] = useState({});
-  const [viewIndex, setViewIndex] = useState(null); // New state for view modal
-  const [viewSliderIndex, setViewSliderIndex] = useState(0); // Image slider in view
+  const [viewSliderIndex, setViewSliderIndex] = useState(0);
 
   useEffect(() => {
     loadProducts();
+    loadUser();
   }, []);
 
-  const loadProducts = () => {
-    const saved = JSON.parse(localStorage.getItem("products")) || [];
-    setProducts(saved);
-    const initialIndex = {};
-    saved.forEach((_, i) => initialIndex[i] = 0);
-    setSliderIndex(initialIndex);
+  const loadUser = async () => {
+    const data = await getUserInfo();
+    setUser(data);
   };
 
-  const deleteProduct = (index) => {
-    if (!window.confirm("Delete this product?")) return;
-    const updated = [...products];
-    updated.splice(index, 1);
-    localStorage.setItem("products", JSON.stringify(updated));
-    setProducts(updated);
+  const loadProducts = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchVendorProducts();
+      // Handle paginated response or direct array
+      const productList = data.results || data || [];
+      setProducts(productList);
+      const initialIndex = {};
+      productList.forEach(p => initialIndex[p.id] = 0);
+      setSliderIndex(initialIndex);
+    } catch (error) {
+      console.error("Error loading products:", error);
+      toast.error("Failed to load products");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const startEdit = (index) => {
-    setEditingIndex(index);
-    setEditedProduct(products[index]);
-    setPreviews(products[index].images || []);
+  const handleToggleBlock = async (productId) => {
+    try {
+      const result = await toggleProductBlock(productId);
+      toast.success(result.is_blocked ? "Product Blocked" : "Product Unblocked");
+      loadProducts();
+    } catch (error) {
+      toast.error("Failed to toggle block status");
+    }
+  };
+
+  const handleDelete = async (productId) => {
+    if (!window.confirm("Are you sure you want to delete this product?")) return;
+    try {
+      await delete_Product(productId);
+      toast.success("Product deleted successfully");
+      loadProducts();
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      toast.error("Failed to delete product");
+    }
+  };
+
+  const startEdit = (product) => {
+    setEditingProduct(product);
+    setEditForm({ ...product });
+    setNewImages([]);
   };
 
   const handleEditChange = (e) => {
-    setEditedProduct({ ...editedProduct, [e.target.name]: e.target.value });
+    setEditForm({ ...editForm, [e.target.name]: e.target.value });
   };
 
-  const handleImages = (e) => {
+  const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    Promise.all(
-      files.map(file =>
-        new Promise(resolve => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.readAsDataURL(file);
-        })
-      )
-    ).then((imgs) => {
-      setEditedProduct(prev => ({
-        ...prev,
-        images: [...(prev.images || []), ...imgs]
-      }));
-      setPreviews(prev => [...prev, ...imgs]);
-    });
+    setNewImages(prev => [...prev, ...files]);
   };
 
-  const removeImage = (index) => {
-    setEditedProduct(prev => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index)
-    }));
-    setPreviews(prev => prev.filter((_, i) => i !== index));
+  const handleSaveEdit = async () => {
+    try {
+      await updateProduct(editingProduct.id, {
+        ...editForm,
+        newImages: newImages
+      });
+      toast.success("Product updated successfully");
+      setEditingProduct(null);
+      loadProducts();
+    } catch (error) {
+      console.error("Error updating product:", error);
+      toast.error(error.response?.data?.error || "Failed to update product");
+    }
   };
 
-  const saveEdit = () => {
-    const updated = [...products];
-    updated[editingIndex] = editedProduct;
-    localStorage.setItem("products", JSON.stringify(updated));
-    setProducts(updated);
-    setEditingIndex(null);
-  };
-
-  const nextSlide = (i) => {
+  const nextSlide = (id, total) => {
     setSliderIndex(prev => ({
       ...prev,
-      [i]: (prev[i] + 1) % (products[i].images?.length || 1)
+      [id]: (prev[id] + 1) % total
     }));
   };
 
-  const prevSlide = (i) => {
+  const prevSlide = (id, total) => {
     setSliderIndex(prev => ({
       ...prev,
-      [i]: (prev[i] - 1 + (products[i].images?.length || 1)) % (products[i].images?.length || 1)
+      [id]: (prev[id] - 1 + total) % total
     }));
   };
 
-  const nextViewSlide = () => {
-    if (!products[viewIndex]?.images) return;
-    setViewSliderIndex((viewSliderIndex + 1) % products[viewIndex].images.length);
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return "/public/placeholder.jpg";
+    if (imagePath.startsWith('http')) return imagePath;
+    if (imagePath.startsWith('/media/')) return `http://localhost:8000${imagePath}`;
+    if (imagePath.startsWith('media/')) return `http://localhost:8000/${imagePath}`;
+    return `http://localhost:8000/media/${imagePath}`;
   };
 
-  const prevViewSlide = () => {
-    if (!products[viewIndex]?.images) return;
-    setViewSliderIndex((viewSliderIndex - 1 + products[viewIndex].images.length) % products[viewIndex].images.length);
-  };
+  if (loading) return <div className="p-8 text-center">Loading products...</div>;
 
   return (
     <div className="max-w-7xl mx-auto p-8 relative">
-
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold">Product Management</h2>
         <span className="bg-gray-100 px-4 py-2 rounded-xl">
@@ -108,65 +127,89 @@ export default function ProductList() {
         </span>
       </div>
 
-      {/* PRODUCT GRID */}
       <div className="grid md:grid-cols-3 gap-8">
-        {products.map((p, i) => (
-          <div key={i} className="bg-white rounded-2xl shadow p-5 relative">
-
+        {products.map((p) => (
+          <div key={p.id} className="bg-white rounded-2xl shadow p-5 relative flex flex-col">
             {/* IMAGE SLIDER */}
-            <div className="relative mb-3">
+            <div className="relative mb-3 aspect-square overflow-hidden rounded-xl">
               {p.images?.length > 0 ? (
                 <>
                   <img
-                    src={p.images[sliderIndex[i]]}
-                    className="h-44 w-full object-cover rounded-xl"
+                    src={getImageUrl(p.images[sliderIndex[p.id]]?.image)}
+                    alt={p.name}
+                    className="h-full w-full object-cover transition-transform hover:scale-105 duration-300"
                   />
                   {p.images.length > 1 && (
                     <>
                       <button
-                        onClick={() => prevSlide(i)}
-                        className="absolute top-1/2 left-2 bg-white px-2 py-1 rounded-full text-lg"
+                        onClick={(e) => { e.stopPropagation(); prevSlide(p.id, p.images.length); }}
+                        className="absolute top-1/2 left-2 -translate-y-1/2 bg-white/80 hover:bg-white w-8 h-8 rounded-full flex items-center justify-center shadow-sm"
                       >
                         ‹
                       </button>
                       <button
-                        onClick={() => nextSlide(i)}
-                        className="absolute top-1/2 right-2 bg-white px-2 py-1 rounded-full text-lg"
+                        onClick={(e) => { e.stopPropagation(); nextSlide(p.id, p.images.length); }}
+                        className="absolute top-1/2 right-2 -translate-y-1/2 bg-white/80 hover:bg-white w-8 h-8 rounded-full flex items-center justify-center shadow-sm"
                       >
                         ›
                       </button>
                     </>
                   )}
+                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                    {p.images.map((_, i) => (
+                      <div key={i} className={`w-1.5 h-1.5 rounded-full ${i === sliderIndex[p.id] ? 'bg-white' : 'bg-white/50'}`} />
+                    ))}
+                  </div>
                 </>
               ) : (
-                <div className="h-44 w-full bg-gray-200 rounded-xl flex items-center justify-center text-gray-400">
+                <div className="h-full w-full bg-gray-200 flex items-center justify-center text-gray-400">
                   No Image
+                </div>
+              )}
+              {p.is_blocked && (
+                <div className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                  Blocked
                 </div>
               )}
             </div>
 
-            <h3 className="font-bold text-lg">{p.name}</h3>
-            <p className="text-emerald-600 font-semibold mt-1">₹ {p.price}</p>
-            <p className="text-sm text-gray-500">{p.category}</p>
+            <h3 className="font-bold text-lg line-clamp-1">{p.name}</h3>
+            <p className="text-sm text-gray-500 line-clamp-2 mt-1">{p.description || <span className="italic text-gray-400">No description</span>}</p>
+            <div className="flex justify-between items-baseline mt-2">
+              <p className="text-emerald-600 font-bold text-xl">₹ {p.price}</p>
+              <p className="text-sm text-gray-500">Qty: {p.quantity}</p>
+            </div>
+            <p className="text-sm text-gray-400 mt-1 uppercase tracking-wider">{p.category}</p>
 
-            <div className="flex gap-4 mt-4">
+            <div className="flex gap-2 mt-auto pt-4 flex-wrap">
               <button
-                onClick={() => startEdit(i)}
-                className="flex-1 border rounded-lg py-2 hover:bg-gray-100"
+                onClick={() => startEdit(p)}
+                className="flex-1 min-w-[80px] border border-gray-200 rounded-lg py-2 hover:bg-gray-50 transition-colors text-sm font-medium"
               >
                 Edit
               </button>
               <button
-                onClick={() => setViewIndex(i)}
-                className="flex-1 border rounded-lg py-2 hover:bg-gray-100"
+                onClick={() => setViewProduct(p)}
+                className="flex-1 min-w-[80px] border border-gray-200 rounded-lg py-2 hover:bg-gray-50 transition-colors text-sm font-medium"
               >
                 View
               </button>
+              {user?.role === 'admin' && (
+                <button
+                  onClick={() => handleToggleBlock(p.id)}
+                  className={`flex-1 min-w-[80px] border rounded-lg py-2 transition-colors text-sm font-medium ${p.is_blocked
+                    ? "border-green-200 bg-green-50 text-green-600 hover:bg-green-100"
+                    : "border-red-200 bg-red-50 text-red-600 hover:bg-red-100"
+                    }`}
+                >
+                  {p.is_blocked ? "Unblock" : "Block"}
+                </button>
+              )}
               <button
-                onClick={() => deleteProduct(i)}
-                className="flex-1 bg-red-500 text-white rounded-lg py-2 hover:bg-red-600"
+                onClick={() => handleDelete(p.id)}
+                className="p-2 border border-red-100 text-red-400 hover:bg-red-50 rounded-lg transition-colors"
               >
-                Delete
+                🗑
               </button>
             </div>
           </div>
@@ -174,125 +217,147 @@ export default function ProductList() {
       </div>
 
       {products.length === 0 && (
-        <p className="text-center text-gray-500 mt-20">No products added yet.</p>
+        <div className="text-center py-20 bg-gray-50 rounded-3xl mt-8">
+          <p className="text-gray-500">No products added yet.</p>
+        </div>
       )}
 
-      {/* EDIT OVERLAY */}
-      {editingIndex !== null && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-start pt-20 z-50">
-          <div className="bg-white rounded-xl p-8 w-full max-w-2xl relative shadow-xl">
-            <h2 className="text-2xl font-bold mb-4">Edit Product</h2>
+      {/* EDIT MODAL */}
+      {editingProduct && (
+        <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative shadow-2xl">
+            <h2 className="text-2xl font-bold mb-6">Edit Product</h2>
 
-            <input
-              name="name"
-              value={editedProduct.name}
-              onChange={handleEditChange}
-              className="border rounded-lg p-2 w-full mb-2"
-              placeholder="Product Name"
-            />
-            <textarea
-              name="description"
-              value={editedProduct.description}
-              onChange={handleEditChange}
-              className="border rounded-lg p-2 w-full mb-2"
-              rows={3}
-              placeholder="Description"
-            />
-            <input
-              name="price"
-              value={editedProduct.price}
-              onChange={handleEditChange}
-              className="border rounded-lg p-2 w-full mb-2"
-              placeholder="Price"
-            />
-            <input
-              name="stock"
-              value={editedProduct.stock}
-              onChange={handleEditChange}
-              className="border rounded-lg p-2 w-full mb-2"
-              placeholder="Stock"
-            />
-            <input
-              name="category"
-              value={editedProduct.category}
-              onChange={handleEditChange}
-              className="border rounded-lg p-2 w-full mb-2"
-              placeholder="Category"
-            />
-
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={handleImages}
-              className="border rounded-lg p-2 w-full mb-3"
-            />
-
-            {/* IMAGE PREVIEWS */}
-            <div className="flex gap-2 flex-wrap mb-4">
-              {previews.map((img, idx) => (
-                <div key={idx} className="relative">
-                  <img src={img} className="w-24 h-24 object-cover rounded" />
-                  <button
-                    onClick={() => removeImage(idx)}
-                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs"
-                  >
-                    ×
-                  </button>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
+                <input
+                  name="name"
+                  value={editForm.name}
+                  onChange={handleEditChange}
+                  className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-emerald-500 outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea
+                  name="description"
+                  value={editForm.description}
+                  onChange={handleEditChange}
+                  className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-emerald-500 outline-none"
+                  rows={3}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
+                  <input
+                    name="price"
+                    type="number"
+                    value={editForm.price}
+                    onChange={handleEditChange}
+                    className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-emerald-500 outline-none"
+                  />
                 </div>
-              ))}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+                  <input
+                    name="quantity"
+                    type="number"
+                    value={editForm.quantity}
+                    onChange={handleEditChange}
+                    className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-emerald-500 outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                <select
+                  name="category"
+                  value={editForm.category}
+                  onChange={handleEditChange}
+                  className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-emerald-500 outline-none"
+                >
+                  <option value="electronics">Electronics</option>
+                  <option value="fashion">Fashion</option>
+                  <option value="home_kitchen">Home & Kitchen</option>
+                  <option value="grocery">Groceries</option>
+                  <option value="beauty_personal_care">Beauty & Personal Care</option>
+                  <option value="sports_fitness">Sports & Fitness</option>
+                  <option value="toys_games">Toys & Games</option>
+                  <option value="automotive">Automotive</option>
+                  <option value="books">Books</option>
+                  <option value="services">Services</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Add New Images (Replace All)</label>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="w-full border border-dashed rounded-xl p-4 text-sm"
+                />
+                <p className="text-xs text-gray-500 mt-1">Note: Uploading new images will replace all existing images.</p>
+              </div>
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex gap-4 mt-8">
               <button
-                onClick={saveEdit}
-                className="flex-1 bg-emerald-500 text-white py-2 rounded-lg"
+                onClick={handleSaveEdit}
+                className="flex-1 bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 transition-colors"
               >
-                Save
+                Save Changes
               </button>
               <button
-                onClick={() => setEditingIndex(null)}
-                className="flex-1 border py-2 rounded-lg"
+                onClick={() => setEditingProduct(null)}
+                className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-bold hover:bg-gray-200 transition-colors"
               >
                 Cancel
               </button>
             </div>
 
             <button
-              onClick={() => setEditingIndex(null)}
-              className="absolute top-4 right-4 text-gray-500 hover:text-black text-xl font-bold"
+              onClick={() => setEditingProduct(null)}
+              className="absolute top-6 right-6 text-gray-400 hover:text-gray-600"
             >
-              ×
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
           </div>
         </div>
       )}
 
-      {/* VIEW OVERLAY */}
-      {viewIndex !== null && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-start pt-20 z-50">
-          <div className="bg-white rounded-xl p-8 w-full max-w-2xl relative shadow-xl">
-            <h2 className="text-2xl font-bold mb-4">View Product</h2>
+      {/* VIEW MODAL */}
+      {viewProduct && (
+        <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-8 w-full max-w-2xl relative shadow-2xl">
+            <h2 className="text-2xl font-bold mb-6">Product Details</h2>
 
-            {/* IMAGE SLIDER */}
-            <div className="relative mb-4">
-              {products[viewIndex]?.images?.length > 0 ? (
+            <div className="relative aspect-video mb-6 rounded-2xl overflow-hidden bg-gray-100">
+              {viewProduct.images?.length > 0 ? (
                 <>
                   <img
-                    src={products[viewIndex].images[viewSliderIndex]}
-                    className="h-44 w-full object-cover rounded-xl"
+                    src={getImageUrl(viewProduct.images[viewSliderIndex]?.image)}
+                    className="w-full h-full object-cover"
+                    alt=""
                   />
-                  {products[viewIndex].images.length > 1 && (
+                  {viewProduct.images.length > 1 && (
                     <>
                       <button
-                        onClick={prevViewSlide}
-                        className="absolute top-1/2 left-2 bg-white px-2 py-1 rounded-full text-lg"
+                        onClick={() => setViewSliderIndex((viewSliderIndex - 1 + viewProduct.images.length) % viewProduct.images.length)}
+                        className="absolute top-1/2 left-4 -translate-y-1/2 bg-white/90 p-2 rounded-full shadow-md"
                       >
                         ‹
                       </button>
                       <button
-                        onClick={nextViewSlide}
-                        className="absolute top-1/2 right-2 bg-white px-2 py-1 rounded-full text-lg"
+                        onClick={() => setViewSliderIndex((viewSliderIndex + 1) % viewProduct.images.length)}
+                        className="absolute top-1/2 right-4 -translate-y-1/2 bg-white/90 p-2 rounded-full shadow-md"
                       >
                         ›
                       </button>
@@ -300,28 +365,55 @@ export default function ProductList() {
                   )}
                 </>
               ) : (
-                <div className="h-44 w-full bg-gray-200 rounded-xl flex items-center justify-center text-gray-400">
-                  No Image
+                <div className="w-full h-full flex items-center justify-center text-gray-400">No Image</div>
+              )}
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">{viewProduct.name}</h3>
+                  <p className="text-gray-500 uppercase text-xs tracking-widest mt-1">{viewProduct.category}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-emerald-600">₹ {viewProduct.price}</p>
+                  <p className="text-sm text-gray-500">Stock: {viewProduct.quantity}</p>
+                </div>
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-xl">
+                <p className="text-sm font-medium text-gray-500 mb-1">Description</p>
+                <p className="text-gray-700 leading-relaxed">{viewProduct.description || "No description provided."}</p>
+              </div>
+
+              {viewProduct.is_blocked && (
+                <div className="bg-red-50 text-red-700 p-4 rounded-xl border border-red-100">
+                  <p className="text-sm font-bold">Blocked by Admin</p>
+                  <p className="text-sm">{viewProduct.blocked_reason || "No reason specified."}</p>
                 </div>
               )}
             </div>
 
-            <p><strong>Name:</strong> {products[viewIndex]?.name}</p>
-            <p><strong>Description:</strong> {products[viewIndex]?.description}</p>
-            <p><strong>Price:</strong> ₹ {products[viewIndex]?.price}</p>
-            <p><strong>Stock:</strong> {products[viewIndex]?.stock}</p>
-            <p><strong>Category:</strong> {products[viewIndex]?.category}</p>
-
             <button
-              onClick={() => setViewIndex(null)}
-              className="absolute top-4 right-4 text-gray-500 hover:text-black text-xl font-bold"
+              onClick={() => setViewProduct(null)}
+              className="absolute top-6 right-6 text-gray-400 hover:text-gray-600"
             >
-              ×
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
+
+            <div className="mt-8">
+              <button
+                onClick={() => setViewProduct(null)}
+                className="w-full bg-gray-900 text-white py-3 rounded-xl font-bold hover:bg-black transition-colors"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
-
     </div>
   );
 }

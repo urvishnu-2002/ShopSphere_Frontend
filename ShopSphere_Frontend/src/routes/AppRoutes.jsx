@@ -9,11 +9,13 @@ import VendorLogin from "../Pages/vendor/VendorLogin";
 import DeliveryAgentLogin from "../Pages/delivery/DeliveryAgentLogin";
 import Profile, { ProfileInfoTab, OrdersTab, AddressTab, WishlistTab, SellTab } from "../Pages/customer/Profile";
 import SellerPage from "../Pages/customer/SellerPage";
-import DeliveryDashboard from "../Pages/delivery/dashboard";
+import DeliveryDashboard from "../Pages/delivery/DeliveryDashboardV2";
 import AssignedOrders from "../Pages/delivery/assignedorder";
 import EarningsPage from "../Pages/delivery/earnings";
+import DeliveryLayout from "../Pages/delivery/DeliveryLayout";
+import DeliveryHistory from "../Pages/delivery/DeliveryHistory";
 import LandingPage from "../Components/common/LandingPage";
-import AccountVerification from "../Pages/customer/Accountverification";
+import AccountVerification from "../Pages/customer/AccountVerification";
 import VerifyOTP from "../Pages/customer/VerifyOTP";
 import StoreName from "../Pages/customer/StoreName";
 import ShippingAddress from "../Pages/customer/ShippingAddress";
@@ -26,11 +28,13 @@ import VerifyGST from "../Pages/customer/VerifyGST";
 import VerifyPAN from "../Pages/customer/VerifyPAN";
 import Sidebar from "../Pages/vendor/Sidebar";
 import Dashboard from "../Pages/vendor/Dashboard";
+import AdminDashboard from "../Pages/vendor/AdminDashboard";
 import Orders from "../Pages/vendor/Orders";
 import AddProduct from "../Pages/vendor/AddProduct";
 import Products from "../Pages/vendor/Products";
 import Earnings from "../Pages/vendor/Earnings";
 import VendorLayout from "../Pages/vendor/VendorLayout";
+import AdminOrders from "../Pages/vendor/AdminOrders";
 
 
 function AppRoutes() {
@@ -82,12 +86,14 @@ function AppRoutes() {
             {/*vendor routes*/}
             <Route path="/vendor" element={<VendorLogin />} />
             <Route element={<VendorLayout />}>
-                <Route path="/vendordashboard" element={<Dashboard/>} />
-                <Route path="/welcome" element={<Dashboard/>} />
-                <Route path="/vendorallproducts" element={<Products/>} />
-                <Route path="/vendoraddproduct" element={<AddProduct/>} />
-                <Route path="/vendororders" element={<Orders/>} />
-                <Route path="/vendorearning" element={<Earnings/>} />
+                <Route path="/vendordashboard" element={<Dashboard />} />
+                <Route path="/admindashboard" element={<AdminDashboard />} />
+                <Route path="/welcome" element={<Dashboard />} />
+                <Route path="/vendorallproducts" element={<Products />} />
+                <Route path="/vendoraddproduct" element={<AddProduct />} />
+                <Route path="/vendororders" element={<Orders />} />
+                <Route path="/adminorders" element={<AdminOrders />} />
+                <Route path="/vendorearning" element={<Earnings />} />
             </Route>
 
 
@@ -101,9 +107,14 @@ function AppRoutes() {
 
             {/* Delivery Routes */}
             <Route path="/delivery" element={<DeliveryAgentLogin onLoginSuccess={() => console.log("Delivery Login Successful")} />} />
-            <Route path="/delivery/dashboard" element={<DeliveryDashboard />} />
-            <Route path="/delivery/assigned" element={<AssignedOrders />} />
-            <Route path="/delivery/earnings" element={<EarningsPage />} />
+
+            <Route element={<DeliveryLayout />}>
+                <Route path="/delivery/dashboard" element={<DeliveryDashboard />} />
+                <Route path="/delivery/assigned" element={<AssignedOrders />} />
+                <Route path="/delivery/order/:id" element={<AssignedOrders />} />
+                <Route path="/delivery/history" element={<DeliveryHistory />} />
+                <Route path="/delivery/earnings" element={<EarningsPage />} />
+            </Route>
 
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />

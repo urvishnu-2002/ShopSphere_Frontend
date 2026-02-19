@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { getUserInfo } from "../../api/axios";
 import {
     FaShoppingCart,
     FaHeart,
@@ -46,13 +47,23 @@ function Navbar() {
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
             try {
-                setUser(JSON.parse(storedUser));
+                const parsedUser = JSON.parse(storedUser);
+                setUser(parsedUser);
+
+                // Refresh user info from server to get latest approval status
+                getUserInfo().then(updatedUser => {
+                    if (updatedUser) {
+                        const newUser = { ...parsedUser, ...updatedUser };
+                        setUser(newUser);
+                        localStorage.setItem("user", JSON.stringify(newUser));
+                    }
+                }).catch(err => console.error("Failed to refresh user info", err));
             } catch (error) {
                 console.error("Failed to parse user data", error);
                 localStorage.removeItem("user");
             }
         }
-    }, [location.pathname]); // Re-check on route change (e.g. after login/redirect)
+    }, [location.pathname]); // Re-check on route change
 
     const handleLogout = () => {
         localStorage.removeItem("user");
@@ -333,6 +344,16 @@ function Navbar() {
                                                 <FaUser size={14} className="text-violet-300" />
                                                 My Profile
                                             </Link>
+                                            {user.role === 'vendor' && user.is_approved_vendor && (
+                                                <Link
+                                                    to="/vendordashboard"
+                                                    className="flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-violet-100 hover:bg-violet-600/50 hover:text-white rounded-xl transition-all"
+                                                    onClick={() => setProfileDropdownOpen(false)}
+                                                >
+                                                    <FaBox size={14} className="text-violet-300" />
+                                                    Vendor Dashboard
+                                                </Link>
+                                            )}
                                             <Link
                                                 to="/orders"
                                                 className="flex items-center gap-3 px-4 py-2.5 text-sm text-violet-100 hover:bg-violet-600/50 hover:text-white rounded-xl transition-all"
@@ -418,6 +439,16 @@ function Navbar() {
                                 </Link>
                             ))}
                             <div className="h-px bg-white/10 my-2" />
+                            {user && user.role === 'vendor' && user.is_approved_vendor && (
+                                <Link
+                                    to="/vendordashboard"
+                                    onClick={() => setIsOpen(false)}
+                                    className="px-4 py-3 rounded-xl font-bold flex items-center gap-3 text-violet-100 hover:bg-white/5 hover:text-white"
+                                >
+                                    <FaBox size={18} />
+                                    Vendor Dashboard
+                                </Link>
+                            )}
                             {!user && (
                                 <Link
                                     to="/login"

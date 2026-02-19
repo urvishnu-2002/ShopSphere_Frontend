@@ -7,12 +7,12 @@ export const generateOtp = () =>
 
 export const sendOtpEmail = async (email, otp) => {
     return emailjs.send(
-        "YOUR_SERVICE_ID",
-        "YOUR_TEMPLATE_ID",
+        "service_0a1vbhw",
+        "template_30pivyj",
         {
             to_email: email,
             otp: otp,
         },
-        "YOUR_PUBLIC_KEY"
+        "Ch-Wgw8L8R5zWGNme"
     );
 };

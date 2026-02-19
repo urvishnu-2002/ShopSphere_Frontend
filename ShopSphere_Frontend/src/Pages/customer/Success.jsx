@@ -64,7 +64,7 @@ function Success() {
             transition={{ delay: 0.3 }}
             className="text-4xl font-black text-gray-900 tracking-tight mb-4"
           >
-            Order Confirmed! 🎉
+            Payment Successful! 🎉
           </motion.h1>
 
           <motion.p
@@ -73,7 +73,7 @@ function Success() {
             transition={{ delay: 0.4 }}
             className="text-gray-400 font-bold text-lg max-w-md mx-auto leading-relaxed"
           >
-            Your payment was successful and your order has been placed. We're getting it ready for you!
+            Your payment was processed securely. Your order is now in the "Wait" stage for vendor confirmation.
           </motion.p>
 
           <motion.div

@@ -30,6 +30,19 @@ export const signupUser = async (signupData) => {
   return response.data;
 };
 
+// GET USER INFO (Protected)
+export const getUserInfo = async () => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) return null;
+
+  const response = await axios.get(`${API_BASE_URL}/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
 // LOGOUT
 export const logout = () => {
   localStorage.removeItem("accessToken");
@@ -116,5 +129,12 @@ export const deleteAddress = async (id) => {
       Authorization: `Bearer ${token}`,
     },
   });
+  return response.data;
+};
+// ADDRESS MANAGEMENT (Protected)
+// ... (omitted)
+
+export const getProducts = async () => {
+  const response = await axios.get(`${API_BASE_URL}/userProducts`);
   return response.data;
 };

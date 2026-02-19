@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { deliveryRegister } from '../../api/delivery_axios';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 const DeliveryAgentLogin = ({ onLoginSuccess }) => {
     const navigate = useNavigate();
@@ -16,13 +19,40 @@ const DeliveryAgentLogin = ({ onLoginSuccess }) => {
     });
 
     const [signupForm, setSignupForm] = useState({
+        // Personal Info
         fullName: '',
         email: '',
         phone: '',
         password: '',
         confirmPassword: '',
+        dateOfBirth: '',
+
+        // Address
+        address: '',
+        city: '',
+        state: '',
+        postalCode: '',
+
+        // Vehicle
         vehicleType: '',
+        vehicleNumber: '',
+
+        // License & ID
         licenseNumber: '',
+        licenseExpires: '',
+        idType: 'aadhar',
+        idNumber: '',
+
+        // Bank
+        bankHolderName: '',
+        bankAccountNumber: '',
+        bankIfscCode: '',
+        bankName: '',
+
+        // Service
+        serviceCities: '',
+        preferredRadius: 5,
+
         agreeTerms: false
     });
 
@@ -30,30 +60,98 @@ const DeliveryAgentLogin = ({ onLoginSuccess }) => {
     const [showForgotPassword, setShowForgotPassword] = useState(false);
     const [resetEmailSent, setResetEmailSent] = useState(false);
 
-    const handleLoginSubmit = (e) => {
+    const handleLoginSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-        setTimeout(() => {
-            setIsLoading(false);
-            console.log('Login submitted:', loginForm);
+        try {
+            const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+            const response = await axios.post(`${API_BASE_URL}/user_login`, {
+                email: loginForm.email,
+                password: loginForm.password
+            });
+
+            const data = response.data;
+
+            // Check if user is a delivery agent
+            if (data.role !== 'delivery') {
+                toast.error("Account is not a delivery agent.");
+                setIsLoading(false);
+                return;
+            }
+
+            // Store tokens
+            if (data.access) {
+                localStorage.setItem("accessToken", data.access);
+                localStorage.setItem("refreshToken", data.refresh);
+                // Also store user info if needed
+                localStorage.setItem("user", JSON.stringify(data));
+            }
+
+            toast.success("Welcome back!");
             navigate('/delivery/dashboard');
             if (onLoginSuccess) {
                 onLoginSuccess();
             }
-        }, 1500);
+        } catch (error) {
+            console.error('Login error:', error);
+            toast.error(error.response?.data?.error || "Invalid email or password");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    const handleSignupSubmit = (e) => {
+    const handleSignupSubmit = async (e) => {
         e.preventDefault();
-        if (signupForm.password !== signupForm.confirmPassword) {
-            alert('Passwords do not match!');
-            return;
-        }
         setIsLoading(true);
-        setTimeout(() => {
+        try {
+            await deliveryRegister({
+                // User Credentials
+                email: signupForm.email,
+                phone: signupForm.phone,
+                phone_number: signupForm.phone,
+                password: signupForm.password,
+                password_confirm: signupForm.confirmPassword,
+
+                // Personal Info
+                full_name: signupForm.fullName, // Kept for reference or if backend uses it indirectly
+                date_of_birth: signupForm.dateOfBirth || null,
+
+                // Address
+                address: signupForm.address || 'Not Provided',
+                city: signupForm.city || 'Not Provided',
+                state: signupForm.state || 'Not Provided',
+                postal_code: signupForm.postalCode || '000000',
+
+                // Vehicle Info
+                vehicle_type: signupForm.vehicleType,
+                vehicle_number: signupForm.vehicleNumber || null,
+
+                // License Info
+                license_number: signupForm.licenseNumber,
+                license_expires: signupForm.licenseExpires || '2030-12-31',
+
+                // ID Proof
+                id_type: signupForm.idType,
+                id_number: signupForm.idNumber || 'PENDING',
+
+                // Bank Details
+                bank_holder_name: signupForm.bankHolderName || signupForm.fullName,
+                bank_account_number: signupForm.bankAccountNumber || 'PENDING',
+                bank_ifsc_code: signupForm.bankIfscCode || 'PENDING',
+                bank_name: signupForm.bankName || 'PENDING',
+
+                // Service Info
+                service_cities: signupForm.serviceCities ? signupForm.serviceCities.split(',').map(c => c.trim()) : [],
+                preferred_delivery_radius: parseInt(signupForm.preferredRadius) || 5
+            });
+            toast.success('Registration submitted! Please wait for admin approval.');
+            setActiveTab('login');
+        } catch (error) {
+            console.error('Signup error:', error);
+            toast.error(error.response?.data?.error || "Registration failed");
+        } finally {
             setIsLoading(false);
-            console.log('Signup submitted:', signupForm);
-        }, 1500);
+        }
     };
 
     const handleForgotPassword = (e) => {
@@ -74,7 +172,7 @@ const DeliveryAgentLogin = ({ onLoginSuccess }) => {
     return (
         <div className="min-h-screen w-full flex font-sans overflow-x-hidden m-0 p-0 bg-white">
 
-            
+
             <div className="w-full flex flex-col lg:flex-row min-h-screen">
 
                 <div className="w-full lg:w-1/2 bg-purple-700 min-h-[50vh] lg:min-h-screen p-8 lg:p-20 flex flex-col justify-center items-center relative overflow-hidden">
@@ -143,7 +241,7 @@ const DeliveryAgentLogin = ({ onLoginSuccess }) => {
                             </button>
                         </div>
 
-                      
+
                         <div className="space-y-6">
                             {activeTab === 'login' ? (
                                 <form className="space-y-6" onSubmit={handleLoginSubmit}>
@@ -179,7 +277,7 @@ const DeliveryAgentLogin = ({ onLoginSuccess }) => {
                                         </div>
                                     </div>
 
-                                    
+
                                     <div className="flex justify-end pr-1">
                                         <button
                                             type="button"
@@ -199,57 +297,98 @@ const DeliveryAgentLogin = ({ onLoginSuccess }) => {
                                     </button>
                                 </form>
                             ) : (
-                                <form className="space-y-4" onSubmit={handleSignupSubmit}>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <input
-                                            type="text"
-                                            placeholder="First Name"
-                                            className="w-full py-4.5 px-6 border-2 border-purple-50 rounded-2xl bg-purple-50/30 text-purple-900 font-bold outline-none focus:border-purple-600"
-                                            value={signupForm.fullName}
-                                            onChange={(e) => setSignupForm({ ...signupForm, fullName: e.target.value })}
-                                            required
-                                        />
-                                        <input
-                                            type="tel"
-                                            placeholder="Mobile"
-                                            className="w-full py-4.5 px-6 border-2 border-purple-50 rounded-2xl bg-purple-50/30 text-purple-900 font-bold outline-none focus:border-purple-600"
-                                            value={signupForm.phone}
-                                            onChange={(e) => setSignupForm({ ...signupForm, phone: e.target.value })}
-                                            required
-                                        />
+                                <form className="space-y-6" onSubmit={handleSignupSubmit}>
+
+                                    {/* Personal Details */}
+                                    <div className="space-y-4">
+                                        <h3 className="text-purple-900 font-bold uppercase text-xs tracking-widest border-b border-purple-100 pb-2">Personal Details</h3>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <input type="text" placeholder="Full Name" className="form-input" value={signupForm.fullName} onChange={(e) => setSignupForm({ ...signupForm, fullName: e.target.value })} required />
+                                            <input type="date" placeholder="Date of Birth" className="form-input text-gray-500" value={signupForm.dateOfBirth} onChange={(e) => setSignupForm({ ...signupForm, dateOfBirth: e.target.value })} title="Date of Birth" />
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <input type="email" placeholder="Email Address" className="form-input" value={signupForm.email} onChange={(e) => setSignupForm({ ...signupForm, email: e.target.value })} required />
+                                            <input type="tel" placeholder="Mobile Number" className="form-input" value={signupForm.phone} onChange={(e) => setSignupForm({ ...signupForm, phone: e.target.value })} required />
+                                        </div>
                                     </div>
-                                    <select
-                                        className="w-full py-4.5 px-6 border-2 border-purple-50 rounded-2xl bg-purple-50/30 text-purple-900 font-bold outline-none focus:border-purple-600 appearance-none cursor-pointer"
-                                        value={signupForm.vehicleType}
-                                        onChange={(e) => setSignupForm({ ...signupForm, vehicleType: e.target.value })}
-                                        required
-                                    >
-                                        <option value="">Choose Vehicle</option>
-                                        <option value="bike">Bicycle</option>
-                                        <option value="scooter">Motorcycle</option>
-                                        <option value="car">Car / Van</option>
-                                    </select>
-                                    <input
-                                        type="text"
-                                        placeholder="License Number"
-                                        className="w-full py-4.5 px-6 border-2 border-purple-50 rounded-2xl bg-purple-50/30 text-purple-900 font-bold outline-none focus:border-purple-600"
-                                        value={signupForm.licenseNumber}
-                                        onChange={(e) => setSignupForm({ ...signupForm, licenseNumber: e.target.value })}
-                                        required
-                                    />
-                                    <input
-                                        type="password"
-                                        placeholder="Create Password"
-                                        className="w-full py-4.5 px-6 border-2 border-purple-50 rounded-2xl bg-purple-50/30 text-purple-900 font-bold outline-none focus:border-purple-600"
-                                        value={signupForm.password}
-                                        onChange={(e) => setSignupForm({ ...signupForm, password: e.target.value })}
-                                        required
-                                    />
-                                    <button
-                                        type="submit"
-                                        className="w-full py-5.5 bg-purple-600 text-white text-[11px] font-black uppercase tracking-[3px] rounded-3xl transition-all hover:bg-purple-700 shadow-xl mt-4"
-                                    >
-                                        CREATE ACCOUNT
+
+                                    {/* Address Details */}
+                                    <div className="space-y-4">
+                                        <h3 className="text-purple-900 font-bold uppercase text-xs tracking-widest border-b border-purple-100 pb-2">Address</h3>
+                                        <input type="text" placeholder="Street Address" className="form-input w-full" value={signupForm.address} onChange={(e) => setSignupForm({ ...signupForm, address: e.target.value })} />
+                                        <div className="grid grid-cols-3 gap-3">
+                                            <input type="text" placeholder="City" className="form-input" value={signupForm.city} onChange={(e) => setSignupForm({ ...signupForm, city: e.target.value })} />
+                                            <input type="text" placeholder="State" className="form-input" value={signupForm.state} onChange={(e) => setSignupForm({ ...signupForm, state: e.target.value })} />
+                                            <input type="text" placeholder="Zip Code" className="form-input" value={signupForm.postalCode} onChange={(e) => setSignupForm({ ...signupForm, postalCode: e.target.value })} />
+                                        </div>
+                                    </div>
+
+                                    {/* Vehicle & License */}
+                                    <div className="space-y-4">
+                                        <h3 className="text-purple-900 font-bold uppercase text-xs tracking-widest border-b border-purple-100 pb-2">Vehicle & License</h3>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <select className="form-input appearance-none" value={signupForm.vehicleType} onChange={(e) => setSignupForm({ ...signupForm, vehicleType: e.target.value })} required>
+                                                <option value="">Vehicle Type</option>
+                                                <option value="motorcycle">Motorcycle</option>
+                                                <option value="scooter">Scooter</option>
+                                                <option value="car">Car / Van</option>
+                                                <option value="van">Van</option>
+                                                <option value="truck">Truck</option>
+                                                <option value="bicycle">Bicycle</option>
+                                            </select>
+                                            <input type="text" placeholder="Vehicle Number (XX-00-AA-1234)" className="form-input" value={signupForm.vehicleNumber} onChange={(e) => setSignupForm({ ...signupForm, vehicleNumber: e.target.value })} />
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <input type="text" placeholder="License Number" className="form-input" value={signupForm.licenseNumber} onChange={(e) => setSignupForm({ ...signupForm, licenseNumber: e.target.value })} required />
+                                            <input type="date" placeholder="Valid Until" className="form-input text-gray-500" value={signupForm.licenseExpires} onChange={(e) => setSignupForm({ ...signupForm, licenseExpires: e.target.value })} title="License Expiry" />
+                                        </div>
+                                    </div>
+
+                                    {/* Identity Proof */}
+                                    <div className="space-y-4">
+                                        <h3 className="text-purple-900 font-bold uppercase text-xs tracking-widest border-b border-purple-100 pb-2">Identity Proof</h3>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <select className="form-input appearance-none" value={signupForm.idType} onChange={(e) => setSignupForm({ ...signupForm, idType: e.target.value })}>
+                                                <option value="aadhar">Aadhar Card</option>
+                                                <option value="pan">PAN Card</option>
+                                                <option value="passport">Passport</option>
+                                                <option value="drivers_license">Driver's License</option>
+                                            </select>
+                                            <input type="text" placeholder="ID Number" className="form-input" value={signupForm.idNumber} onChange={(e) => setSignupForm({ ...signupForm, idNumber: e.target.value })} />
+                                        </div>
+                                    </div>
+
+                                    {/* Bank Details */}
+                                    <div className="space-y-4">
+                                        <h3 className="text-purple-900 font-bold uppercase text-xs tracking-widest border-b border-purple-100 pb-2">Banking Details</h3>
+                                        <input type="text" placeholder="Account Holder Name" className="form-input w-full" value={signupForm.bankHolderName} onChange={(e) => setSignupForm({ ...signupForm, bankHolderName: e.target.value })} />
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <input type="text" placeholder="Account Number" className="form-input" value={signupForm.bankAccountNumber} onChange={(e) => setSignupForm({ ...signupForm, bankAccountNumber: e.target.value })} />
+                                            <input type="text" placeholder="IFSC Code" className="form-input" value={signupForm.bankIfscCode} onChange={(e) => setSignupForm({ ...signupForm, bankIfscCode: e.target.value })} />
+                                        </div>
+                                        <input type="text" placeholder="Bank Name" className="form-input w-full" value={signupForm.bankName} onChange={(e) => setSignupForm({ ...signupForm, bankName: e.target.value })} />
+                                    </div>
+
+                                    {/* Service Area */}
+                                    <div className="space-y-4">
+                                        <h3 className="text-purple-900 font-bold uppercase text-xs tracking-widest border-b border-purple-100 pb-2">Service Preferences</h3>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <input type="text" placeholder="Service Cities (comma sep)" className="form-input" value={signupForm.serviceCities} onChange={(e) => setSignupForm({ ...signupForm, serviceCities: e.target.value })} />
+                                            <input type="number" placeholder="Radius (km)" className="form-input" value={signupForm.preferredRadius} onChange={(e) => setSignupForm({ ...signupForm, preferredRadius: e.target.value })} min="1" max="50" />
+                                        </div>
+                                    </div>
+
+                                    {/* Password */}
+                                    <div className="space-y-4">
+                                        <h3 className="text-purple-900 font-bold uppercase text-xs tracking-widest border-b border-purple-100 pb-2">Security</h3>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <input type="password" placeholder="Create Password" className="form-input" value={signupForm.password} onChange={(e) => setSignupForm({ ...signupForm, password: e.target.value })} required />
+                                            <input type="password" placeholder="Confirm Password" className="form-input" value={signupForm.confirmPassword} onChange={(e) => setSignupForm({ ...signupForm, confirmPassword: e.target.value })} required />
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" className="w-full py-5.5 bg-purple-600 text-white text-[11px] font-black uppercase tracking-[3px] rounded-3xl transition-all hover:bg-purple-700 shadow-xl mt-8">
+                                        COMPLETE REGISTRATION
                                     </button>
                                 </form>
                             )}
@@ -322,6 +461,25 @@ const DeliveryAgentLogin = ({ onLoginSuccess }) => {
                     background-repeat: no-repeat;
                     background-position: right 1.5rem center;
                     background-size: 1.1rem;
+                }
+                .form-input {
+                    display: block;
+                    width: 100%;
+                    padding: 0.875rem 1.25rem;
+                    border: 2px solid #f3e8ff; /* purple-50 */
+                    border-radius: 1rem;
+                    background-color: rgba(243, 232, 255, 0.3); /* purple-50/30 */
+                    color: #581c87; /* purple-900 */
+                    font-weight: 700;
+                    outline: none;
+                    transition: all 0.2s;
+                }
+                .form-input::placeholder {
+                    color: rgba(88, 28, 135, 0.4);
+                }
+                .form-input:focus {
+                    border-color: #7c3aed; /* purple-600 */
+                    background-color: #ffffff;
                 }
                 ::-webkit-scrollbar { display: none; }
             `}</style>

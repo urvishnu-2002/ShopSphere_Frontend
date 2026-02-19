@@ -86,7 +86,7 @@
 //   };
 
 //   return (
-    
+
 //     <div>
 //       <h1 className="text-2xl font-bold mb-6">Product Information</h1>
 
@@ -291,13 +291,18 @@ export default function AddProduct() {
 
   // ✅ Submit product to backend
   const submitProduct = async () => {
-    if (!product.name || !product.price) {
-      alert("Please fill required fields");
+    if (!product.name || !product.price || !product.description || !product.stock || !product.category) {
+      alert("Please fill all required fields");
       return;
     }
 
     if (product.category === "Other" && !customCategory.trim()) {
       alert("Please specify a category");
+      return;
+    }
+
+    if (product.images.length < 4) {
+      alert("Minimum 4 product images are required.");
       return;
     }
 
@@ -308,11 +313,12 @@ export default function AddProduct() {
           product.category === "Other" ? customCategory.trim() : product.category,
       });
 
-      alert("Submitted for approval!");
+      alert("Product submitted for approval!");
       navigate("/vendorallproducts");
     } catch (error) {
       console.error("Error submitting product:", error);
-      alert("Failed to submit product. Please try again.");
+      const errorMessage = error.response?.data?.error || error.response?.data?.detail || "Failed to submit product. Please try again.";
+      alert(errorMessage);
     }
   };
 
@@ -376,11 +382,17 @@ export default function AddProduct() {
           className="w-full bg-gray-50 border rounded-md px-4 py-3 mt-2 mb-4"
         >
           <option value="">Select a category</option>
-          <option>Electronics</option>
-          <option>Fashion</option>
-          <option>Groceries</option>
-          <option>Home</option>
-          <option>Other</option>
+          <option value="electronics">Electronics</option>
+          <option value="fashion">Fashion</option>
+          <option value="home_kitchen">Home & Kitchen</option>
+          <option value="grocery">Groceries</option>
+          <option value="beauty_personal_care">Beauty & Personal Care</option>
+          <option value="sports_fitness">Sports & Fitness</option>
+          <option value="toys_games">Toys & Games</option>
+          <option value="automotive">Automotive</option>
+          <option value="books">Books</option>
+          <option value="services">Services</option>
+          <option value="other">Other</option>
         </select>
 
         {product.category === "Other" && (

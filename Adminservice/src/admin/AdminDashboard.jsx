@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Store, ShoppingCart, PanelLeftClose, PanelLeftOpen, ClipboardList } from 'lucide-react';
+import { Store, ShoppingCart, PanelLeftClose, PanelLeftOpen, ClipboardList, Truck } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import NotificationBell from '../components/NotificationBell';
 import { motion as Motion } from 'framer-motion';
@@ -84,6 +84,22 @@ const AdminDashboard = () => {
             route: '/products',
             routeState: { status: 'Blocked' }
         },
+        {
+            title: 'Total Agents',
+            value: dashData?.delivery.total || 0,
+            icon: Truck,
+            color: 'text-indigo-600',
+            bgColor: 'bg-indigo-50',
+            route: '/delivery-agents'
+        },
+        {
+            title: 'Pending Agents',
+            value: dashData?.delivery.pending || 0,
+            icon: ClipboardList,
+            color: 'text-amber-600',
+            bgColor: 'bg-amber-50',
+            route: '/delivery/requests'
+        },
     ];
 
     return (
@@ -148,36 +164,58 @@ const AdminDashboard = () => {
                             </Motion.div>
                         ))}
                     </div>
-                    <br></br>
-                    <br></br>
 
-                    <Motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.6 }}
-                        className="mt-12"
-                    >
-                        <h2 className="text-2xl font-bold text-slate-800 mb-6">Vendor Management</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Vendor Requests Button */}
-                            <button
-                                onClick={() => navigate('/vendors/requests')}
-                                className="bg-gradient-to-r from-violet-500 to-violet-900 hover:from-violet-700 hover:to-violet-800 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-3 font-semibold text-lg"
-                            >
-                                <ClipboardList className="w-6 h-6" />
-                                Vendor Requests
-                            </button>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-12">
+                        {/* Vendor Management */}
+                        <Motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.6 }}
+                        >
+                            <h2 className="text-2xl font-bold text-slate-800 mb-6">Vendor Management</h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <button
+                                    onClick={() => navigate('/vendors/requests')}
+                                    className="bg-white border border-slate-200 hover:border-violet-300 hover:bg-violet-50 text-slate-700 rounded-xl p-6 shadow-sm transition-all duration-200 flex flex-col items-center gap-3 font-semibold"
+                                >
+                                    <ClipboardList className="w-8 h-8 text-violet-600" />
+                                    <span className="text-sm uppercase tracking-widest">New Requests</span>
+                                </button>
+                                <button
+                                    onClick={() => navigate('/vendors')}
+                                    className="bg-white border border-slate-200 hover:border-violet-300 hover:bg-violet-50 text-slate-700 rounded-xl p-6 shadow-sm transition-all duration-200 flex flex-col items-center gap-3 font-semibold"
+                                >
+                                    <Store className="w-8 h-8 text-violet-600" />
+                                    <span className="text-sm uppercase tracking-widest">All Vendors</span>
+                                </button>
+                            </div>
+                        </Motion.div>
 
-                            {/* All Vendors Button */}
-                            <button
-                                onClick={() => navigate('/vendors')}
-                                className="bg-gradient-to-r from-violet-500 to-violet-900 hover:from-indigo-700 hover:to-violet-800 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-3 font-semibold text-lg"
-                            >
-                                <Store className="w-6 h-6" />
-                                All Vendors
-                            </button>
-                        </div>
-                    </Motion.div>
+                        {/* Delivery Management */}
+                        <Motion.div
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.7 }}
+                        >
+                            <h2 className="text-2xl font-bold text-slate-800 mb-6">Delivery Management</h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <button
+                                    onClick={() => navigate('/delivery/requests')}
+                                    className="bg-white border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 text-slate-700 rounded-xl p-6 shadow-sm transition-all duration-200 flex flex-col items-center gap-3 font-semibold"
+                                >
+                                    <ClipboardList className="w-8 h-8 text-indigo-600" />
+                                    <span className="text-sm uppercase tracking-widest">Join Requests</span>
+                                </button>
+                                <button
+                                    onClick={() => navigate('/delivery-agents')}
+                                    className="bg-white border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 text-slate-700 rounded-xl p-6 shadow-sm transition-all duration-200 flex flex-col items-center gap-3 font-semibold"
+                                >
+                                    <Truck className="w-8 h-8 text-indigo-600" />
+                                    <span className="text-sm uppercase tracking-widest">All Agents</span>
+                                </button>
+                            </div>
+                        </Motion.div>
+                    </div>
                 </div>
             </main>
         </div>

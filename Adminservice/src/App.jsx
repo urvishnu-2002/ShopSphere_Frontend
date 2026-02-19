@@ -12,6 +12,10 @@ import Reports from './admin/Reports';
 import CommissionSettings from './admin/CommissionSettings';
 import ProtectedAdminRoute from './admin/ProtectedAdminRoute';
 import SplashScreen from './admin/SplashScreen';
+import DeliveryAgentsManagement from './admin/DeliveryAgentsManagement';
+import DeliveryAgentReview from './admin/DeliveryAgentReview';
+import DeliveryRequests from './admin/DeliveryRequests';
+import OrderManagement from './admin/OrderManagement';
 import { NotificationProvider } from './context/NotificationContext';
 import { UserProvider } from './context/UserContext';
 import { ProductProvider } from './context/ProductContext';
@@ -40,6 +44,22 @@ function App() {
                 }
               />
               <Route
+                path="/delivery-agents"
+                element={
+                  <ProtectedAdminRoute>
+                    <DeliveryAgentsManagement />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path="/delivery-agents/review/:id"
+                element={
+                  <ProtectedAdminRoute>
+                    <DeliveryAgentReview />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
                 path="/users"
                 element={
                   <ProtectedAdminRoute>
@@ -52,6 +72,14 @@ function App() {
                 element={
                   <ProtectedAdminRoute>
                     <VendorApproval />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path="/delivery/requests"
+                element={
+                  <ProtectedAdminRoute>
+                    <DeliveryRequests />
                   </ProtectedAdminRoute>
                 }
               />
@@ -100,6 +128,14 @@ function App() {
                 element={
                   <ProtectedAdminRoute>
                     <CommissionSettings />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path="/orders"
+                element={
+                  <ProtectedAdminRoute>
+                    <OrderManagement />
                   </ProtectedAdminRoute>
                 }
               />

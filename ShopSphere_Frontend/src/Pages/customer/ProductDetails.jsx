@@ -29,10 +29,12 @@ const ProductDetails = () => {
     const dispatch = useDispatch();
 
     // Get products from Redux to find the selected one
-    const allProductsInCategories = useSelector((state) => state.products);
+    const productsState = useSelector((state) => state.products);
+    const { all: allProducts, isLoading, error: fetchError } = productsState;
     const wishlist = useSelector((state) => state.wishlist);
 
     const [product, setProduct] = useState(null);
+    const [notFound, setNotFound] = useState(false);
     const [mainImage, setMainImage] = useState("");
     const [quantity, setQuantity] = useState(1);
     const [selectedImgIndex, setSelectedImgIndex] = useState(0);
@@ -48,32 +50,47 @@ const ProductDetails = () => {
 
     // Find product logic
     useEffect(() => {
-        // In a real app, you'd fetch by ID. 
-        // Here we search across categories. Since 'id' might be the product name in this setup.
-        let foundProduct = null;
-        Object.values(allProductsInCategories).forEach(categoryProducts => {
-            const match = categoryProducts.find(p => encodeURIComponent(p.name) === id || p.name === id);
-            if (match) foundProduct = match;
-        });
+        if (!allProducts || allProducts.length === 0) {
+            if (!isLoading) {
+                // If not loading and no products, maybe we need to fetch?
+                // But Home.jsx already fetches. Let's just wait or show not found.
+            }
+            return;
+        }
 
-        if (foundProduct) {
-            // Augment with details requested by user if they don't exist
+        const decodedId = decodeURIComponent(id);
+        const match = allProducts.find(p =>
+            p.name === decodedId ||
+            p.name === id ||
+            encodeURIComponent(p.name) === id
+        );
+
+        if (match) {
+            setNotFound(false);
+            // Convert price to number safely
+            const currentPrice = parseFloat(match.price) || 0;
+
             const augmentedProduct = {
-                ...foundProduct,
-                oldPrice: foundProduct.oldPrice || foundProduct.price + 20, // Mocked
-                rating: foundProduct.rating || 4.5, // Mocked
-                // Ensure we have an array of images. If only one exists, we repeat it with different hints or use placeholders
-                images: foundProduct.images || [
-                    foundProduct.image,
-                    foundProduct.image, // Just repeating the same image for gallery demonstration
-                    foundProduct.image,
-                    foundProduct.image
-                ]
+                ...match,
+                price: currentPrice,
+                oldPrice: parseFloat(match.oldPrice) || (currentPrice + 20),
+                rating: parseFloat(match.rating) || 4.5,
+                images: match.images && match.images.length > 0
+                    ? match.images.map(img => {
+                        const imgPath = img.image;
+                        if (imgPath.startsWith('http')) return imgPath;
+                        if (imgPath.startsWith('/media/')) return `http://localhost:8000${imgPath}`;
+                        if (imgPath.startsWith('media/')) return `http://localhost:8000/${imgPath}`;
+                        return `http://localhost:8000/media/${imgPath}`;
+                    })
+                    : [match.image || "/placeholder.jpg"]
             };
             setProduct(augmentedProduct);
             setMainImage(augmentedProduct.images[0]);
+        } else if (!isLoading) {
+            setNotFound(true);
         }
-    }, [id, allProductsInCategories]);
+    }, [id, allProducts, isLoading]);
 
     // Initialize product-specific dummy reviews
     useEffect(() => {
@@ -190,10 +207,28 @@ const ProductDetails = () => {
         navigate("/checkout");
     };
 
-    if (!product) {
+    if (notFound) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center p-4">
+                <div className="text-6xl mb-4">🔍</div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Product Not Found</h2>
+                <p className="text-gray-500 mb-8 text-center max-w-md">
+                    We couldn't find the product you're looking for. It might have been removed or the link is incorrect.
+                </p>
+                <button
+                    onClick={() => navigate("/home")}
+                    className="px-8 py-3 bg-gray-900 text-white rounded-2xl font-bold hover:bg-black transition-all"
+                >
+                    Back to Home
+                </button>
+            </div>
+        );
+    }
+
+    if (!product || isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-12 h-12 border-4 border-violet-600 border-t-transparent rounded-full animate-spin"></div>
             </div>
         );
     }

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { getUserInfo } from "../../api/axios";
 import {
   HomeIcon,
   CubeIcon,
@@ -42,13 +43,36 @@ export default function Sidebar() {
     };
   }, []);
 
-  const menu = [
-                { path: "/welcome", label: "Dashboard", icon: HomeIcon },
+  const [user, setUser] = useState(null);
+  const [fetching, setFetching] = useState(true);
+
+  useEffect(() => {
+    getUserInfo()
+      .then(u => {
+        setUser(u);
+        setFetching(false);
+      })
+      .catch(() => setFetching(false));
+  }, []);
+
+  const vendorMenu = [
+    { path: "/welcome", label: "Dashboard", icon: HomeIcon },
     { path: "/vendorallproducts", label: "Products", icon: CubeIcon },
     { path: "/vendoraddproduct", label: "Add Product", icon: PlusCircleIcon },
     { path: "/vendororders", label: "Orders", icon: ShoppingCartIcon },
     { path: "/vendorearning", label: "Earnings", icon: BanknotesIcon }
   ];
+
+  const adminMenu = [
+    { path: "/admindashboard", label: "Dashboard", icon: HomeIcon },
+    { path: "/adminorders", label: "Orders", icon: ShoppingCartIcon },
+    { path: "/vendorearning", label: "Earnings", icon: BanknotesIcon }
+  ];
+
+  if (fetching) return null; // Wait for user to load to avoid flickering wrong menu
+
+  const isAdmin = user?.role === 'admin' || user?.is_staff || user?.is_superuser;
+  const menu = isAdmin ? adminMenu : vendorMenu;
 
   return (
     <>
@@ -58,10 +82,10 @@ export default function Sidebar() {
       >
 
         <div className="flex justify-between items-center mb-6">
-          <h2 className="font-bold text-xl">Vendor Portal</h2>
+          <h2 className="font-bold text-xl">{isAdmin ? "Admin Portal" : "Vendor Portal"}</h2>
         </div>
 
-        <Menu menu={menu} location={location} close={() => {}} />
+        <Menu menu={menu} location={location} close={() => { }} />
 
       </aside>
 
@@ -72,7 +96,7 @@ export default function Sidebar() {
 
         <div className="flex justify-between items-center mb-8">
 
-          {desktopOpen && <h2 className="font-bold text-xl">Vendor Portal</h2>}
+          {desktopOpen && <h2 className="font-bold text-xl">{isAdmin ? "Admin Portal" : "Vendor Portal"}</h2>}
 
           <button onClick={() => setDesktopOpen(!desktopOpen)} aria-label="Toggle sidebar">
             <Bars3Icon

@@ -15,32 +15,29 @@ export default function VerifyAccount() {
       setError("Please enter your email address");
       return;
     }
-
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
     setLoading(true);
+    setError("");
 
     try {
-      await emailjs.send(
-        "service_0a1vbhw",
-        "template_30pivyj",
-        {
-          to_email: email,
-          otp: otp,
-          name: "ShopSphere",
-          time: new Date().toLocaleString(),
-        },
-        "Ch-Wgw8L8R5zWGNme"
-      );
+      // Call backend SMTP instead of EmailJS
+      const response = await fetch("http://localhost:8000/vendor/send-otp/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email }),
+      });
 
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Failed to send OTP");
+
+      const receivedOtp = data.otp.toString();
       localStorage.setItem("verify_email", email);
-      localStorage.setItem("email_otp", otp);
-      localStorage.setItem("email_otp_expiry", Date.now() + 5 * 60 * 1000); // 5 mins
-
+      localStorage.setItem("email_otp", receivedOtp);
+      localStorage.setItem("email_otp_expiry", Date.now() + 5 * 60 * 1000);
 
       navigate("/verify-otp");
     } catch (err) {
-      console.error(err);
-      setError("Failed to send OTP. Please try again.");
+      console.error("OTP Error:", err);
+      setError(err.message || "Failed to send OTP");
     } finally {
       setLoading(false);
     }

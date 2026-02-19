@@ -80,6 +80,41 @@ const StepCard = ({ step, title, description, icon: Icon }) => (
  */
 const SellerLanding = () => {
     const navigate = useNavigate();
+    const [vendorInfo, setVendorInfo] = React.useState(null);
+    const [isLoading, setIsLoading] = React.useState(true);
+
+    React.useEffect(() => {
+        const checkStatus = async () => {
+            const token = localStorage.getItem("accessToken");
+            if (!token) {
+                setIsLoading(false);
+                return;
+            }
+            try {
+                const { getUserInfo } = await import('../../api/axios');
+                const data = await getUserInfo();
+                setVendorInfo(data);
+            } catch (error) {
+                console.error("Error checking vendor status:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        checkStatus();
+    }, []);
+
+    const handleAction = () => {
+        if (vendorInfo?.is_approved_vendor) {
+            navigate('/vendordashboard');
+        } else if (vendorInfo?.is_vendor) {
+            // If they are a vendor but not yet approved, we still send them to the dashboard
+            // where they can see their status, or stay on the current page.
+            // For now, let's go to dashboard as it's the professional space for vendors.
+            navigate('/vendordashboard');
+        } else {
+            navigate('/verifyGST');
+        }
+    };
 
     return (
         <div className="min-h-screen bg-[#FCFBFA] selection:bg-violet-100 selection:text-violet-900">
@@ -124,10 +159,10 @@ const SellerLanding = () => {
                                 <motion.button
                                     whileHover={{ scale: 1.05, boxShadow: "0 20px 40px -12px rgba(79, 70, 229, 0.4)" }}
                                     whileTap={{ scale: 0.98 }}
-                                    onClick={() => navigate('/verifyGST')}
+                                    onClick={handleAction}
                                     className="px-10 py-5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-[24px] font-black text-lg shadow-xl shadow-violet-200 flex items-center justify-center gap-3 group transition-all duration-300"
                                 >
-                                    Start Selling
+                                    {vendorInfo?.is_vendor ? "Go to Dashboard" : "Start Selling"}
                                     <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                                 </motion.button>
 
@@ -301,10 +336,10 @@ const SellerLanding = () => {
                                 <motion.button
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.98 }}
-                                    onClick={() => navigate('/verifyGST')}
+                                    onClick={handleAction}
                                     className="px-12 py-6 bg-white text-gray-900 rounded-[24px] font-black text-xl shadow-2xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-3 mx-auto lg:mx-0 group"
                                 >
-                                    Get Started Now
+                                    {vendorInfo?.is_vendor ? "My Dashboard" : "Get Started Now"}
                                     <CheckCircle2 size={24} className="text-violet-600 group-hover:scale-110 transition-transform" />
                                 </motion.button>
                             </div>

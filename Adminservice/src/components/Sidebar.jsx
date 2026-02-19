@@ -8,7 +8,8 @@ import {
     BarChart3,
     Settings,
     ArrowRight,
-    ClipboardList
+    ClipboardList,
+    Truck
 } from 'lucide-react';
 import { motion as Motion } from 'framer-motion';
 
@@ -22,6 +23,9 @@ const Sidebar = ({ isSidebarOpen, activePage = 'Dashboard', onLogout }) => {
         { name: 'Users', icon: Users, path: '/users' },
         { name: 'Vendors', icon: Store, path: '/vendors' },
         { name: 'Vendor Requests', icon: ClipboardList, path: '/vendors/requests' },
+        { name: 'Delivery Agents', icon: Truck, path: '/delivery-agents' },
+        { name: 'Delivery Requests', icon: ClipboardList, path: '/delivery/requests' },
+        { name: 'Orders', icon: ShoppingCart, path: '/orders' },
         { name: 'Products', icon: Package, path: '/products' },
         { name: 'Reports', icon: BarChart3, path: '/reports' },
         { name: 'Commission Settings', icon: Settings, path: '/settings/commission' },
@@ -76,7 +80,7 @@ const Sidebar = ({ isSidebarOpen, activePage = 'Dashboard', onLogout }) => {
                             A
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-bold text-white truncate">Admin User</p>
+                            <p className="text-sm font-bold text-black truncate">Admin User</p>
                             <p className="text-xs text-slate-500 truncate">admin@shopsphere.com</p>
                         </div>
                         <button

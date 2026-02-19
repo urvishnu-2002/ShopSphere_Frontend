@@ -34,7 +34,11 @@ function Login() {
             localStorage.setItem("user", JSON.stringify(data));
             toast.success("Login successful! Welcome back.");
 
-            navigate("/");
+            if (data.role === 'vendor') {
+                navigate("/vendordashboard");
+            } else {
+                navigate("/");
+            }
         } catch (err) {
             const errorMessage = err.response?.data?.message || "Login failed. Please check your credentials.";
             setError(errorMessage);
