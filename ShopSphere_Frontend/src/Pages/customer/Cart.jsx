@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { DecrCart, IncrCart, RemoveFromCart } from "../../Store";
+import { DecrCart, IncrCart, RemoveFromCart, setCart } from "../../Store";
+import { fetchCart, formatImageUrl, removeFromCart, updateCartQuantity } from "../../api/axios";
+import toast from "react-hot-toast";
 import {
   FaTrashAlt,
   FaPlus,
@@ -17,6 +19,29 @@ function Cart() {
   const navigate = useNavigate();
 
   const cartObjects = useSelector((state) => state.cart || []);
+
+  useEffect(() => {
+    const loadCart = async () => {
+      try {
+        const cartData = await fetchCart();
+        if (cartData && cartData.items) {
+          const formattedItems = cartData.items.map(item => ({
+            id: item.product.id,
+            name: item.product.name,
+            price: parseFloat(item.product.price),
+            description: item.product.description,
+            image: item.product.images && item.product.images.length > 0 ? formatImageUrl(item.product.images[0].image) : "/placeholder.jpg",
+            quantity: item.quantity
+          }));
+          dispatch(setCart(formattedItems));
+        }
+      } catch (error) {
+        console.error("Failed to load cart in Cart page:", error);
+      }
+    };
+
+    loadCart();
+  }, [dispatch]);
 
   const subtotal = cartObjects.reduce(
     (acc, item) => acc + item.price * item.quantity,
@@ -76,9 +101,16 @@ function Cart() {
                     {/* Quantity Controls */}
                     <div className="flex items-center gap-5 bg-gray-50 p-2 rounded-2xl border border-gray-100">
                       <button
-                        onClick={() => dispatch(DecrCart(item))}
+                        onClick={async () => {
+                          try {
+                            await updateCartQuantity(item.id, 'decrease');
+                            dispatch(DecrCart(item));
+                          } catch (err) {
+                            toast.error(err.message || "Failed to update quantity");
+                          }
+                        }}
                         className="bg-white hover:bg-red-50 text-red-500 w-10 h-10 rounded-xl transition-all shadow-sm border border-gray-100 flex items-center justify-center font-black text-lg"
-                        disabled={item.quantity <= 1}
+                        disabled={item.quantity <= 0}
                       >
                         <FaMinus size={12} />
                       </button>
@@ -86,7 +118,14 @@ function Cart() {
                         {item.quantity}
                       </span>
                       <button
-                        onClick={() => dispatch(IncrCart(item))}
+                        onClick={async () => {
+                          try {
+                            await updateCartQuantity(item.id, 'increase');
+                            dispatch(IncrCart(item));
+                          } catch (err) {
+                            toast.error(err.message || "Failed to update quantity");
+                          }
+                        }}
                         className="bg-white hover:bg-purple-50 text-purple-500 w-10 h-10 rounded-xl transition-all shadow-sm border border-gray-100 flex items-center justify-center font-black text-lg"
                       >
                         <FaPlus size={12} />
@@ -99,7 +138,15 @@ function Cart() {
                         ₹{(item.price * item.quantity).toFixed(2)}
                       </div>
                       <button
-                        onClick={() => dispatch(RemoveFromCart(item))}
+                        onClick={async () => {
+                          try {
+                            await removeFromCart(item.id);
+                            dispatch(RemoveFromCart(item));
+                            toast.success("Removed from cart");
+                          } catch (err) {
+                            toast.error(err.message || "Failed to remove item");
+                          }
+                        }}
                         className="flex items-center gap-2 text-sm font-bold text-red-500 hover:bg-red-50 px-4 py-2 rounded-xl transition-all"
                       >
                         <FaTrashAlt size={14} /> Remove

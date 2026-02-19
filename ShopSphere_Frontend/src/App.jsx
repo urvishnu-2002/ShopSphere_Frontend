@@ -1,11 +1,43 @@
+import React, { useEffect } from "react";
 import { BrowserRouter, useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import AppRoutes from "./routes/AppRoutes";
 import Navbar from "./Components/common/Navbar";
 import Footer from "./Components/common/Footer";
 import { Toaster } from "react-hot-toast";
+import { fetchCart, formatImageUrl } from "./api/axios";
+import { setCart } from "./Store";
 
 function Layout() {
   const location = useLocation();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const syncCart = async () => {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
+
+      try {
+        const cartData = await fetchCart();
+        if (cartData && cartData.items) {
+          const formattedItems = cartData.items.map(item => ({
+            id: item.product.id,
+            name: item.product.name,
+            price: parseFloat(item.product.price),
+            description: item.product.description,
+            image: item.product.images && item.product.images.length > 0 ? formatImageUrl(item.product.images[0].image) : "/placeholder.jpg",
+            quantity: item.quantity
+          }));
+          dispatch(setCart(formattedItems));
+        }
+      } catch (error) {
+        console.error("Cart sync failed:", error);
+      }
+    };
+
+    syncCart();
+  }, [dispatch, location.pathname]); // Runs on mount and route changes
+
   const hideNavbarFooter = ["/", "/vendor", "/delivery", "/login", "/signup", "/delivery/dashboard", "/delivery/assigned", "/delivery/earnings", "/account-verification", "/verify-otp", "/verifyGST", "/verifyPAN", "/store-name", "/shipping-address", "/shipping-method", "/shipping-fee-preferences", "/bank-details"].includes(location.pathname);
 
   return (
@@ -57,7 +89,7 @@ function App() {
   return (
     <BrowserRouter>
       <Layout />
-      
+
     </BrowserRouter>
   );
 }

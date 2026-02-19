@@ -669,6 +669,7 @@ const cartSlice = createSlice({
     RemoveFromCart: (state, action) =>
       state.filter(i => i.name !== action.payload.name),
     clearCart: () => [],
+    setCart: (state, action) => action.payload,
   }
 });
 
@@ -677,7 +678,8 @@ export const {
   IncrCart,
   DecrCart,
   RemoveFromCart,
-  clearCart
+  clearCart,
+  setCart
 } = cartSlice.actions;
 
 // WISHLIST SLICE

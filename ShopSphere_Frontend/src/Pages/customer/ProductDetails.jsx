@@ -6,6 +6,7 @@ import {
     FaStar, FaStarHalfAlt, FaRegStar, FaPlus, FaMinus, FaShoppingCart, FaBolt, FaHeart, FaTruck, FaUndo, FaMapMarkerAlt, FaChevronLeft, FaCamera, FaTimes, FaUser
 } from "react-icons/fa";
 import { AddToCart, AddToWishlist, RemoveFromWishlist } from "../../Store";
+import { formatImageUrl } from "../../api/axios";
 import toast from "react-hot-toast";
 
 // Mock Rating Component

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { AddToCart, AddToWishlist, RemoveFromWishlist } from "../../Store";
+import { fetchProducts, addToCart, formatImageUrl } from "../../api/axios";
 import { FaHeart, FaShoppingBag, FaArrowRight } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,17 +11,17 @@ import toast from "react-hot-toast";
 // CONFIGURATION
 
 const CATEGORIES = [
-  { id: "all", label: "All", key: null },
+  { id: "all", label: "All Products", key: null },
   { id: "electronics", label: "Electronics", key: "electronics" },
-  // { id: "fruits", label: "Fruits", key: "fruits" },
-  // { id: "vegetables", label: "Vegetables", key: "vegetables" },
-  // { id: "milk", label: "Milk Products", key: "milkproducts" },
-  // { id: "snacks", label: "Snacks", key: "snacks" },
-  // { id: "chocolates", label: "Chocolates", key: "chocolates" },
-  { id: "sports", label: "Sports", key: "sports" },
   { id: "fashion", label: "Fashion", key: "fashion" },
-  { id: "books", label: "Books", key: "books" },
   { id: "accessories", label: "Accessories", key: "accessories" },
+  { id: "home_kitchen", label: "Home & Kitchen", key: "home_kitchen" },
+  { id: "beauty", label: "Beauty", key: "beauty" },
+  { id: "sports", label: "Sports", key: "sports" },
+  { id: "toys", label: "Toys", key: "toys" },
+  { id: "books", label: "Books", key: "books" },
+  { id: "grocery", label: "Grocery", key: "grocery" },
+  { id: "automotive", label: "Automotive", key: "automotive" },
 ];
 
 const BANNERS = [
@@ -57,18 +58,82 @@ function Home() {
 
   // REDUX STATE & HOOKS
 
-  const products = useSelector((state) => state.products);
+  const reduxProducts = useSelector((state) => state.products);
   const wishlist = useSelector((state) => state.wishlist);
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
 
   // LOCAL STATE
+  const [apiProducts, setApiProducts] = useState(null);
   const [activeCategory, setActiveCategory] = useState("all");
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [isAnimating, setIsAnimating] = useState(false);
   const [currentBanner, setCurrentBanner] = useState(0);
   const categoryRefs = useRef({});
+
+  // Use API products if available, otherwise fallback to Redux mock data
+  const products = apiProducts || reduxProducts;
+
+  // FETCH PRODUCTS FROM API
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const data = await fetchProducts();
+
+        // Organize products by category to match existing structure
+        const organized = {};
+
+        // Helper to map backend categories to frontend keys
+        const getCategoryKey = (backendCat) => {
+          const map = {
+            'electronics': 'electronics',
+            'fashion': 'fashion',
+            'sports_fitness': 'sports',
+            'books': 'books',
+            'home_kitchen': 'home_kitchen',
+            'beauty_personal_care': 'beauty',
+            'toys_games': 'toys',
+            'automotive': 'automotive',
+            'grocery': 'grocery',
+            'services': 'services',
+            'other': 'accessories',
+          };
+          return map[backendCat] || 'all'; // Default to 'all' if category doesn't match
+        };
+
+        data.forEach(product => {
+          const key = getCategoryKey(product.category);
+
+          if (!organized[key]) organized[key] = [];
+
+          let imageUrl = "/placeholder.jpg";
+          if (product.images && product.images.length > 0) {
+            imageUrl = formatImageUrl(product.images[0].image);
+          }
+
+          organized[key].push({
+            ...product,
+            image: imageUrl,
+            price: parseFloat(product.price)
+          });
+        });
+
+        // Also populate 'all' category indirectly via Object.values concatenation in searching logic
+        // But the original code expects `products` to be an object of categories.
+
+        // Update state
+        setApiProducts(organized);
+
+      } catch (error) {
+        console.error("Failed to fetch products", error);
+        toast.error("Using offline mode (mock data)");
+      }
+    };
+
+    loadProducts();
+  }, []);
+
 
   // Safety check: Ensure index is always valid
   const bannerIndex = currentBanner % BANNERS.length;
@@ -90,18 +155,8 @@ function Home() {
     const searchParams = new URLSearchParams(location.search);
     const searchQuery = searchParams.get("search")?.toLowerCase() || "";
 
-    const allProducts = [
-      ...(products.electronics || []),
-      ...(products.fruits || []),
-      ...(products.vegetables || []),
-      ...(products.milkproducts || []),
-      ...(products.snacks || []),
-      ...(products.chocolates || []),
-      ...(products.sports || []),
-      ...(products.fashion || []),
-      ...(products.books || []),
-      ...(products.accessories || []),
-    ];
+    // Flatten all categories
+    const allProducts = Object.values(products).flat();
 
     let result = [];
 
@@ -118,8 +173,16 @@ function Home() {
         result = allProducts;
       } else {
         const categoryConfig = CATEGORIES.find((c) => c.id === activeCategory);
+
+        // If we have API products, we might have keys not in CATEGORIES config
+        // But we stick to configured categories for the tab bar.
+
         if (categoryConfig && categoryConfig.key) {
+          // Direct lookup
           result = products[categoryConfig.key] || [];
+        } else {
+          // For 'all' or fallback
+          result = [];
         }
       }
     }
@@ -144,10 +207,16 @@ function Home() {
   };
 
   const handleWishlistClick = (item) => {
-    const user = localStorage.getItem("user");
-    if (!user) {
+    const user = localStorage.getItem("user"); // This might be deprecated if we use token check
+    // If using token:
+    const token = localStorage.getItem("accessToken");
+
+    if (!token) {
       toast.error("Please login to add items to your wishlist");
-      navigate("/login");
+      navigate("/login"); // Check if route is /login or /user_login from user urls provided?
+      // User urls: path('user_login'...). Frontend likely has /login route mapping to Login.jsx
+      // App.js usually defines frontend routes.
+      // Assuming /login is correct for frontend.
       return;
     }
 
@@ -160,15 +229,31 @@ function Home() {
     }
   };
 
-  const handleAddToCartClick = (item) => {
-    const user = localStorage.getItem("user");
-    if (!user) {
+  const handleAddToCartClick = async (item) => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
       toast.error("Please login to add items to your cart");
-      navigate("/login");
+      navigate("/login"); // Assuming frontend route checks
       return;
     }
-    dispatch(AddToCart(item));
-    toast.success("Added to cart");
+
+    // Call API
+    try {
+      if (item.id) {
+        await addToCart(item.id);
+        toast.success("Added to cart");
+        // Also update Redux for immediate UI feedback (cart count in header etc)
+        // Explicitly set quantity to 1 so we don't use product.quantity (which is stock)
+        dispatch(AddToCart({ ...item, quantity: 1 }));
+      } else {
+        // Fallback for mock items
+        dispatch(AddToCart({ ...item, quantity: 1 }));
+        toast.success("Added to cart (Local)");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to add to cart");
+    }
   };
 
   return (

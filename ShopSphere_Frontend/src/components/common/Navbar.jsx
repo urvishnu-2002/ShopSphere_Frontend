@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
     FaShoppingCart,
     FaHeart,
@@ -14,6 +14,7 @@ import {
     FaHome,
 } from "react-icons/fa";
 import toast from "react-hot-toast";
+import { clearCart } from "../../Store";
 
 // ============================================
 // NAVBAR COMPONENT
@@ -23,6 +24,7 @@ function Navbar() {
     // ============================================
     // STATE & HOOKS
     // ============================================
+    const dispatch = useDispatch();
     const [isOpen, setIsOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [searchFocused, setSearchFocused] = useState(false);
@@ -56,6 +58,9 @@ function Navbar() {
 
     const handleLogout = () => {
         localStorage.removeItem("user");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        dispatch(clearCart());
         setUser(null);
         setProfileDropdownOpen(false);
         toast.success("Logged out successfully");
