@@ -6,7 +6,9 @@ const SplashScreen = () => {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        setIsVisible(true);
+        // Use a small timeout to ensure the initial mount is rendered before triggering the entrance animation
+        const entranceTimer = setTimeout(() => setIsVisible(true), 10);
+
         const timer = setTimeout(() => {
             const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
 
@@ -22,9 +24,20 @@ const SplashScreen = () => {
                     const padding = '='.repeat((4 - (base64.length % 4)) % 4);
                     const payload = JSON.parse(atob(base64 + padding));
 
-                    if (payload.role === 'ADMIN' || payload.role === 'SUPER_ADMIN') {
+                    // Improved check: handles ADMIN, admin, or is_staff/is_superuser flags
+                    const userRole = (payload.role || '').toUpperCase();
+                    const isAllowed = userRole === 'ADMIN' ||
+                        userRole === 'SUPER_ADMIN' ||
+                        payload.is_staff === true ||
+                        payload.is_superuser === true;
+
+                    if (isAllowed) {
                         navigate('/dashboard');
                     } else {
+                        console.warn("[Splash] User is authenticated but NOT an admin. Redirecting to login.");
+                        // Clear them out to be safe
+                        const keys = ["accessToken", "authToken", "refreshToken", "adminAuthenticated", "adminUsername"];
+                        keys.forEach(k => { localStorage.removeItem(k); sessionStorage.removeItem(k); });
                         navigate('/login');
                     }
                 } catch (e) {
@@ -35,8 +48,12 @@ const SplashScreen = () => {
             }
         }, 3000);
 
-        return () => clearTimeout(timer);
+        return () => {
+            clearTimeout(timer);
+            clearTimeout(entranceTimer);
+        };
     }, [navigate]);
+
 
     return (
         <div className="fixed inset-0 bg-[#0f0720] flex flex-col items-center justify-center z-[9999] transition-opacity duration-1000">
@@ -51,17 +68,17 @@ const SplashScreen = () => {
                 </div>
 
                 {/* Brand Name */}
-                <h1 className="text-4xl font-black tracking-tighter text-white mb-2">
-                    Shop<span className="bg-gradient-to-r from-violet-400 to-fuchsia-500 bg-clip-text text-transparent">Sphere</span>
+                <h1 className="text-4xl font-semibold tracking-normal text-white mb-2">
+                    Shop<span className="bg-gradient-to-r from-emerald-400 to-fuchsia-500 bg-clip-text text-transparent">Sphere</span>
                 </h1>
 
-                <p className="text-violet-300/40 text-sm font-medium tracking-[0.3em] uppercase">
+                <p className="text-emerald-300/40 text-sm font-medium tracking-normal uppercase">
                     Admin Portal
                 </p>
 
                 {/* Simple CSS Loading Bar */}
                 <div className="w-48 h-1 bg-white/5 rounded-full overflow-hidden mt-8">
-                    <div className="h-full bg-violet-500 animate-[loading_3s_ease-in-out_forwards]"></div>
+                    <div className="h-full bg-emerald-500 animate-[loading_3s_ease-in-out_forwards]"></div>
                 </div>
             </div>
 

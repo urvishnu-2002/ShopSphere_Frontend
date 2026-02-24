@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import React, { createContext, useContext, useState } from 'react';
 
 const NotificationContext = createContext();
 
@@ -11,43 +12,9 @@ export const useNotifications = () => {
 };
 
 export const NotificationProvider = ({ children }) => {
-    const [notifications, setNotifications] = useState([
-        {
-            id: 'notif-1',
-            type: 'VENDOR_REGISTRATION',
-            vendorId: 'VND-2024-999',
-            vendorName: 'Mumbai Gadget Mart',
-            vendorEmail: 'sales@mumbaigadgets.com',
-            registrationDate: '2024-02-09',
-            status: 'Pending Approval',
-            read: false,
-            timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-        },
-        {
-            id: 'notif-2',
-            type: 'VENDOR_REGISTRATION',
-            vendorId: 'VND-2024-888',
-            vendorName: 'Jaipur Organic Hub',
-            vendorEmail: 'hello@jaipurorganics.in',
-            registrationDate: '2024-02-08',
-            status: 'Pending Approval',
-            read: false,
-            timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-        },
-        {
-            id: 'notif-swift',
-            type: 'VENDOR_REGISTRATION',
-            vendorId: 'VND-2024-SWIFT',
-            vendorName: 'IndoFlash Logistics',
-            vendorEmail: 'shipping@indoflash.co.in',
-            registrationDate: new Date().toISOString().split('T')[0],
-            status: 'Pending Approval',
-            read: false,
-            timestamp: new Date().toISOString(),
-        }
-    ]);
+    const [notifications, setNotifications] = useState([]);
 
-   
+
 
     const addNotification = React.useCallback((notif) => {
         setNotifications(prev => [{

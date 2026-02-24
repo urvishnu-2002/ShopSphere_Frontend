@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Bell, X, Check, ArrowRight, Clock, UserPlus, FileText } from 'lucide-react';
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNotifications } from '../context/NotificationContext';
 import { useNavigate } from 'react-router-dom';
 
 const NotificationBell = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const { notifications, unreadCount, markAsRead, handleVendorAction, markAllAsRead } = useNotifications();
+    const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
     const dropdownRef = useRef(null);
     const navigate = useNavigate();
 
@@ -35,7 +36,7 @@ const NotificationBell = () => {
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="relative p-2 text-slate-500 hover:bg-gray-100 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                className="relative p-2 text-slate-500 hover:bg-gray-100 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
             >
                 <motion.div
                     animate={unreadCount > 0 ? {
@@ -86,7 +87,7 @@ const NotificationBell = () => {
                                     {notifications.map((notification) => (
                                         <div
                                             key={notification.id}
-                                            className={`p-4 hover:bg-slate-50 transition-colors cursor-pointer ${!notification.read ? 'bg-indigo-50/20' : ''}`}
+                                            className={`p-4 hover:bg-slate-50 transition-colors cursor-pointer ${!notification.read ? 'bg-blue-50/20' : ''}`}
                                             onClick={() => {
                                                 // Mark as read when clicked
                                                 markAsRead(notification.id);
@@ -99,7 +100,7 @@ const NotificationBell = () => {
                                             }}
                                         >
                                             <div className="flex gap-3">
-                                                <div className={`mt-1 p-2 rounded-xl flex-shrink-0 ${notification.actionTaken ? 'bg-slate-100 text-slate-400' : 'bg-indigo-100 text-indigo-600'}`}>
+                                                <div className={`mt-1 p-2 rounded-xl flex-shrink-0 ${notification.actionTaken ? 'bg-slate-100 text-slate-400' : 'bg-blue-100 text-blue-600'}`}>
                                                     <UserPlus className="w-4 h-4" />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
@@ -119,7 +120,7 @@ const NotificationBell = () => {
                                                     {!notification.actionTaken ? (
                                                         <div className="flex items-center gap-2 mt-3 pointer-events-none">
                                                             {/* Buttons are visual indicators now since the whole div is clickable */}
-                                                            <div className="flex-1 py-1.5 bg-indigo-600 text-white text-[10px] font-bold rounded-lg flex items-center justify-center gap-1 shadow-sm shadow-indigo-100">
+                                                            <div className="flex-1 py-1.5 bg-blue-600 text-white text-[10px] font-bold rounded-lg flex items-center justify-center gap-1 shadow-sm shadow-blue-100">
                                                                 <FileText className="w-3 h-3" /> Review & Decide
                                                                 <ArrowRight className="w-3 h-3" />
                                                             </div>
@@ -129,7 +130,7 @@ const NotificationBell = () => {
                                                             <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${notification.status === 'Approved' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
                                                                 {notification.status}
                                                             </span>
-                                                            <span className="text-[10px] text-slate-400 italic">Actioned</span>
+                                                            <span className="text-[10px] text-slate-400">Actioned</span>
                                                         </div>
                                                     )}
                                                 </div>
@@ -154,7 +155,7 @@ const NotificationBell = () => {
                                     setIsOpen(false);
                                     navigate('/vendors');
                                 }}
-                                className="text-[11px] font-bold text-slate-600 hover:text-indigo-600 transition-colors flex items-center gap-1"
+                                className="text-[11px] font-bold text-slate-600 hover:text-blue-600 transition-colors flex items-center gap-1"
                             >
                                 View all requests <ArrowRight className="w-3 h-3" />
                             </button>

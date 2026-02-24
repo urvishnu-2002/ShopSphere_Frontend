@@ -18,7 +18,7 @@ const ProtectedAdminRoute = ({ children }) => {
         const payload = JSON.parse(atob(base64 + padding));
 
         const allowedRoles = ['SUPER_ADMIN', 'ADMIN', 'admin', 'super_admin'];
-        if (!allowedRoles.includes(payload.role)) {
+        if (!allowedRoles.includes(payload.role) && !payload.is_staff && !payload.is_superuser) {
             console.warn("Access denied: Admin role required, found:", payload.role);
             return <Navigate to="/" replace />;
         }
