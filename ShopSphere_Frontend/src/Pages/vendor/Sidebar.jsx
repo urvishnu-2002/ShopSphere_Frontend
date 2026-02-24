@@ -1,156 +1,181 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  HomeIcon,
-  CubeIcon,
-  PlusCircleIcon,
-  ShoppingCartIcon,
-  BanknotesIcon,
-  ArrowRightOnRectangleIcon,
-  Bars3Icon,
-  XMarkIcon
-} from "@heroicons/react/24/outline";
+  FaTachometerAlt,
+  FaBoxOpen,
+  FaPlusCircle,
+  FaShoppingCart,
+  FaMoneyBillWave,
+  FaUser,
+  FaInfoCircle,
+  FaSignOutAlt,
+  FaBars,
+  FaTimes
+} from "react-icons/fa";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function Sidebar() {
-
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [desktopOpen, setDesktopOpen] = useState(true);
+  const [desktopCollapsed, setDesktopCollapsed] = useState(false);
+  const { isDarkMode } = useTheme();
   const location = useLocation();
+  const navigate = useNavigate();
 
+  // Notify layout of desktop sidebar width
   useEffect(() => {
-    // notify layout about current sidebar state
-    window.dispatchEvent(new CustomEvent('vendorSidebarToggle', { detail: { open: desktopOpen } }));
-  }, [desktopOpen]);
+    window.dispatchEvent(new CustomEvent('vendorSidebarToggle', {
+      detail: { open: !desktopCollapsed }
+    }));
+  }, [desktopCollapsed]);
 
+  // Close mobile sidebar on route change
   useEffect(() => {
-    // hide top nav and footer when vendor sidebar is mounted
-    const selectors = ['nav', 'header', '.navbar', 'footer', '.site-footer'];
-    const elems = [];
+    setMobileOpen(false);
+  }, [location.pathname]);
 
-    selectors.forEach(sel => {
-      document.querySelectorAll(sel).forEach(el => {
-        elems.push({ el, display: el.style.display });
-        el.style.display = 'none';
-      });
-    });
-
-    return () => {
-      // restore original display styles
-      elems.forEach(({ el, display }) => {
-        el.style.display = display || '';
-      });
-    };
-  }, []);
+  const onLogout = () => {
+    localStorage.removeItem("accessToken");
+    navigate('/');
+  };
 
   const menu = [
-                { path: "/welcome", label: "Dashboard", icon: HomeIcon },
-    { path: "/vendorallproducts", label: "Products", icon: CubeIcon },
-    { path: "/vendoraddproduct", label: "Add Product", icon: PlusCircleIcon },
-    { path: "/vendororders", label: "Orders", icon: ShoppingCartIcon },
-    { path: "/vendorearning", label: "Earnings", icon: BanknotesIcon }
+    { path: "/welcome", label: "Dashboard", icon: FaTachometerAlt },
+    { path: "/vendorprofile", label: "My Profile", icon: FaUser },
+    { path: "/vendorallproducts", label: "My Products", icon: FaBoxOpen },
+    { path: "/vendoraddproduct", label: "Add Product", icon: FaPlusCircle },
+    { path: "/vendororders", label: "Orders", icon: FaShoppingCart },
+    { path: "/vendorearning", label: "Earnings", icon: FaMoneyBillWave },
+    { path: "/vendorfeestructure", "label": "Fee Structure", icon: FaInfoCircle },
   ];
 
-  return (
-    <>
-      {/* MOBILE SIDEBAR (always visible, fixed) */}
-      <aside
-        className="fixed z-50 top-0 left-0 h-full bg-white w-64 p-4 md:hidden"
-      >
+  const SidebarContent = ({ collapsed }) => (
+    <div className="relative h-full flex flex-col p-4 z-10 font-['Inter']">
+      {/* Logo */}
+      <div className="flex justify-between items-center mb-10 px-2 h-16">
+        <Link to="/welcome" className="flex items-center gap-0 group">
+          <img src="/s_logo.png" alt="ShopSphere" className="w-16 h-16 object-contain transition-transform duration-300 group-hover:scale-110 mb-5 mr-1" />
+          {!collapsed && (
+            <div className="flex flex-col -ml-5">
+              <span className={`text-xl font-bold leading-none tracking-wide transition-colors duration-300 group-hover:text-sky-400 ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
+                hopSphere
+              </span>
+              <span className="text-xs font-semibold uppercase tracking-normal mt-0.5 text-slate-500">Vendor Hub</span>
+            </div>
+          )}
+        </Link>
+        {/* Desktop collapse button */}
+        <button
+          onClick={() => setDesktopCollapsed(!desktopCollapsed)}
+          className={`hidden md:flex p-2 rounded-xl transition-all ${isDarkMode ? 'hover:bg-white/10 text-slate-300 hover:text-white' : 'hover:bg-slate-100 text-slate-400 hover:text-teal-500'}`}
+        >
+          {collapsed ? <FaBars size={16} /> : <FaTimes size={16} />}
+        </button>
+        {/* Mobile close button */}
+        <button
+          onClick={() => setMobileOpen(false)}
+          className={`md:hidden p-2 rounded-xl transition-all ${isDarkMode ? 'hover:bg-white/10 text-slate-300 hover:text-white' : 'hover:bg-slate-100 text-slate-400 hover:text-teal-500'}`}
+        >
+          <FaTimes size={16} />
+        </button>
+      </div>
 
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="font-bold text-xl">Vendor Portal</h2>
-        </div>
-
-        <Menu menu={menu} location={location} close={() => {}} />
-
-      </aside>
-
-      {/* DESKTOP SIDEBAR */}
-      <aside
-        className={`hidden md:block fixed top-0 left-0 h-screen bg-white shadow-lg p-4 transition-all duration-300 z-30 ${desktopOpen ? 'w-64' : 'w-20'}`}
-      >
-
-        <div className="flex justify-between items-center mb-8">
-
-          {desktopOpen && <h2 className="font-bold text-xl">Vendor Portal</h2>}
-
-          <button onClick={() => setDesktopOpen(!desktopOpen)} aria-label="Toggle sidebar">
-            <Bars3Icon
-              className="h-6 w-6 cursor-pointer"
-            />
-          </button>
-
-        </div>
-
-        <ul className="space-y-2">
-
+      {/* Nav */}
+      <nav className="flex-1 overflow-y-auto no-scrollbar">
+        <ul className="space-y-1.5">
           {menu.map(item => {
             const active = location.pathname === item.path;
-
+            const Icon = item.icon;
             return (
               <li key={item.path}>
                 <Link
                   to={item.path}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg transition
-                  ${active ? "bg-blue-100 text-blue-600" : "hover:bg-gray-100"}`}
+                  title={collapsed ? item.label : undefined}
+                  className={`group relative flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300
+                    ${active
+                      ? "bg-gradient-to-r from-teal-500 to-violet-600 text-white shadow-lg shadow-teal-400/20"
+                      : isDarkMode ? "text-slate-300 hover:bg-slate-900 hover:text-white" : "text-slate-500 hover:bg-slate-50 hover:text-teal-500"
+                    }`}
                 >
-                  <item.icon className="h-5 w-5" />
-                  {desktopOpen && item.label}
+                  {active && (
+                    <div className="absolute left-0 w-1 h-6 bg-white rounded-r-full" />
+                  )}
+                  <div className={`flex-shrink-0 transition-transform duration-300 group-hover:scale-110
+                    ${active ? "text-white" : isDarkMode ? "text-slate-500 group-hover:text-indigo-400" : "text-slate-400 group-hover:text-teal-500"}`}
+                  >
+                    <Icon size={18} />
+                  </div>
+                  {!collapsed && (
+                    <span className={`text-[13px] font-semibold uppercase tracking-normal whitespace-nowrap ${active ? 'opacity-100' : 'opacity-80'}`}>
+                      {item.label}
+                    </span>
+                  )}
                 </Link>
               </li>
             );
           })}
-
-          <li>
-            <Link
-              to="/logout"
-              className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-50 text-red-500"
-            >
-              <ArrowRightOnRectangleIcon className="h-5 w-5" />
-              {desktopOpen && 'Logout'}
-            </Link>
-          </li>
-
         </ul>
+      </nav>
 
-      </aside>
-    </>
+      {/* Logout */}
+      <div className={`mt-auto border-t pt-5 ${isDarkMode ? 'border-slate-800' : 'border-slate-100'}`}>
+        <button
+          onClick={onLogout}
+          title={collapsed ? "Logout" : undefined}
+          className="w-full group flex items-center gap-4 px-4 py-3.5 rounded-2xl text-rose-500 hover:bg-rose-500/10 transition-all font-semibold uppercase tracking-normal text-xs "
+        >
+          <FaSignOutAlt className="flex-shrink-0 group-hover:-translate-x-1 transition-transform" />
+          {!collapsed && <span>Logout</span>}
+        </button>
+      </div>
+    </div>
   );
-}
 
-/* MOBILE MENU */
-
-function Menu({ menu, location, close }) {
   return (
-    <ul className="space-y-2">
-
-      {menu.map(item => {
-        const active = location.pathname === item.path;
-
-        return (
-          <li key={item.path}>
-            <Link
-              to={item.path}
-              onClick={close}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg
-              ${active ? "bg-blue-100 text-blue-600" : "hover:bg-gray-100"}`}
-            >
-              <item.icon className="h-5 w-5" />
-              {item.label}
-            </Link>
-          </li>
-        );
-      })}
-
-      <Link
-        to="/logout"
-        onClick={close}
-        className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-50 text-red-500"
+    <>
+      {/* ── Mobile hamburger button (always visible on mobile) ── */}
+      <button
+        onClick={() => setMobileOpen(true)}
+        className={`md:hidden fixed top-4 left-4 z-50 w-10 h-10 border rounded-xl flex items-center justify-center shadow-lg transition-colors ${isDarkMode ? 'bg-[#0f172a] border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}
+        aria-label="Open menu"
       >
-        <ArrowRightOnRectangleIcon className="h-5 w-5" />
-        Logout
-      </Link>
+        <FaBars size={16} />
+      </button>
 
-    </ul>
+      {/* ── Mobile overlay backdrop ── */}
+      {mobileOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* ── Mobile drawer ── */}
+      <aside
+        className={`md:hidden fixed top-0 left-0 h-screen w-72 z-50 transition-all duration-300 border-r
+          ${isDarkMode
+            ? 'bg-gradient-to-b from-[#0f172a] via-[#1e1b4b] to-[#0f172a] border-slate-100 shadow-2xl'
+            : 'bg-white border-slate-100 shadow-xl'}
+          ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
+      >
+        <SidebarContent collapsed={false} />
+      </aside>
+
+      {/* ── Desktop sidebar ── */}
+      <aside
+        className={`hidden md:block fixed top-0 left-0 h-screen transition-all duration-500 z-40 border-r
+          ${isDarkMode
+            ? 'bg-gradient-to-b from-[#0f172a] via-[#1e1b4b] to-[#0f172a] border-slate-100 shadow-2xl'
+            : 'bg-white border-slate-100 shadow-sm'}
+          ${desktopCollapsed ? 'w-20' : 'w-72'}`}
+      >
+        {isDarkMode && <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10 pointer-events-none" />}
+        <SidebarContent collapsed={desktopCollapsed} />
+      </aside>
+
+      <style>{`
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
+    </>
   );
 }

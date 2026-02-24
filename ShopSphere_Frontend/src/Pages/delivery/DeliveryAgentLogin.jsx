@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { deliveryRegister } from '../../api/delivery_axios';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
+import { Truck, Lock, Mail, Phone, Calendar, ArrowRight, UserPlus, LogIn, ShieldCheck, Globe, Zap } from 'lucide-react';
+import { useTheme } from '../../context/ThemeContext';
 
 const DeliveryAgentLogin = ({ onLoginSuccess }) => {
     const navigate = useNavigate();
-    console.log("DeliveryAgentLogin rendering...");
+    const { isDarkMode } = useTheme();
     const [activeTab, setActiveTab] = useState('login');
     const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     const [loginForm, setLoginForm] = useState({
@@ -15,45 +19,55 @@ const DeliveryAgentLogin = ({ onLoginSuccess }) => {
         rememberMe: false
     });
 
-    const [signupForm, setSignupForm] = useState({
-        fullName: '',
-        email: '',
-        phone: '',
-        password: '',
-        confirmPassword: '',
-        vehicleType: '',
-        licenseNumber: '',
-        agreeTerms: false
-    });
-
     const [forgotEmail, setForgotEmail] = useState('');
     const [showForgotPassword, setShowForgotPassword] = useState(false);
     const [resetEmailSent, setResetEmailSent] = useState(false);
 
-    const handleLoginSubmit = (e) => {
+    const handleLoginSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-        setTimeout(() => {
-            setIsLoading(false);
-            console.log('Login submitted:', loginForm);
+        try {
+            const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+            const response = await axios.post(`${API_BASE_URL}/user_login`, {
+                email: loginForm.email,
+                password: loginForm.password
+            });
+
+            const data = response.data;
+
+            if (data.role !== 'delivery') {
+                toast.error("Account is not a delivery agent.");
+                setIsLoading(false);
+                return;
+            }
+
+            if (data.access) {
+                localStorage.setItem("accessToken", data.access);
+                localStorage.setItem("refreshToken", data.refresh);
+                localStorage.setItem("user", JSON.stringify(data));
+            }
+
+            toast.success("Welcome back, Commander!");
             navigate('/delivery/dashboard');
             if (onLoginSuccess) {
                 onLoginSuccess();
             }
-        }, 1500);
-    };
+        } catch (error) {
+            console.error('Login error:', error);
+            const status = error.response?.data?.status;
+            const errorMessage = error.response?.data?.error || "Invalid credentials";
 
-    const handleSignupSubmit = (e) => {
-        e.preventDefault();
-        if (signupForm.password !== signupForm.confirmPassword) {
-            alert('Passwords do not match!');
-            return;
-        }
-        setIsLoading(true);
-        setTimeout(() => {
+            if (status === 'pending_approval' || status === 'rejected' || status === 'blocked') {
+                toast.error(errorMessage, {
+                    duration: 6000,
+                    icon: status === 'pending_approval' ? '⏳' : '🚫'
+                });
+            } else {
+                toast.error(errorMessage);
+            }
+        } finally {
             setIsLoading(false);
-            console.log('Signup submitted:', signupForm);
-        }, 1500);
+        }
     };
 
     const handleForgotPassword = (e) => {
@@ -72,237 +86,239 @@ const DeliveryAgentLogin = ({ onLoginSuccess }) => {
     };
 
     return (
-        <div className="min-h-screen w-full flex font-sans overflow-x-hidden m-0 p-0 bg-white">
-
-            
+        <div className={`min-h-screen w-full flex overflow-x-hidden transition-colors duration-300 ${isDarkMode ? 'bg-[#0f172a]' : 'bg-[#f8fafc]'}`}>
             <div className="w-full flex flex-col lg:flex-row min-h-screen">
 
-                <div className="w-full lg:w-1/2 bg-purple-700 min-h-[50vh] lg:min-h-screen p-8 lg:p-20 flex flex-col justify-center items-center relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/10 rounded-full translate-x-1/2 -translate-y-1/2 blur-[100px] pointer-events-none"></div>
-                    <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-white/10 rounded-full -translate-x-1/2 translate-y-1/2 blur-[80px] pointer-events-none"></div>
+                {/* Visual Brand Section */}
+                <div className={`w-full lg:w-1/2 min-h-[40vh] lg:min-h-screen p-8 lg:p-20 flex flex-col justify-center items-center relative overflow-hidden transition-all duration-500 ${isDarkMode ? 'bg-gradient-to-br from-[#0f172a] via-[#1e1b4b] to-[#0f172a]' : 'bg-gradient-to-br from-orange-400 to-purple-500'}`}>
+                    <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-orange-500/10 rounded-full translate-x-1/2 -translate-y-1/2 blur-[150px] pointer-events-none animate-pulse"></div>
+                    <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-orange-500/10 rounded-full -translate-x-1/2 translate-y-1/2 blur-[120px] pointer-events-none animate-pulse"></div>
 
                     <div className="relative z-10 w-full max-w-lg">
-                        <div className="flex items-center gap-6 mb-12 justify-center lg:justify-start">
-                            <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-2xl">
-                                <svg className="w-10 h-10 text-purple-700" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
-                                </svg>
+                        <div className="flex items-center gap-0 mb-20 justify-center lg:justify-start group cursor-default">
+                            <img src="/s_logo.png" alt="ShopSphere" className="w-16 h-16 object-contain transition-transform duration-300 group-hover:scale-110" />
+                            <div className="flex flex-col -ml-5">
+                                <h1 className="text-2xl font-bold text-white tracking-wide leading-none flex items-center">
+                                    hopSphere
+                                    <span className="ml-3 px-3 py-1 bg-orange-500 text-white text-[8px] font-bold uppercase tracking-widest rounded-lg">DELIVERY</span>
+                                </h1>
+                                <p className="text-indigo-300 text-[9px] font-bold uppercase tracking-wider mt-1">Delivery Portal</p>
                             </div>
-                            <h1 className="text-3xl font-black text-white tracking-[6px] uppercase">ShopSphere</h1>
                         </div>
 
-                        <div className="text-center lg:text-left transition-all duration-500">
-                            <h2 className="text-5xl lg:text-7xl font-black text-white mb-6 leading-tight">
-                                Elevate Your <br />
-                                <span className="text-purple-200">Operations.</span>
+                        <div className="text-center lg:text-left">
+                            <h2 className="text-6xl lg:text-8xl font-bold text-white mb-8 tracking-tight leading-[0.8]  uppercase">
+                                MOVE <br />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-orange-400 to-purple-400">FASTER.</span>
                             </h2>
-                            <p className="text-purple-50 text-xl leading-relaxed mb-12 max-w-md mx-auto lg:mx-0 font-medium opacity-80">
-                                The premier logistics portal tailored for modern delivery experts. Track, earn, and excel with every delivery.
+                            <p className="text-indigo-200/60 text-lg leading-relaxed mb-12 max-w-sm mx-auto lg:mx-0 font-medium">
+                                Deliver faster, smarter, and get paid. Log in to your delivery dashboard.
                             </p>
                         </div>
 
-                        {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8">
-                            <div className="flex flex-col items-center lg:items-start group p-6 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all">
-                                <div className="text-3xl mb-3">⚡</div>
-                                <span className="text-white font-bold tracking-[3px] uppercase text-[10px]">Real-time Stats</span>
+                        <div className="grid grid-cols-2 gap-4 md:gap-6 mt-12">
+                            <div className="p-6 md:p-8 bg-white/5 border border-white/10 rounded-[32px] backdrop-blur-xl group hover:border-orange-500/50 transition-all cursor-default">
+                                <Zap className="text-orange-400 mb-4" size={24} />
+                                <p className="text-[9px] font-bold text-white/50 uppercase tracking-widest mb-1">Response Time</p>
+                                <p className="text-2xl font-bold text-white">4.2min</p>
+                                <p className="text-[8px] text-orange-400 font-bold mt-1 uppercase">Instant Dispatch</p>
                             </div>
-                            <div className="flex flex-col items-center lg:items-start group p-6 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all">
-                                <div className="text-3xl mb-3">💎</div>
-                                <span className="text-white font-bold tracking-[3px] uppercase text-[10px]">Premium Perks</span>
+                            <div className="p-6 md:p-8 bg-white/5 border border-white/10 rounded-[32px] backdrop-blur-xl group hover:border-orange-500/50 transition-all cursor-default">
+                                <Globe className="text-orange-400 mb-4" size={24} />
+                                <p className="text-[9px] font-bold text-white/50 uppercase tracking-widest mb-1">Global Reach</p>
+                                <p className="text-2xl font-bold text-white">128+</p>
+                                <p className="text-[8px] text-orange-400 font-bold mt-1 uppercase">Active Hubs</p>
                             </div>
-                        </div> */}
+                        </div>
                     </div>
                 </div>
 
-                <div className="w-full lg:w-1/2 p-8 lg:p-20 flex flex-col justify-center items-center bg-white min-h-[50vh] lg:min-h-screen">
-                    <div className="w-full max-w-md animate-fadeIn">
-
+                {/* Interactive Form Section */}
+                <div className={`w-full lg:w-1/2 p-8 lg:p-20 flex flex-col justify-center items-center relative transition-colors duration-300 ${isDarkMode ? 'bg-[#0f172a]' : 'bg-white'}`}>
+                    <div className="w-full max-w-lg scroll-mt-20">
                         <div className="mb-12 text-center lg:text-left">
-                            <h2 className="text-4xl lg:text-5xl font-black text-purple-900 tracking-tighter mb-4">Partner Portal</h2>
-                            <p className="text-black font-extrabold uppercase tracking-[6px] text-[10px] opacity-80">Secure Access Point</p>
+                            <h2 className={`text-4xl lg:text-5xl font-bold tracking-tight mb-3  uppercase transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                                Authenticate
+                            </h2>
+                            <div className="flex items-center gap-3 justify-center lg:justify-start">
+                                <div className="h-1.5 w-12 bg-orange-500 rounded-full"></div>
+                                <p className={`font-bold uppercase tracking-wider text-[9px] ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>Delivery Agent Login</p>
+                            </div>
                         </div>
 
-                        <div className="flex bg-purple-50/50 rounded-[32px] p-2 mb-12 border border-purple-100 shadow-sm">
+                        {/* Tab Switcher */}
+                        <div className={`flex p-2 rounded-[32px] mb-10 border transition-all ${isDarkMode ? 'bg-white/5 border-white/5' : 'bg-slate-100 border-slate-200 shadow-inner'}`}>
                             <button
-                                className={`flex-1 py-4.5 rounded-[26px] text-[11px] font-black uppercase tracking-[2px] transition-all duration-300 ${activeTab === 'login'
-                                    ? 'bg-purple-600 text-white shadow-xl shadow-purple-200'
-                                    : 'bg-transparent text-purple-600/40 hover:text-purple-600'
-                                    }`}
                                 onClick={() => setActiveTab('login')}
+                                className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-[26px] text-[10px] font-bold uppercase tracking-wider transition-all duration-300 ${activeTab === 'login'
+                                    ? 'bg-orange-500 text-white shadow-xl shadow-indigo-900/40 scale-[1.02]'
+                                    : isDarkMode ? 'bg-transparent text-slate-500 hover:text-white' : 'bg-transparent text-slate-500 hover:text-slate-900'
+                                    }`}
                             >
-                                Sign In
+                                <LogIn size={14} /> Login
                             </button>
                             <button
-                                className={`flex-1 py-4.5 rounded-[26px] text-[11px] font-black uppercase tracking-[2px] transition-all duration-300 ${activeTab === 'signup'
-                                    ? 'bg-purple-600 text-white shadow-xl shadow-purple-200'
-                                    : 'bg-transparent text-purple-600/40 hover:text-purple-600'
-                                    }`}
                                 onClick={() => setActiveTab('signup')}
+                                className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-[26px] text-[10px] font-bold uppercase tracking-wider transition-all duration-300 ${activeTab === 'signup'
+                                    ? 'bg-orange-500 text-white shadow-xl shadow-indigo-900/40 scale-[1.02]'
+                                    : isDarkMode ? 'bg-transparent text-slate-500 hover:text-white' : 'bg-transparent text-slate-500 hover:text-slate-900'
+                                    }`}
                             >
-                                Sign Up
+                                <UserPlus size={14} /> Register
                             </button>
                         </div>
 
-                      
-                        <div className="space-y-6">
+                        <div className="transition-all duration-500">
                             {activeTab === 'login' ? (
-                                <form className="space-y-6" onSubmit={handleLoginSubmit}>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-[2px] text-black ml-1">Email Identifier</label>
+                                <form className="space-y-6 animate-fadeInUp" onSubmit={handleLoginSubmit}>
+                                    <div className="space-y-3">
+                                        <label className={`text-[9px] font-bold uppercase tracking-wider ml-1 flex items-center gap-2 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                                            <Mail size={10} /> Email Address
+                                        </label>
                                         <input
                                             type="email"
-                                            placeholder="partner@shopsphere.com"
-                                            className="w-full py-5 px-7 border-2 border-purple-50 rounded-3xl bg-purple-50/30 text-purple-900 font-bold outline-none transition-all focus:border-purple-600 focus:bg-white placeholder:text-purple-200 shadow-sm"
+                                            placeholder="your@email.com"
+                                            className={`w-full py-5 px-8 border-2 rounded-[24px] font-bold outline-none transition-all placeholder:text-slate-300  shadow-sm hover:border-orange-500/30 focus:border-orange-500 ${isDarkMode ? 'bg-white/5 border-white/5 text-white focus:bg-white/10' : 'bg-slate-50 border-slate-100 text-slate-900 focus:bg-white'}`}
                                             value={loginForm.email}
                                             onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
                                             required
                                         />
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-[2px] text-black ml-1">Secret Password</label>
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between items-center px-1">
+                                            <label className={`text-[9px] font-bold uppercase tracking-wider flex items-center gap-2 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                                                <Lock size={10} /> Password
+                                            </label>
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowForgotPassword(true)}
+                                                className="text-[9px] font-bold uppercase tracking-wider text-orange-500 hover:text-orange-600 transition-colors bg-transparent border-none cursor-pointer"
+                                            >
+                                                Forgot Password?
+                                            </button>
+                                        </div>
                                         <div className="relative">
                                             <input
                                                 type={showPassword ? 'text' : 'password'}
                                                 placeholder="••••••••"
-                                                className="w-full py-5 px-7 border-2 border-purple-50 rounded-3xl bg-purple-50/30 text-purple-900 font-bold outline-none transition-all focus:border-purple-600 focus:bg-white placeholder:text-purple-200 shadow-sm"
+                                                className={`w-full py-5 px-8 border-2 rounded-[24px] font-bold outline-none transition-all placeholder:text-slate-300  shadow-sm hover:border-orange-500/30 focus:border-orange-500 ${isDarkMode ? 'bg-white/5 border-white/5 text-white focus:bg-white/10' : 'bg-slate-50 border-slate-100 text-slate-900 focus:bg-white'}`}
                                                 value={loginForm.password}
                                                 onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
                                                 required
                                             />
                                             <button
                                                 type="button"
-                                                className="absolute right-4 top-1/2 -translate-y-1/2 h-10 px-5 bg-purple-50 text-purple-600 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-purple-100 transition-all border-none cursor-pointer"
+                                                className={`absolute right-5 top-1/2 -translate-y-1/2 h-9 px-4 rounded-xl text-[8px] font-bold uppercase tracking-widest transition-all ${isDarkMode ? 'bg-white/10 text-white hover:bg-white hover:text-slate-900 shadow-lg shadow-white/5' : 'bg-slate-900 text-white hover:bg-slate-700'}`}
                                                 onClick={() => setShowPassword(!showPassword)}
                                             >
-                                                {showPassword ? 'HIDE' : 'SHOW'}
+                                                {showPassword ? 'Hide' : 'Show'}
                                             </button>
                                         </div>
                                     </div>
 
-                                    
-                                    <div className="flex justify-end pr-1">
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowForgotPassword(true)}
-                                            className="text-[10px] font-black uppercase tracking-widest text-purple-600 hover:text-purple-800 transition-colors bg-transparent border-none cursor-pointer"
-                                        >
-                                            Recovery Options?
-                                        </button>
-                                    </div>
-
                                     <button
                                         type="submit"
-                                        className="w-full py-5.5 border-none rounded-3xl bg-purple-600 text-white text-sm font-black uppercase tracking-[4px] cursor-pointer transition-all duration-300 shadow-2xl shadow-purple-200 hover:bg-purple-700 hover:-translate-y-1 active:scale-[0.98] mt-4"
+                                        className="w-full py-6 rounded-[28px] bg-orange-500 hover:bg-orange-500 text-white text-[11px] font-bold uppercase tracking-wider transition-all duration-500 shadow-2xl shadow-indigo-900/40 hover:scale-[1.02] active:scale-[0.98] mt-6 flex items-center justify-center gap-4 "
                                         disabled={isLoading}
                                     >
-                                        {isLoading ? "AUTHENTICATING..." : "SIGN IN NOW"}
+                                        {isLoading ? (
+                                            <>
+                                                <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                                                Decrypting...
+                                            </>
+                                        ) : (
+                                            <>
+                                                Log In <ArrowRight size={16} />
+                                            </>
+                                        )}
                                     </button>
                                 </form>
                             ) : (
-                                <form className="space-y-4" onSubmit={handleSignupSubmit}>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <input
-                                            type="text"
-                                            placeholder="First Name"
-                                            className="w-full py-4.5 px-6 border-2 border-purple-50 rounded-2xl bg-purple-50/30 text-purple-900 font-bold outline-none focus:border-purple-600"
-                                            value={signupForm.fullName}
-                                            onChange={(e) => setSignupForm({ ...signupForm, fullName: e.target.value })}
-                                            required
-                                        />
-                                        <input
-                                            type="tel"
-                                            placeholder="Mobile"
-                                            className="w-full py-4.5 px-6 border-2 border-purple-50 rounded-2xl bg-purple-50/30 text-purple-900 font-bold outline-none focus:border-purple-600"
-                                            value={signupForm.phone}
-                                            onChange={(e) => setSignupForm({ ...signupForm, phone: e.target.value })}
-                                            required
-                                        />
+                                <div className="space-y-10 py-10 text-center animate-fadeInUp">
+                                    <div className="relative mx-auto">
+                                        <div className="w-24 h-24 bg-orange-500/10 rounded-[40px] flex items-center justify-center mx-auto text-4xl shadow-2xl shadow-indigo-900/10 mb-8 border border-orange-500/20">
+                                            <Truck className="text-orange-500" size={40} />
+                                        </div>
+                                        <div className="absolute -top-2 -right-2 w-8 h-8 bg-emerald-500 rounded-full border-4 border-white flex items-center justify-center text-white scale-0 animate-popIn">
+                                            <ShieldCheck size={14} />
+                                        </div>
                                     </div>
-                                    <select
-                                        className="w-full py-4.5 px-6 border-2 border-purple-50 rounded-2xl bg-purple-50/30 text-purple-900 font-bold outline-none focus:border-purple-600 appearance-none cursor-pointer"
-                                        value={signupForm.vehicleType}
-                                        onChange={(e) => setSignupForm({ ...signupForm, vehicleType: e.target.value })}
-                                        required
-                                    >
-                                        <option value="">Choose Vehicle</option>
-                                        <option value="bike">Bicycle</option>
-                                        <option value="scooter">Motorcycle</option>
-                                        <option value="car">Car / Van</option>
-                                    </select>
-                                    <input
-                                        type="text"
-                                        placeholder="License Number"
-                                        className="w-full py-4.5 px-6 border-2 border-purple-50 rounded-2xl bg-purple-50/30 text-purple-900 font-bold outline-none focus:border-purple-600"
-                                        value={signupForm.licenseNumber}
-                                        onChange={(e) => setSignupForm({ ...signupForm, licenseNumber: e.target.value })}
-                                        required
-                                    />
-                                    <input
-                                        type="password"
-                                        placeholder="Create Password"
-                                        className="w-full py-4.5 px-6 border-2 border-purple-50 rounded-2xl bg-purple-50/30 text-purple-900 font-bold outline-none focus:border-purple-600"
-                                        value={signupForm.password}
-                                        onChange={(e) => setSignupForm({ ...signupForm, password: e.target.value })}
-                                        required
-                                    />
+                                    <div className="space-y-3">
+                                        <h3 className={`text-4xl font-bold tracking-tight  transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Become an Agent</h3>
+                                        <p className={`font-bold uppercase tracking-widest text-[9px] max-w-xs mx-auto leading-relaxed ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                                            Apply to become a delivery agent. Complete the registration and get approved.
+                                        </p>
+                                    </div>
                                     <button
-                                        type="submit"
-                                        className="w-full py-5.5 bg-purple-600 text-white text-[11px] font-black uppercase tracking-[3px] rounded-3xl transition-all hover:bg-purple-700 shadow-xl mt-4"
+                                        onClick={() => navigate("/delivery/account-verification")}
+                                        className="w-full py-6 bg-slate-900 text-white rounded-[28px] text-[11px] font-bold uppercase tracking-wider shadow-2xl hover:bg-orange-500 transition-all hover:scale-[1.02] active:scale-[0.98]"
                                     >
-                                        CREATE ACCOUNT
+                                        Get Started
                                     </button>
-                                </form>
+                                    <div className="flex items-center justify-center gap-6 pt-4">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                                            <span className={`text-[8px] font-bold uppercase tracking-widest ${isDarkMode ? 'text-slate-600' : 'text-slate-400'}`}>OTP Secure</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                                            <span className={`text-[8px] font-bold uppercase tracking-widest ${isDarkMode ? 'text-slate-600' : 'text-slate-400'}`}>KYC Ready</span>
+                                        </div>
+                                    </div>
+                                </div>
                             )}
                         </div>
 
-                        <div className="mt-16">
-                            <div className="flex items-center gap-6 mb-8 text-[#00000033]">
-                                <div className="flex-1 h-px bg-purple-100"></div>
-                                <span className="text-[10px] font-black uppercase tracking-[5px]">Connect with</span>
-                                <div className="flex-1 h-px bg-purple-100"></div>
-                            </div>
-                            <div className="flex gap-5">
-                                <button className="flex-1 py-5 bg-white border-2 border-purple-50 text-purple-600 rounded-3xl flex items-center justify-center hover:bg-purple-50 transition-all shadow-sm cursor-pointer">
-                                    <svg width="22" height="22" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" /><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" /><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" /><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" /></svg>
-                                </button>
-                                <button className="flex-1 py-5 bg-white border-2 border-purple-50 text-purple-600 rounded-3xl flex items-center justify-center hover:bg-purple-50 transition-all shadow-sm cursor-pointer">
-                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
-                                </button>
-                            </div>
+                        <div className="mt-20 text-center">
+                            <p className="text-[10px] font-bold flex items-center justify-center gap-4 transition-colors">
+                                <span className={isDarkMode ? 'text-slate-700' : 'text-slate-300'}>© 2026 ShopSphere</span>
+                                <span className={isDarkMode ? 'text-slate-700' : 'text-slate-300'}>•</span>
+                                <span className={isDarkMode ? 'text-slate-700' : 'text-slate-300'}>Delivery Portal</span>
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
 
+            {/* Forgot Password Modal */}
             {showForgotPassword && (
-                <div className="fixed inset-0 bg-purple-950/90 flex items-center justify-center z-[100] backdrop-blur-xl p-6" onClick={closeForgotModal}>
-                    <div className="bg-white rounded-[48px] p-12 md:p-16 max-w-md w-full relative shadow-3xl animate-fadeIn text-center" onClick={(e) => e.stopPropagation()}>
-
-                        <button className="absolute top-10 right-10 text-[10px] font-black tracking-widest text-purple-200 hover:text-purple-600 transition-colors bg-transparent border-none cursor-pointer" onClick={closeForgotModal}>CLOSE</button>
+                <div className={`fixed inset-0 backdrop-blur-2xl flex items-center justify-center z-[100] p-6 transition-all ${isDarkMode ? 'bg-[#0f172a]/95' : 'bg-slate-900/60'}`} onClick={closeForgotModal}>
+                    <div className={`rounded-[56px] p-12 md:p-16 max-w-lg w-full relative shadow-3xl animate-scaleIn text-center overflow-hidden border transition-all ${isDarkMode ? 'bg-[#0f172a] border-white/10' : 'bg-white border-slate-200'}`} onClick={(e) => e.stopPropagation()}>
+                        <div className="absolute top-0 right-0 w-40 h-40 bg-orange-500/5 rounded-full translate-x-1/2 -translate-y-1/2 blur-2xl"></div>
+                        <button className="absolute top-10 right-10 text-[9px] font-bold tracking-widest text-slate-400 hover:text-orange-500 transition-colors bg-transparent border-none cursor-pointer uppercase " onClick={closeForgotModal}>Abort</button>
 
                         {!resetEmailSent ? (
-                            <div className="space-y-8">
-                                <div className="w-20 h-20 bg-purple-50 rounded-3xl flex items-center justify-center mx-auto text-4xl">🔐</div>
-                                <h3 className="text-3xl font-black text-purple-900">Security Reset</h3>
-                                <p className="text-black/40 font-bold uppercase tracking-widest text-[10px]">Guidelines will be sent via email.</p>
+                            <div className="space-y-10">
+                                <div className={`w-24 h-24 rounded-[40px] flex items-center justify-center mx-auto text-4xl shadow-inner border transition-all ${isDarkMode ? 'bg-white/5 border-white/5' : 'bg-slate-50 border-slate-100'}`}>
+                                    <Lock className="text-orange-500" size={32} />
+                                </div>
+                                <div className="space-y-2">
+                                    <h3 className={`text-4xl font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Forgot Password?</h3>
+                                    <p className={`font-bold uppercase tracking-widest text-[9px] ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>Enter your email to reset your password</p>
+                                </div>
                                 <form className="space-y-6" onSubmit={handleForgotPassword}>
                                     <input
                                         type="email"
-                                        placeholder="Enter partner email"
-                                        className="w-full py-5 px-8 border-2 border-purple-50 rounded-3xl bg-purple-50/50 text-purple-900 font-bold text-center outline-none focus:border-purple-600 transition-all font-sans"
+                                        placeholder="agent@shopsphere.hq"
+                                        className={`w-full py-6 px-10 border-2 rounded-[28px] font-bold text-center outline-none transition-all text-sm  ${isDarkMode ? 'bg-white/5 border-white/10 text-white focus:border-orange-500' : 'bg-slate-50 border-slate-100 text-slate-900 focus:border-orange-500'}`}
                                         value={forgotEmail}
                                         onChange={(e) => setForgotEmail(e.target.value)}
                                         required
                                     />
-                                    <button type="submit" className="w-full py-5 bg-purple-600 text-white rounded-3xl font-black uppercase tracking-[3px] shadow-2xl hover:bg-purple-700 transition-all border-none cursor-pointer">Reset Now</button>
+                                    <button type="submit" className="w-full py-6 bg-slate-900 text-white rounded-[28px] font-bold uppercase tracking-wider shadow-2xl hover:bg-orange-500 transition-all border-none cursor-pointer shadow-indigo-900/10">Send Reset Link</button>
                                 </form>
                             </div>
                         ) : (
-                            <div className="space-y-8 py-6">
-                                <div className="w-24 h-24 bg-purple-50 rounded-[40px] flex items-center justify-center mx-auto text-5xl">📨</div>
-                                <h3 className="text-3xl font-black text-purple-900">Link Sent</h3>
-                                <p className="text-purple-600 font-bold tracking-tight text-lg">{forgotEmail}</p>
-                                <button className="w-full py-5 bg-purple-600 text-white rounded-3xl font-black uppercase tracking-[3px] border-none cursor-pointer shadow-xl" onClick={closeForgotModal}>Done</button>
+                            <div className="space-y-10 py-10">
+                                <div className="w-28 h-28 bg-emerald-500/10 rounded-[48px] flex items-center justify-center mx-auto text-5xl shadow-2xl shadow-emerald-900/10 border border-emerald-500/20">
+                                    <Mail className="text-emerald-500" size={48} />
+                                </div>
+                                <div className="space-y-4">
+                                    <h3 className={`text-4xl font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Email Sent!</h3>
+                                    <p className="text-emerald-500 font-bold tracking-tight text-xl ">{forgotEmail}</p>
+                                    <p className={`text-[9px] font-bold uppercase tracking-widest ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>Check your email for a reset link.</p>
+                                </div>
+                                <button className={`w-full py-6 rounded-[28px] font-bold uppercase tracking-wider border-none cursor-pointer shadow-xl transition-all  ${isDarkMode ? 'bg-white text-[#0f172a] hover:bg-orange-500 hover:text-white' : 'bg-slate-900 text-white hover:bg-slate-800'}`} onClick={closeForgotModal}>Close Link</button>
                             </div>
                         )}
                     </div>
@@ -310,20 +326,27 @@ const DeliveryAgentLogin = ({ onLoginSuccess }) => {
             )}
 
             <style>{`
-                @keyframes fadeIn {
-                    from { opacity: 0; transform: translateY(30px); }
+                @keyframes fadeInUp {
+                    from { opacity: 0; transform: translateY(20px); }
                     to { opacity: 1; transform: translateY(0); }
                 }
-                .animate-fadeIn {
-                    animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                @keyframes scaleIn {
+                    from { opacity: 0; transform: scale(0.95); }
+                    to { opacity: 1; transform: scale(1); }
                 }
-                select {
-                    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%237c3aed'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-                    background-repeat: no-repeat;
-                    background-position: right 1.5rem center;
-                    background-size: 1.1rem;
+                @keyframes popIn {
+                    from { transform: scale(0); }
+                    to { transform: scale(1); }
                 }
-                ::-webkit-scrollbar { display: none; }
+                .animate-fadeInUp {
+                    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                }
+                .animate-scaleIn {
+                    animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                }
+                .animate-popIn {
+                    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.5s forwards;
+                }
             `}</style>
         </div>
     );

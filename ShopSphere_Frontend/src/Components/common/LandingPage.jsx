@@ -66,7 +66,7 @@ const LandingPage = () => {
                         key={index}
                         size={75}
                         strokeWidth={1}
-                        className="text-violet-300/40"
+                        className="text-orange-300/40"
                     />
                 ))}
             </motion.div>
@@ -110,14 +110,14 @@ const LandingPage = () => {
                     src="/s_logo.png"
                     alt="ShopSphere Logo"
                     className="w-64 h-64 md:w-80 md:h-80 object-contain
-                    drop-shadow-[0_0_45px_rgba(139,92,246,0.6)]"
+                    drop-shadow-[0_0_45px_rgba(249,115,22,0.6)]"
                 />
 
                 <motion.div
                     initial={{ width: 0, opacity: 0 }}
                     animate={{ width: "10rem", opacity: 1 }}
                     transition={{ delay: 0.6, duration: 1.4 }}
-                    className="mt-3 h-0.5 bg-gradient-to-r from-transparent via-violet-500 to-transparent"
+                    className="mt-3 h-0.5 bg-gradient-to-r from-transparent via-orange-500 to-transparent"
                 />
             </motion.div>
         </div>

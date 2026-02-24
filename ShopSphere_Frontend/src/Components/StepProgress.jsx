@@ -80,18 +80,18 @@ export default function StepProgress() {
                                 animate={{
                                     backgroundColor:
                                         isCompleted || isActive
-                                            ? "#6d28d9"
+                                            ? "#fb923c"
                                             : "#ffffff",
                                     borderColor:
                                         isCompleted || isActive
-                                            ? "#6d28d9"
-                                            : "#ddd6fe",
+                                            ? "#fb923c"
+                                            : "#fed7aa",
                                     scale: isActive ? 1.1 : 1,
                                 }}
                                 className={`flex items-center justify-center w-10 h-10 rounded-full border-2 z-10
                                 ${isCompleted || isActive
                                         ? "text-white"
-                                        : "text-purple-300"
+                                        : "text-orange-300"
                                     }`}
                             >
                                 {isCompleted ? (
@@ -116,7 +116,7 @@ export default function StepProgress() {
                             <span
                                 className={`absolute -bottom-7 whitespace-nowrap text-xs font-semibold transition-colors duration-300
                                 ${isActive
-                                        ? "text-purple-700"
+                                        ? "text-orange-400"
                                         : isCompleted
                                             ? "text-gray-500"
                                             : "text-gray-400"
@@ -128,7 +128,7 @@ export default function StepProgress() {
 
                         {/* Progress Line */}
                         {index !== steps.length - 1 && (
-                            <div className="flex-1 h-1 bg-purple-100 mx-2 relative overflow-hidden rounded-full">
+                            <div className="flex-1 h-1 bg-orange-100 mx-2 relative overflow-hidden rounded-full">
                                 <motion.div
                                     initial={{ width: "0%" }}
                                     animate={{
@@ -138,7 +138,7 @@ export default function StepProgress() {
                                         duration: 0.6,
                                         ease: "easeInOut",
                                     }}
-                                    className="h-full bg-purple-600 rounded-full"
+                                    className="h-full bg-gradient-to-r from-orange-400 to-purple-500 rounded-full"
                                 />
                             </div>
                         )}

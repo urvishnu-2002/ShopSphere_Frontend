@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import StepProgress from "../../Components/StepProgress";
 import { useNavigate } from "react-router-dom";
 import { vendorRegister } from "../../api/vendor_axios";
+import { Check } from "lucide-react";
 
 export default function BankDetails() {
     const navigate = useNavigate();
@@ -18,23 +19,32 @@ export default function BankDetails() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [apiError, setApiError] = useState("");
 
+    // File upload state
+    const [idProofFile, setIdProofFile] = useState(null); // The GST or PAN certificate
+    const [additionalDocs, setAdditionalDocs] = useState(null);
+    const [selfieWithId, setSelfieWithId] = useState(null);
+    const [selfiePreview, setSelfiePreview] = useState(null);
+    const [fileErrors, setFileErrors] = useState({});
+
+    const idInputRef = useRef(null);
+    const docsInputRef = useRef(null);
+    const selfieInputRef = useRef(null);
+
     // Load previously saved vendor data from localStorage
     const [vendorData, setVendorData] = useState({});
 
     useEffect(() => {
-        // Retrieve all vendor form data from localStorage
         const gstData = JSON.parse(localStorage.getItem("vendorGSTData") || "{}");
         const storeData = JSON.parse(localStorage.getItem("vendorStoreData") || "{}");
         const shippingData = JSON.parse(localStorage.getItem("vendorShippingData") || "{}");
         const feeData = JSON.parse(localStorage.getItem("vendorFeeData") || "{}");
-        const authData = JSON.parse(localStorage.getItem("user") || "{}"); // If user info is stored here
+        const authData = JSON.parse(localStorage.getItem("user") || "{}");
 
         const combinedData = {
             ...gstData,
             ...storeData,
             ...shippingData,
             ...feeData,
-            // Fallbacks for individual keys
             shopName: storeData.shopName || localStorage.getItem("shop_name"),
             shopDescription: storeData.shopDescription || localStorage.getItem("shop_description"),
             businessType: storeData.businessType || localStorage.getItem("business_type"),
@@ -42,13 +52,12 @@ export default function BankDetails() {
             gstNumber: gstData.gstNumber || localStorage.getItem("gst_number") || localStorage.getItem("gst"),
             panNumber: gstData.panNumber || localStorage.getItem("pan_number"),
             panName: gstData.panName || localStorage.getItem("pan_name"),
-            idType: gstData.idType || localStorage.getItem("id_type"),
+            idType: gstData.idType || localStorage.getItem("id_type") || (gstData.gstNumber ? "gst" : "pan"),
             username: localStorage.getItem("username") || authData.username || "",
             email: localStorage.getItem("email") || authData.email || "",
             password: localStorage.getItem("password") || ""
         };
 
-        // If shippingAddress is still missing, try formatting from pickupAddress
         if (!combinedData.shippingAddress) {
             const pickup = JSON.parse(localStorage.getItem("pickupAddress") || "null");
             if (pickup) {
@@ -56,338 +65,314 @@ export default function BankDetails() {
             }
         }
 
-        console.log("Loaded Vendor Data from Storage:", combinedData);
         setVendorData(combinedData);
     }, []);
 
     // FIELD VALIDATION
-
     const validateField = (name, value, currentForm) => {
         switch (name) {
             case "holderName": {
-                const letters = value.replace(/[^A-Za-z]/g, "");
                 if (!value.trim()) return "Account holder name is required";
-                if (!/^[A-Za-z ]+$/.test(value))
-                    return "Only letters and spaces are allowed";
-                if (letters.length < 3)
-                    return "Name must contain at least 3 letters";
+                if (!/^[A-Za-z ]+$/.test(value)) return "Only letters and spaces are allowed";
+                if (value.replace(/[^A-Za-z]/g, "").length < 3) return "Name must contain at least 3 letters";
                 return "";
             }
-
             case "accountNumber":
                 if (!value) return "Bank account number is required";
-                if (!/^\d{9,18}$/.test(value))
-                    return "Account number must be 9 to 18 digits";
+                if (!/^\d{9,18}$/.test(value)) return "Account number must be 9 to 18 digits";
                 return "";
-
             case "confirmAccountNumber":
                 if (!value) return "Please re-enter account number";
-                if (value !== currentForm.accountNumber)
-                    return "Account numbers do not match";
+                if (value !== currentForm.accountNumber) return "Account numbers do not match";
                 return "";
-
             case "ifsc":
                 if (!value) return "IFSC code is required";
-                if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(value))
-                    return "Enter a valid IFSC code";
+                if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(value)) return "Enter a valid IFSC code";
                 return "";
-
             default:
                 return "";
         }
     };
 
-    // HANDLE CHANGE
-
     const handleChange = (field, rawValue) => {
         let value = rawValue;
-
-        // INPUT RESTRICTIONS
-        if (field === "holderName") {
-            value = value.replace(/[^A-Za-z ]/g, "");
-        }
-
-        if (field === "accountNumber" || field === "confirmAccountNumber") {
-            value = value.replace(/\D/g, "").slice(0, 18);
-        }
-
-        if (field === "ifsc") {
-            value = value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 11);
-        }
+        if (field === "holderName") value = value.replace(/[^A-Za-z ]/g, "");
+        if (field === "accountNumber" || field === "confirmAccountNumber") value = value.replace(/\D/g, "").slice(0, 18);
+        if (field === "ifsc") value = value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 11);
 
         const updatedForm = { ...form, [field]: value };
-
         setForm(updatedForm);
-
         const error = validateField(field, value, updatedForm);
+        setErrors({ ...errors, [field]: error });
+    };
 
-        setErrors({
-            ...errors,
-            [field]: error,
-        });
+    // --- File Handlers ---
+    const handleFileValidation = (file, maxSizeMB = 10) => {
+        if (!file) return null;
+        const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+        if (!allowedTypes.includes(file.type)) return "Allowed: PDF, JPG, PNG, DOC, DOCX";
+        if (file.size > maxSizeMB * 1024 * 1024) return `Max file size is ${maxSizeMB} MB`;
+        return null;
+    };
+
+    const handleIdProofChange = (e) => {
+        const file = e.target.files?.[0];
+        const error = handleFileValidation(file);
+        if (error) { setFileErrors(prev => ({ ...prev, idProof: error })); e.target.value = ""; return; }
+        setFileErrors(prev => ({ ...prev, idProof: "" }));
+        setIdProofFile(file);
+    };
+
+    const handleAdditionalDocsChange = (e) => {
+        const file = e.target.files?.[0];
+        const error = handleFileValidation(file);
+        if (error) { setFileErrors(prev => ({ ...prev, docs: error })); e.target.value = ""; return; }
+        setFileErrors(prev => ({ ...prev, docs: "" }));
+        setAdditionalDocs(file);
+    };
+
+    const handleSelfieChange = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        if (!file.type.startsWith("image/")) { setFileErrors(prev => ({ ...prev, selfie: "Please upload an image file" })); return; }
+        if (file.size > 5 * 1024 * 1024) { setFileErrors(prev => ({ ...prev, selfie: "Max 5 MB" })); return; }
+        setFileErrors(prev => ({ ...prev, selfie: "" }));
+        setSelfieWithId(file);
+        const reader = new FileReader();
+        reader.onload = (ev) => setSelfiePreview(ev.target.result);
+        reader.readAsDataURL(file);
     };
 
     // FINAL SUBMIT
-
     const handleContinue = async () => {
         const newErrors = {};
-
         Object.keys(form).forEach((key) => {
             const error = validateField(key, form[key], form);
             if (error) newErrors[key] = error;
         });
-
         setErrors(newErrors);
-
         if (Object.keys(newErrors).length > 0) return;
+
+        const newFileErrors = {};
+        if (!idProofFile) newFileErrors.idProof = `Please upload your ${vendorData.idType === "gst" ? "GST Certificate" : "PAN Card"}`;
+        if (!additionalDocs) newFileErrors.docs = "Please upload supporting documents";
+        if (!selfieWithId) newFileErrors.selfie = "Selfie with ID is required";
+        setFileErrors(newFileErrors);
+        if (Object.keys(newFileErrors).length > 0) return;
 
         setIsSubmitting(true);
         setApiError("");
 
         try {
-            // Combine all vendor data with bank details
             const completeVendorData = {
-                // User credentials
                 username: vendorData.username || "",
                 email: vendorData.email || "",
                 password: vendorData.password || "",
-
-                // GST/PAN details
                 gst_number: vendorData.gstNumber || vendorData.gst || "",
                 pan_number: vendorData.panNumber || "",
                 pan_name: vendorData.panName || "",
-                id_type: vendorData.idType || (vendorData.gstNumber ? "gst" : "pan"),
-                id_number: vendorData.gstNumber || vendorData.panNumber || "",
-
-                // Store details
-                shop_name: vendorData.shopName || vendorData.storeName || "",
-                shop_description: vendorData.shopDescription || vendorData.storeDescription || "",
+                id_type: vendorData.idType || "gst",
+                id_number: vendorData.idNumber || vendorData.gstNumber || vendorData.panNumber || "",
+                shop_name: vendorData.shopName || "",
+                shop_description: vendorData.shopDescription || "",
                 business_type: vendorData.businessType || "retail",
-
-                // Shipping address
                 address: vendorData.shippingAddress || "",
-
-                // Shipping fee preferences
                 shipping_fee: vendorData.shippingFee || "0",
-
-                // Bank details
                 bank_holder_name: form.holderName,
                 bank_account_number: form.accountNumber,
                 bank_ifsc_code: form.ifsc,
             };
 
-            console.log("Submitting Vendor payload:", completeVendorData);
+            const files = {
+                id_proof_file: idProofFile,
+                pan_card_file: vendorData.idType === "pan" ? idProofFile : null,
+                additional_documents: additionalDocs,
+                selfie_with_id: selfieWithId,
+            };
 
-            // Call the API
-            const response = await vendorRegister(completeVendorData);
+            await vendorRegister(completeVendorData, files);
 
-            console.log("Success! Details have been successfully sent to the Admin for approval.");
-            console.log("Response:", response);
-
-            // Clear all vendor data from localStorage after successful submission
             localStorage.removeItem("vendorGSTData");
             localStorage.removeItem("vendorStoreData");
             localStorage.removeItem("vendorShippingData");
             localStorage.removeItem("vendorFeeData");
+            localStorage.removeItem("username");
+            localStorage.removeItem("email");
+            localStorage.removeItem("password");
 
-            // Show success modal
             setShowSuccessModal(true);
-
         } catch (error) {
-            console.error("Error registering vendor:", error);
-
-            // Handle different error types
-            if (error.response) {
-                // Server responded with error
-                const errorMessage = error.response.data?.error ||
-                    error.response.data?.message ||
-                    "Registration failed. Please try again.";
-                setApiError(errorMessage);
-            } else if (error.request) {
-                // Request made but no response
-                setApiError("Unable to connect to server. Please check your connection.");
-            } else {
-                // Other errors
-                setApiError("An unexpected error occurred. Please try again.");
-            }
+            console.error("Error:", error);
+            setApiError(error.response?.data?.error || error.message || "Registration failed");
         } finally {
             setIsSubmitting(false);
         }
     };
 
     const isFormValid =
-        Object.values(errors).every((e) => !e) &&
-        Object.values(form).every((v) => v);
+        Object.values(errors).every(e => !e) &&
+        Object.values(form).every(v => v) &&
+        !!idProofFile &&
+        !!additionalDocs &&
+        !!selfieWithId;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-100">
-
-            <header className="px-8 py-5 bg-purple-700 shadow-sm">
-                <h1 className="text-sm font-bold text-white">
-                    ShopSphere Seller Central
-                </h1>
+        <div className="min-h-screen bg-gradient-to-br from-[#fff5f5] via-[#fef3f2] to-[#f3e8ff]">
+            <header className="px-8 py-5 bg-gradient-to-r from-orange-400 to-purple-500 shadow-sm text-white font-bold">
+                ShopSphere Seller Central
             </header>
 
             <main className="px-6 py-12">
                 <StepProgress />
 
-                <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-10">
+                <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-10">
+                    <h2 className="text-3xl font-bold text-gray-800 mb-2">Final Step: Bank & KYC</h2>
+                    <p className="text-gray-500 mb-10">Complete your profile by adding bank details and uploading verification documents.</p>
 
-                    <h2 className="text-2xl font-bold mb-3">
-                        Add your bank account
-                    </h2>
+                    {apiError && <div className="mb-8 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">{apiError}</div>}
 
-                    {/* API Error Message */}
-                    {apiError && (
-                        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                            <p className="text-sm text-red-600">{apiError}</p>
-                        </div>
-                    )}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                        {/* BANK SECTION */}
+                        <div className="space-y-6">
+                            <h3 className="text-lg font-bold text-gray-700 flex items-center gap-3">
+                                <span className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-sm italic">🏦</span>
+                                Bank Account
+                            </h3>
 
-                    {/* ACCOUNT HOLDER NAME */}
-                    <div className="mb-6">
-                        <label className="block text-sm font-medium mb-2">
-                            Account holder name
-                        </label>
-                        <input
-                            value={form.holderName}
-                            onChange={(e) =>
-                                handleChange("holderName", e.target.value)
-                            }
-                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-600"
-                            disabled={isSubmitting}
-                        />
-                        {errors.holderName && (
-                            <p className="text-xs text-red-500 mt-1">
-                                {errors.holderName}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* ACCOUNT NUMBER */}
-                    <div className="mb-6">
-                        <label className="block text-sm font-medium mb-2">
-                            Bank account number
-                        </label>
-                        <input
-                            value={form.accountNumber}
-                            onChange={(e) =>
-                                handleChange("accountNumber", e.target.value)
-                            }
-                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-600"
-                            disabled={isSubmitting}
-                        />
-                        {errors.accountNumber && (
-                            <p className="text-xs text-red-500 mt-1">
-                                {errors.accountNumber}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* CONFIRM ACCOUNT NUMBER */}
-                    <div className="mb-6">
-                        <label className="block text-sm font-medium mb-2">
-                            Re-enter bank account number
-                        </label>
-                        <input
-                            value={form.confirmAccountNumber}
-                            onChange={(e) =>
-                                handleChange("confirmAccountNumber", e.target.value)
-                            }
-                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-600"
-                            disabled={isSubmitting}
-                        />
-                        {errors.confirmAccountNumber && (
-                            <p className="text-xs text-red-500 mt-1">
-                                {errors.confirmAccountNumber}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* IFSC */}
-                    <div className="mb-8">
-                        <label className="block text-sm font-medium mb-2">
-                            IFSC code
-                        </label>
-                        <input
-                            value={form.ifsc}
-                            onChange={(e) =>
-                                handleChange("ifsc", e.target.value)
-                            }
-                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-600"
-                            disabled={isSubmitting}
-                        />
-                        {errors.ifsc && (
-                            <p className="text-xs text-red-500 mt-1">
-                                {errors.ifsc}
-                            </p>
-                        )}
-                    </div>
-
-                    <button
-                        onClick={handleContinue}
-                        disabled={!isFormValid || isSubmitting}
-                        className={`w-full py-3 rounded-lg font-medium transition
-                        ${isFormValid && !isSubmitting
-                                ? "bg-gradient-to-r from-purple-700 to-purple-500 text-white hover:from-purple-800 hover:to-purple-600"
-                                : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                            }`}
-                    >
-                        {isSubmitting ? "Submitting..." : "Save and continue"}
-                    </button>
-
-                </div>
-            </main>
-
-            {/* SUCCESS MODAL */}
-            {showSuccessModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg px-10 py-8
-            animate-scaleIn relative overflow-hidden">
-
-                        {/* Top gradient bar */}
-                        <div className="absolute top-0 left-0 w-full h-2
-                bg-gradient-to-r from-purple-600 to-purple-400" />
-
-                        {/* Icon */}
-                        <div className="flex justify-center mt-4">
-                            <div className="w-14 h-14 rounded-full bg-purple-100
-                    flex items-center justify-center text-2xl">
-                                ✅
+                            <div className="space-y-5">
+                                <div>
+                                    <label className="block text-xs font-black uppercase text-gray-400 mb-2 tracking-widest">Holder Name</label>
+                                    <input
+                                        value={form.holderName}
+                                        onChange={(e) => handleChange("holderName", e.target.value)}
+                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all outline-none"
+                                        placeholder="Name as per bank record"
+                                    />
+                                    {errors.holderName && <p className="text-[10px] text-red-500 mt-1 font-bold">{errors.holderName}</p>}
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-black uppercase text-gray-400 mb-2 tracking-widest">Account Number</label>
+                                    <input
+                                        value={form.accountNumber}
+                                        onChange={(e) => handleChange("accountNumber", e.target.value)}
+                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all outline-none"
+                                        placeholder="9-18 digit number"
+                                    />
+                                    {errors.accountNumber && <p className="text-[10px] text-red-500 mt-1 font-bold">{errors.accountNumber}</p>}
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-black uppercase text-gray-400 mb-2 tracking-widest">Re-enter Account No.</label>
+                                    <input
+                                        value={form.confirmAccountNumber}
+                                        onChange={(e) => handleChange("confirmAccountNumber", e.target.value)}
+                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all outline-none"
+                                        placeholder="Confirm number"
+                                    />
+                                    {errors.confirmAccountNumber && <p className="text-[10px] text-red-500 mt-1 font-bold">{errors.confirmAccountNumber}</p>}
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-black uppercase text-gray-400 mb-2 tracking-widest">IFSC Code</label>
+                                    <input
+                                        value={form.ifsc}
+                                        onChange={(e) => handleChange("ifsc", e.target.value)}
+                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all outline-none"
+                                        placeholder="e.g. SBIN0001234"
+                                    />
+                                    {errors.ifsc && <p className="text-[10px] text-red-500 mt-1 font-bold">{errors.ifsc}</p>}
+                                </div>
                             </div>
                         </div>
 
-                        {/* Title */}
-                        <h3 className="text-xl font-bold text-center mt-6 text-gray-800">
-                            Vendor details saved successfully
-                        </h3>
+                        {/* DOCUMENT SECTION */}
+                        <div className="space-y-8">
+                            <h3 className="text-lg font-bold text-gray-700 flex items-center gap-3">
+                                <span className="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center text-sm italic">📄</span>
+                                Verification Bundle
+                            </h3>
 
-                        {/* Message */}
-                        <p className="text-sm text-gray-600 text-center mt-3 leading-relaxed">
-                            You will be notified about the vendor confirmation
-                            through email once the verification is completed.
-                        </p>
+                            {/* ID PROOF */}
+                            <div className="space-y-3">
+                                <label className="block text-xs font-black uppercase text-gray-400 tracking-widest">{vendorData.idType === "gst" ? "GST Certificate" : "PAN Card File"} (Required)</label>
+                                <div
+                                    onClick={() => idInputRef.current?.click()}
+                                    className={`p-4 border-2 border-dashed rounded-2xl flex items-center gap-4 cursor-pointer transition-all ${fileErrors.idProof ? 'bg-red-50 border-red-200' : 'bg-slate-50 border-slate-200 hover:border-indigo-400'}`}
+                                >
+                                    <input ref={idInputRef} type="file" hidden onChange={handleIdProofChange} />
+                                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm text-indigo-500">📁</div>
+                                    <div className="flex-1 overflow-hidden">
+                                        <p className="text-sm font-bold text-slate-700 truncate">{idProofFile ? idProofFile.name : "Upload primary ID proof"}</p>
+                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">PDF, JPG, PNG · 10MB</p>
+                                    </div>
+                                </div>
+                                {fileErrors.idProof && <p className="text-[10px] text-red-500 font-bold">⚠ {fileErrors.idProof}</p>}
+                            </div>
 
-                        {/* OK Button */}
-                        <div className="mt-8 flex justify-center">
-                            <button
-                                onClick={() => {
-                                    setShowSuccessModal(false);
-                                    navigate("/Home"); // Home page
-                                }}
-                                className="px-6 py-3 rounded-lg font-medium text-white
-                        bg-gradient-to-r from-purple-700 to-purple-500
-                        hover:from-purple-800 hover:to-purple-600
-                        transition shadow-lg"
-                            >
-                                OK
-                            </button>
+                            {/* ADDITIONAL DOCS */}
+                            <div className="space-y-3">
+                                <label className="block text-xs font-black uppercase text-gray-400 tracking-widest">Documents (Utility/Trade) - Required</label>
+                                <div
+                                    onClick={() => docsInputRef.current?.click()}
+                                    className={`p-4 border-2 border-dashed rounded-2xl flex items-center gap-4 cursor-pointer transition-all ${fileErrors.docs ? 'bg-red-50 border-red-200' : 'bg-slate-50 border-slate-200 hover:border-orange-400'}`}
+                                >
+                                    <input ref={docsInputRef} type="file" hidden onChange={handleAdditionalDocsChange} />
+                                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm text-orange-500">📂</div>
+                                    <div className="flex-1 overflow-hidden">
+                                        <p className="text-sm font-bold text-slate-700 truncate">{additionalDocs ? additionalDocs.name : "Supporting business docs"}</p>
+                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Plural docs allowed in one PDF</p>
+                                    </div>
+                                </div>
+                                {fileErrors.docs && <p className="text-[10px] text-red-500 font-bold">⚠ {fileErrors.docs}</p>}
+                            </div>
+
+                            {/* SELFIE */}
+                            <div className="space-y-3">
+                                <label className="block text-xs font-black uppercase text-gray-400 tracking-widest">Selfie Holding ID - Required</label>
+                                <div
+                                    onClick={() => selfieInputRef.current?.click()}
+                                    className={`p-4 border-2 border-dashed rounded-2xl flex items-center gap-4 cursor-pointer transition-all ${fileErrors.selfie ? 'bg-red-50 border-red-200' : 'bg-slate-50 border-slate-200 hover:border-indigo-400'}`}
+                                >
+                                    <input ref={selfieInputRef} type="file" hidden accept="image/*" onChange={handleSelfieChange} />
+                                    {selfiePreview ? (
+                                        <img src={selfiePreview} className="w-10 h-10 rounded-lg object-cover shadow-sm border" alt="preview" />
+                                    ) : (
+                                        <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm text-indigo-500">📷</div>
+                                    )}
+                                    <div className="flex-1 overflow-hidden">
+                                        <p className="text-sm font-bold text-slate-700 truncate">{selfieWithId ? selfieWithId.name : "Your face + ID Card photo"}</p>
+                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Face & card must be clear</p>
+                                    </div>
+                                </div>
+                                {fileErrors.selfie && <p className="text-[10px] text-red-500 font-bold">⚠ {fileErrors.selfie}</p>}
+                            </div>
                         </div>
+                    </div>
+
+                    <div className="mt-16 pt-8 border-t border-slate-100 flex flex-col items-center">
+                        <button
+                            onClick={handleContinue}
+                            disabled={!isFormValid || isSubmitting}
+                            className={`px-16 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all ${isFormValid && !isSubmitting ? 'bg-slate-900 text-white shadow-2xl hover:scale-105' : 'bg-slate-200 text-slate-400 cursor-not-allowed'}`}
+                        >
+                            {isSubmitting ? "Processing Entry..." : isFormValid ? "Submit Registration for Audit" : "Upload Required Documents"}
+                        </button>
+                        <p className="mt-6 text-[10px] text-slate-400 font-bold uppercase tracking-wider">🔒 Encrypted Transfer · ShopSphere Privacy Protocol 2.0</p>
+                    </div>
+                </div>
+            </main>
+
+            {showSuccessModal && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-6">
+                    <div className="bg-white rounded-[3rem] p-16 max-w-sm w-full text-center shadow-2xl border border-slate-100">
+                        <div className="w-24 h-24 bg-emerald-50 rounded-[2rem] flex items-center justify-center mx-auto mb-10 border border-emerald-100">
+                            <Check className="text-emerald-500 w-12 h-12" strokeWidth={3} />
+                        </div>
+                        <h2 className="text-2xl font-black text-slate-900 mb-4 tracking-tight">Audit Successful</h2>
+                        <p className="text-xs text-slate-500 font-bold leading-relaxed mb-12">Registry received. Verification takes ~5 days. Check email for status updates.</p>
+                        <button onClick={() => navigate("/Home")} className="w-full py-4 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all">Registry Complete</button>
                     </div>
                 </div>
             )}
-
         </div>
     );
 }

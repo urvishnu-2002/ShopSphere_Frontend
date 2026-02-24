@@ -2,209 +2,179 @@ import React, { useState } from 'react';
 import { signupUser } from "../../api/axios";
 import { useNavigate, Link } from "react-router-dom";
 import toast from 'react-hot-toast';
+import { validateUsername, validateEmail, validatePassword } from '../../utils/validators';
 
 function SignUp() {
     const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        username: '',
-        email: '',
-        password: ''
-    });
+    const [formData, setFormData] = useState({ username: '', email: '', password: '' });
+    const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
+
+    const validate = () => {
+        const errs = {};
+        const usernameErr = validateUsername(formData.username);
+        const emailErr = validateEmail(formData.email);
+        const passwordErr = validatePassword(formData.password);
+        if (usernameErr) errs.username = usernameErr;
+        if (emailErr) errs.email = emailErr;
+        if (passwordErr) errs.password = passwordErr;
+        return errs;
+    };
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-        setError('');
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+        // Clear error for this field on change
+        setErrors(prev => ({ ...prev, [name]: null }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const errs = validate();
+        if (Object.keys(errs).length > 0) {
+            setErrors(errs);
+            toast.error(Object.values(errs)[0]);
+            return;
+        }
         setLoading(true);
-        setError("");
-
         try {
-            const data = await signupUser({
-                username: formData.username,
-                email: formData.email,
-                password: formData.password,
-            });
-
-            console.log("Signup success:", data);
+            await signupUser({ username: formData.username, email: formData.email, password: formData.password });
             toast.success("Account created successfully! Please log in.");
-
-            // Navigate to login after successful signup
             navigate("/login");
         } catch (err) {
-            const errorMessage = err.response?.data?.message || "Signup failed. Please try again.";
-            setError(errorMessage);
-            toast.error(errorMessage);
+            const msg = err.response?.data?.detail || Object.values(err.response?.data || {})[0]?.[0] || "Signup failed. Please try again.";
+            setErrors({ form: msg });
+            toast.error(msg);
         } finally {
             setLoading(false);
         }
     };
 
+    const FieldError = ({ field }) => errors[field] ? (
+        <p className="text-red-500 text-xs font-bold mt-1 ml-1 flex items-center gap-1">
+            <span>⚠</span> {errors[field]}
+        </p>
+    ) : null;
+
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-100 px-4 py-12 relative overflow-hidden">
-            {/* Background decorative elements */}
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#fff5f5] via-[#fef3f2] to-[#f3e8ff] p-4 lg:p-6 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-                <div className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-violet-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
-                <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-purple-400/20 to-pink-400/20 rounded-full blur-3xl"></div>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-violet-200/30 to-purple-200/30 rounded-full blur-3xl"></div>
+                <div className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-orange-400/10 to-purple-400/10 rounded-full blur-3xl"></div>
+                <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-purple-400/10 to-orange-400/10 rounded-full blur-3xl"></div>
             </div>
+            <div className="fixed top-0 left-0 w-full h-1.5 bg-gradient-to-r from-orange-400 via-purple-500 to-purple-500 z-50"></div>
 
-            {/* Top gradient bar */}
-            <div className="fixed top-0 left-0 w-full h-1.5 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 z-50"></div>
-
-            {/* Signup Card */}
-            <div className="relative w-full max-w-md">
-                <div className="bg-white/70 backdrop-blur-2xl border border-white/60 rounded-3xl shadow-2xl shadow-gray-300/40 p-10 sm:p-12">
-                    {/* Logo / Brand */}
-                    <div className="text-center mb-10">
-                        <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-2xl shadow-lg shadow-violet-500/20 mb-6 transform hover:scale-105 transition-transform duration-300 p-2">
-                            <div className="text-3xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">S</div>
+            <div className="relative w-full max-w-6xl flex flex-row-reverse bg-white/40 backdrop-blur-3xl rounded-[40px] shadow-2xl overflow-hidden border border-white/50">
+                {/* Right Side Hero */}
+                <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+                    <img src="/signup.jpg" alt="Join ShopSphere" className="absolute inset-0 w-full h-full object-cover transition-transform duration-10000 hover:scale-110" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/30 to-blue-600/40 mix-blend-multiply"></div>
+                    <div className="absolute inset-0 flex flex-col justify-end p-16 text-white z-10">
+                        <div className="bg-white/10 backdrop-blur-md border border-white/20 p-8 rounded-3xl">
+                            <h2 className="text-4xl font-black mb-4 leading-tight">Your Global <br />Marketplace Awaits</h2>
+                            <p className="text-white/80 font-medium text-lg">Create an account and start your journey towards a smarter, faster shopping experience.</p>
+                            <div className="grid grid-cols-2 gap-6 mt-8">
+                                <div className="space-y-1"><p className="text-2xl font-black">20k+</p><p className="text-white/60 text-xs font-bold uppercase tracking-widest">Premium Brands</p></div>
+                                <div className="space-y-1"><p className="text-2xl font-black">24/7</p><p className="text-white/60 text-xs font-bold uppercase tracking-widest">Customer Support</p></div>
+                            </div>
                         </div>
-                        <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight mb-2">
-                            Shop<span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-purple-600">Sphere</span>
-                        </h1>
-                        <p className="text-gray-500 text-sm font-medium">
-                            Create your account to get started!
-                        </p>
                     </div>
-
-                    {/* Section Title */}
-                    <div className="mb-8">
-                        <h2 className="text-xl font-bold text-gray-800 text-center">
-                            Sign Up
-                        </h2>
-                        <div className="w-12 h-1 bg-gradient-to-r from-violet-600 to-purple-600 rounded-full mx-auto mt-3"></div>
-                    </div>
-
-                    {/* Form */}
-                    <form className="space-y-5" onSubmit={handleSubmit}>
-                        {/* Username Field */}
-                        <div className="space-y-2">
-                            <label htmlFor="username" className="block text-sm font-semibold text-gray-700">
-                                Username
-                            </label>
-                            <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-violet-500 transition-colors">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                    </svg>
-                                </div>
-                                <input
-                                    type="text"
-                                    id="username"
-                                    name="username"
-                                    value={formData.username}
-                                    onChange={handleChange}
-                                    className="w-full pl-12 pr-4 py-4 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-gray-300 hover:bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 focus:bg-white"
-                                    placeholder="Enter username"
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        {/* Email Field */}
-                        <div className="space-y-2">
-                            <label htmlFor="email" className="block text-sm font-semibold text-gray-700">
-                                Email Address
-                            </label>
-                            <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-violet-500 transition-colors">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                    </svg>
-                                </div>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    className="w-full pl-12 pr-4 py-4 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-gray-300 hover:bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 focus:bg-white"
-                                    placeholder="Enter email address"
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        {/* Password Field */}
-                        <div className="space-y-2">
-                            <label htmlFor="password" className="block text-sm font-semibold text-gray-700">
-                                Password
-                            </label>
-                            <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-violet-500 transition-colors">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                    </svg>
-                                </div>
-                                <input
-                                    type="password"
-                                    id="password"
-                                    name="password"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    className="w-full pl-12 pr-4 py-4 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-gray-300 hover:bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 focus:bg-white"
-                                    placeholder="••••••••"
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        {/* Error Message */}
-                        {error && (
-                            <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm font-medium">
-                                {error}
-                            </div>
-                        )}
-
-                        {/* Submit Button */}
-                        <div className="pt-4">
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className={`w-full py-4 px-6 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-bold rounded-xl shadow-lg shadow-violet-500/30 transition-all duration-300 hover:from-violet-700 hover:to-purple-700 hover:shadow-xl hover:shadow-violet-500/40 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
-                            >
-                                <span className="flex items-center justify-center gap-2">
-                                    {loading ? (
-                                        <>
-                                            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                            </svg>
-                                            Creating Account...
-                                        </>
-                                    ) : (
-                                        <>
-                                            Sign Up
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                            </svg>
-                                        </>
-                                    )}
-                                </span>
-                            </button>
-                        </div>
-                    </form>
-
-                    {/* Login Link */}
-                    <div className="mt-8 text-center">
-                        <p className="text-gray-600 text-sm">
-                            Already have an account?{' '}
-                            <Link to="/login" className="font-bold text-violet-600 hover:text-violet-700 transition-colors underline-offset-2 hover:underline">
-                                Log in here
-                            </Link>
-                        </p>
-                    </div>
+                    <div className="absolute top-20 right-20 w-32 h-32 bg-purple-400/30 rounded-full blur-xl animate-pulse"></div>
+                    <div className="absolute bottom-1/4 left-10 w-24 h-24 bg-orange-400/30 rounded-full blur-xl animate-pulse" style={{ animationDelay: '1.5s' }}></div>
                 </div>
 
-                {/* Subtle branding */}
-                <p className="text-center text-gray-400 text-xs mt-6">
-                    © 2026 ShopSphere. All rights reserved.
-                </p>
+                {/* Left Side Form */}
+                <div className="w-full lg:w-1/2 p-6 sm:p-10 md:p-12 flex flex-col justify-center">
+                    <div className="mb-6 lg:hidden text-center">
+                        <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Shop<span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-500">Sphere</span></h1>
+                    </div>
+
+                    <div className="max-w-md mx-auto w-full">
+                        <div className="mb-6">
+                            <h2 className="text-3xl font-black text-gray-900 mb-1">Join ShopSphere</h2>
+                            <p className="text-gray-500 font-medium">Create your account to get started</p>
+                            <div className="w-12 h-1.5 bg-gradient-to-r from-orange-400 to-purple-500 rounded-full mt-3"></div>
+                        </div>
+
+                        <form className="space-y-4" onSubmit={handleSubmit} noValidate>
+                            {/* Username */}
+                            <div className="space-y-1">
+                                <label htmlFor="username" className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Username</label>
+                                <input
+                                    type="text" id="username" name="username"
+                                    value={formData.username} onChange={handleChange}
+                                    className={`w-full px-5 py-4 bg-white border rounded-2xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-orange-300 focus:outline-none focus:ring-4 focus:ring-orange-400/5 focus:border-orange-400 ${errors.username ? 'border-red-400 bg-red-50' : 'border-gray-200'}`}
+                                    placeholder="Letters only, more than 3 characters"
+                                />
+                                <FieldError field="username" />
+                            </div>
+
+                            {/* Email */}
+                            <div className="space-y-1">
+                                <label htmlFor="email" className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
+                                <input
+                                    type="email" id="email" name="email"
+                                    value={formData.email} onChange={handleChange}
+                                    className={`w-full px-5 py-4 bg-white border rounded-2xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-orange-300 focus:outline-none focus:ring-4 focus:ring-orange-400/5 focus:border-orange-400 ${errors.email ? 'border-red-400 bg-red-50' : 'border-gray-200'}`}
+                                    placeholder="user@example.com"
+                                />
+                                <FieldError field="email" />
+                            </div>
+
+                            {/* Password */}
+                            <div className="space-y-1">
+                                <label htmlFor="password" className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Password</label>
+                                <input
+                                    type="password" id="password" name="password"
+                                    value={formData.password} onChange={handleChange}
+                                    className={`w-full px-5 py-4 bg-white border rounded-2xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-orange-300 focus:outline-none focus:ring-4 focus:ring-orange-400/5 focus:border-orange-400 ${errors.password ? 'border-red-400 bg-red-50' : 'border-gray-200'}`}
+                                    placeholder="Min 8 chars, 1 uppercase, 1 number, 1 special"
+                                />
+                                <FieldError field="password" />
+                                {/* Password hints */}
+                                {formData.password.length > 0 && (
+                                    <div className="flex gap-2 flex-wrap mt-1 ml-1">
+                                        {[
+                                            { label: '8+ chars', ok: formData.password.length >= 8 },
+                                            { label: 'Uppercase', ok: /[A-Z]/.test(formData.password) },
+                                            { label: 'Number', ok: /[0-9]/.test(formData.password) },
+                                            { label: 'Special', ok: /[!@#$%^&*]/.test(formData.password) },
+                                            { label: 'No spaces', ok: !/\s/.test(formData.password) },
+                                        ].map(h => (
+                                            <span key={h.label} className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${h.ok ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}`}>{h.ok ? '✓' : '○'} {h.label}</span>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Form-level error */}
+                            {errors.form && (
+                                <div className="p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-sm font-bold flex items-center gap-2">
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" /></svg>
+                                    {errors.form}
+                                </div>
+                            )}
+
+                            <button
+                                type="submit" disabled={loading}
+                                className={`group relative w-full py-4 px-6 bg-gradient-to-r from-orange-400 to-purple-500 text-white font-black rounded-2xl shadow-xl shadow-orange-400/20 transition-all duration-300 hover:shadow-orange-400/40 hover:-translate-y-1 active:scale-95 flex items-center justify-center overflow-hidden mb-4 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                            >
+                                <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                                <span className="relative flex items-center gap-2">
+                                    {loading ? 'Creating Account...' : 'Get Started'}
+                                    {!loading && <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>}
+                                </span>
+                            </button>
+                        </form>
+
+                        <div className="mt-6 text-center">
+                            <p className="text-gray-500 font-medium">
+                                Already have an account?{' '}
+                                <Link to="/login" className="font-black text-orange-400 hover:text-orange-500 transition-colors underline decoration-orange-400/30 underline-offset-4 decoration-2">Sign in here</Link>
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );

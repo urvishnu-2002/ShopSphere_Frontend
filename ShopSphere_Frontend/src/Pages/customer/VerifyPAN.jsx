@@ -112,10 +112,10 @@ export default function VerifyPAN() {
 
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-100">
+        <div className="min-h-screen bg-gradient-to-br from-[#fff5f5] via-[#fef3f2] to-[#f3e8ff]">
 
             {/* Header */}
-            <header className="flex items-center justify-between px-8 py-5 bg-purple-700 shadow-sm">
+            <header className="flex items-center justify-between px-8 py-5 bg-gradient-to-r from-orange-400 to-purple-500 shadow-sm">
                 <h1 className="text-x font-bold text-white">
                     ShopSphere Seller Central
                 </h1>
@@ -228,7 +228,7 @@ export default function VerifyPAN() {
                                 </label>
 
                                 <div className="border-2 border-dashed border-purple-300 rounded-lg p-5 flex items-center gap-4">
-                                    <label className="cursor-pointer bg-purple-700 text-white px-4 py-2 rounded-lg text-sm">
+                                    <label className="cursor-pointer bg-gradient-to-r from-orange-400 to-purple-500 text-white px-4 py-2 rounded-lg text-sm">
                                         Upload file
                                         <input type="file" hidden onChange={handleFileChange} />
                                     </label>
@@ -281,7 +281,7 @@ export default function VerifyPAN() {
                             className={`px-6 py-3 rounded-lg font-medium shadow-md transition
     ${!isPanValid || !panName || !panFile || !panOwnerChecked
                                     ? "bg-purple-300 cursor-not-allowed text-white"
-                                    : "bg-purple-700 hover:bg-purple-800 text-white"
+                                    : "bg-gradient-to-r from-orange-400 to-purple-500 hover:from-orange-600 hover:to-purple-700 text-white"
                                 }`}
                         >
                             Save and Continue

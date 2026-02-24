@@ -94,10 +94,10 @@ export default function ShippingAddress() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-100">
+        <div className="min-h-screen bg-gradient-to-br from-[#fff5f5] via-[#fef3f2] to-[#f3e8ff]">
 
             {/* Header */}
-            <header className="px-8 py-5 bg-purple-700">
+            <header className="px-8 py-5 bg-gradient-to-r from-orange-400 to-purple-500">
                 <h1 className="text-sm font-bold text-white">
                     ShopSphere Seller Central
                 </h1>
@@ -142,7 +142,7 @@ export default function ShippingAddress() {
                                             <button
                                                 type="button"
                                                 onClick={() => handleEditAddress(addr)}
-                                                className="mt-2 text-purple-700 text-sm hover:underline"
+                                                className="mt-2 text-orange-400 text-sm hover:underline"
                                             >
                                                 Edit address
                                             </button>
@@ -157,7 +157,7 @@ export default function ShippingAddress() {
                                     setIsEditing(false);
                                     setForm({ pincode: "", city: "", state: "", area: "" });
                                 }}
-                                className="mt-6 px-5 py-2 border border-purple-600 text-purple-700 rounded-lg
+                                className="mt-6 px-5 py-2 border border-purple-600 text-orange-400 rounded-lg
                                 hover:bg-purple-50 transition font-medium"
                             >
                                 + Add new address
@@ -226,7 +226,7 @@ export default function ShippingAddress() {
                                     <button
                                         onClick={handleSaveAddress}
                                         className="px-6 py-3 rounded-lg text-white font-medium
-                                        bg-purple-700 hover:bg-purple-800 transition"
+                                        bg-gradient-to-r from-orange-400 to-purple-500 hover:from-orange-600 hover:to-purple-700 transition"
                                     >
                                         Save and continue
                                     </button>

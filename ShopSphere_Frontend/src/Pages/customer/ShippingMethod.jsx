@@ -13,10 +13,10 @@ export default function ShippingMethod() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-100">
+        <div className="min-h-screen bg-gradient-to-br from-[#fff5f5] via-[#fef3f2] to-[#f3e8ff]">
 
             {/* Header */}
-            <header className="px-8 py-5 bg-purple-700 shadow-sm">
+            <header className="px-8 py-5 bg-gradient-to-r from-orange-400 to-purple-500 shadow-sm">
                 <h1 className="text-sm font-bold text-white">
                     ShopSphere Seller Central
                 </h1>
@@ -61,7 +61,7 @@ export default function ShippingMethod() {
                                     </p>
 
                                     <span className="inline-block mt-2 px-3 py-1 text-xs font-semibold
-                                        bg-purple-100 text-purple-700 rounded-full">
+                                        bg-purple-100 text-orange-400 rounded-full">
                                         Most sellers choose this
                                     </span>
                                 </div>
